@@ -1,0 +1,110 @@
+POST http://localhost:5000/api/users
+Content-Type: application/json
+
+{
+    "email": "test1@test.com",
+    "name": "Test",
+    "password": "test123",
+    "role": "ADMIN"
+}
+
+###
+PUT http://localhost:5000/api/users/2
+Content-Type: application/json
+
+{
+    "email": "duarr@test.com",
+    "name": "Testtt",
+    "password": "test1234",
+    "role": "STAFF_PRODUKSI"
+}
+
+###
+DELETE http://localhost:5000/api/users/1
+
+###
+POST http://localhost:5000/api/inventaris
+Content-Type: application/json
+
+{
+    "nama_barang": "Kain",
+    "quantity": 20,
+    "satuan": "Meter"
+}
+
+
+###
+GET http://localhost:5000/api/users
+
+###
+GET http://localhost:5000/api/users?name=Test
+
+###
+GET http://localhost:5000/api/inventaris/1
+
+###
+GET http://localhost:5000/api/inventaris/search?nama_barang=Gerinda
+
+###
+POST http://localhost:5000/api/materials
+Content-Type: application/json
+
+{
+    "kode_material": "M003",
+    "nama_material": "Lampu",
+    "satuan": "Pcs"
+}
+
+###
+GET http://localhost:5000/api/materials
+
+###
+POST http://localhost:5000/api/movements/in
+Content-Type: application/json
+
+{
+    "material_id": 1,
+    "quantity": 10
+}
+
+###
+POST http://localhost:5000/api/movements/out
+Content-Type: application/json
+
+{
+    "material_id": 1,
+    "quantity": 50
+}
+
+###
+GET http://localhost:5000/api/movements
+
+###
+POST http://localhost:5000/api/orders
+Content-Type: application/json
+
+{
+    "nama_pemesan": "PT.ABC",
+    "kode_pesanan": "P001",
+    "estimatedTime": "2021-08-01T00:00:00.000Z",
+    "products": [
+        {
+            "kode_produk": "PROD-1",
+            "nama_produk": "Product 1",
+            "deskripsi": "Description of product 1",
+            "materials": [
+                { "nama_material": "Akrilik", "quantity": 2 },
+                { "nama_material": "Lampu", "quantity": 5 }
+            ]
+        },
+        {
+            "kode_produk": "PROD-2",
+            "nama_produk": "Product 2",
+            "deskripsi": "Description of product 2",
+            "materials": [
+                { "nama_material": "Akrilik", "quantity": 1 },
+                { "nama_material": "Lampu", "quantity": 3 }
+            ]
+        }
+    ]
+}
