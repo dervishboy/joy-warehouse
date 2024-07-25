@@ -51,8 +51,8 @@ Content-Type: application/json
 
 {
     "kode_material": "M003",
-    "nama_material": "Lampu",
-    "satuan": "Pcs"
+    "nama_material": "Akrilik",
+    "satuan": "Lembar"
 }
 
 ###
@@ -63,8 +63,8 @@ POST http://localhost:5000/api/movements/in
 Content-Type: application/json
 
 {
-    "material_id": 1,
-    "quantity": 10
+    "material_id": 4,
+    "quantity": 5
 }
 
 ###
@@ -84,27 +84,49 @@ POST http://localhost:5000/api/orders
 Content-Type: application/json
 
 {
-    "nama_pemesan": "PT.ABC",
-    "kode_pesanan": "P001",
-    "estimatedTime": "2021-08-01T00:00:00.000Z",
+    "nama_pemesan": "PT.ABCDE",
+    "kode_pesanan": "P002",
+    "estimatedTime": "2021-12-31T00:00:00.000Z",
     "products": [
         {
-            "kode_produk": "PROD-1",
-            "nama_produk": "Product 1",
-            "deskripsi": "Description of product 1",
-            "materials": [
-                { "nama_material": "Akrilik", "quantity": 2 },
-                { "nama_material": "Lampu", "quantity": 5 }
+            "kode_produk": "PROD-3",
+            "nama_produk": "Product 3",
+            "deskripsi": "Description of product 3",
+            "productMaterials": [
+                { "material_id": 1, "quantity": 1 },
+                { "material_id": 4, "quantity": 1 }
             ]
         },
         {
-            "kode_produk": "PROD-2",
-            "nama_produk": "Product 2",
-            "deskripsi": "Description of product 2",
-            "materials": [
-                { "nama_material": "Akrilik", "quantity": 1 },
-                { "nama_material": "Lampu", "quantity": 3 }
+            "kode_produk": "PROD-4",
+            "nama_produk": "Product 4",
+            "deskripsi": "Description of product 4",
+            "productMaterials": [
+                { "material_id": 1, "quantity": 1 },
+                { "material_id": 4, "quantity": 1 }
             ]
         }
     ]
 }
+
+
+###
+POST http://localhost:5000/api/products
+Content-Type: application/json
+
+{
+    "kode_produk": "PROD-1",
+    "nama_produk": "Product 1",
+    "deskripsi": "Ini adalah deskripsi dari product 1",
+    "materials": [
+        { "material_id": 1,  "quantity": 3 },
+        { "material_id": 2, "quantity": 100 }
+    ]
+}
+
+###
+GET http://localhost:5000/api/products
+
+
+###
+GET http://localhost:5000/api/orders

@@ -9,7 +9,15 @@ const Order = {
                 include: {
                     orderProducts: {
                         include: {
-                            product: true
+                            product: {
+                                include: {
+                                    productMaterials: {
+                                        include: {
+                                            material: true
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -26,7 +34,15 @@ const Order = {
                 include: {
                     orderProducts: {
                         include: {
-                            product: true
+                            product: {
+                                include: {
+                                    productMaterials: {
+                                        include: {
+                                            material: true
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -46,21 +62,41 @@ const Order = {
                     kode_pesanan,
                     estimatedTime: new Date(estimatedTime),
                     orderProducts: {
-                        create: products.map(product => ({
-                            product: {
-                                create: {
+                        create: await Promise.all(products.map(async product => {
+                            const createdProduct = await prisma.product.create({
+                                data: {
                                     kode_produk: product.kode_produk,
                                     nama_produk: product.nama_produk,
                                     deskripsi: product.deskripsi,
                                     productMaterials: {
-                                        create: product.materials.map(material => ({
-                                            material: { connect: { nama_material: material.nama_material } },
-                                            quantity: parseInt(material.quantity)
+                                        create: product.productMaterials.map(material => ({
+                                            material: { connect: { id: material.material_id } },
+                                            quantity: material.quantity
                                         }))
                                     }
                                 }
-                            },
-                            quantity: 1
+                            });
+                            for (const material of product.productMaterials) {
+                                await prisma.material.update({
+                                    where: { id: material.material_id },
+                                    data: {
+                                        quantity: {
+                                            decrement: material.quantity
+                                        }
+                                    }
+                                });
+                                await prisma.materialMovement.create({
+                                    data: {
+                                        material_id: material.material_id,
+                                        quantity: material.quantity,
+                                        type: 'KELUAR'
+                                    }
+                                });
+                            }
+
+                            return {
+                                product_id: createdProduct.id
+                            };
                         }))
                     }
                 },
@@ -80,34 +116,6 @@ const Order = {
                     }
                 }
             });
-
-            for (const product of products) {
-                for (const material of product.materials) {
-                    const existingMaterial = await prisma.material.findUnique({
-                        where: { nama_material: material.nama_material }
-                    });
-
-                    if (existingMaterial) {
-                        await prisma.material.update({
-                            where: { nama_material: material.nama_material },
-                            data: {
-                                quantity: {
-                                    decrement: parseInt(material.quantity)
-                                }
-                            }
-                        });
-                        await prisma.materialMovement.create({
-                            data: {
-                                material_id: existingMaterial.id,
-                                quantity: parseInt(material.quantity),
-                                type: "KELUAR"
-                            }
-                        });
-                    } else {
-                        throw new Error(`Material ${material.nama_material} does not exist.`);
-                    }
-                }
-            }
 
             return createdOrder;
         } catch (error) {
