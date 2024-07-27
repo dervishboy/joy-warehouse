@@ -23,6 +23,13 @@ model User {
   updatedAt DateTime @default(now())
 }
 
+model Inventaris {
+  id          Int     @id @default(autoincrement())
+  nama_barang String  
+  quantity    Int
+  satuan      String
+}
+
 model Material {
   id                Int              @id @default(autoincrement())
   kode_material     String           @unique

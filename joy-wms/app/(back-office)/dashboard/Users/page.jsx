@@ -1,16 +1,12 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, TablePagination, InputAdornment } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TextField, TablePagination, InputAdornment } from "@mui/material";
 import { CirclePlus, Pencil, Trash2, Search, BookUser } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Users() {
-    const [open, setOpen] = useState(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        role: '',
-    });
+    const router = useRouter();
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -43,16 +39,6 @@ export default function Users() {
 
     const handleAdd = () => {
         router.push(`/dashboard/Users/tambah`);
-    };
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleSubmit = () => {
-        console.log('Form Data:', formData);
-        handleClose();
     };
 
     const handleSearchChange = (event) => {

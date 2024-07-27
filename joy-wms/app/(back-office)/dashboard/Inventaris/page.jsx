@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, TablePagination, InputAdornment } from "@mui/material";
 import { CirclePlus, Pencil, Trash2, Warehouse, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Inventaris() {
-    
+    const router = useRouter();
 
     const columns = [
         { id: 'id', name: '#' },
@@ -30,6 +31,10 @@ export default function Inventaris() {
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    const handleAdd = () => {
+        router.push(`/dashboard/Inventaris/tambah`);
+    };
 
     const handleEdit = (id) => {
         console.log(`Edit row with id ${id}`);
@@ -70,6 +75,7 @@ export default function Inventaris() {
                                 variant="outlined"
                                 size="medium"
                                 startIcon={<CirclePlus className='w-4 h-4' />}
+                                onClick={handleAdd}
                             >
                                 Tambah
                             </Button>

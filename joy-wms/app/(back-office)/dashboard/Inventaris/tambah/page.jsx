@@ -4,12 +4,12 @@ import React, { useState } from 'react';
 import { Container, Paper, Grid, TextField, Button, Typography } from "@mui/material";
 import { useRouter } from 'next/navigation';
 
-export default function TambahUser() {
+export default function TambahInventaris() {
     const router = useRouter();
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        role: '',
+        nama_barang: '',
+        quantity: '',
+        satuan: '',
     });
 
     const handleChange = (event) => {
@@ -20,14 +20,14 @@ export default function TambahUser() {
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log('Form Data:', formData);
-        router.push('/dashboard/Users');
+        router.push('/dashboard/Inventaris');
     };
 
     return (
             <div className='px-3 py-4'>
                 <Paper className="p-4">
                 <Typography variant="h5" component="h2" gutterBottom>
-                    Tambah User
+                    Tambah Data Inventaris
                 </Typography>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
@@ -35,9 +35,19 @@ export default function TambahUser() {
                             <TextField
                                 fullWidth
                                 variant="outlined"
-                                label="Name"
-                                name="name"
-                                value={formData.name}
+                                label="Nama Barang"
+                                name="nama_barang"
+                                value={formData.nama_barang}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                label="Jumlah"
+                                name="quantity"
+                                value={formData.quantity}
                                 onChange={handleChange}
                                 required
                             />
@@ -46,20 +56,9 @@ export default function TambahUser() {
                             <TextField
                                 fullWidth
                                 variant="outlined"
-                                label="Email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                label="Role"
-                                name="role"
-                                value={formData.role}
+                                label="Satuan"
+                                name="satuan"
+                                value={formData.satuan}
                                 onChange={handleChange}
                                 required
                             />
@@ -75,7 +74,7 @@ export default function TambahUser() {
                             <Button
                                 variant="contained"
                                 color="secondary"
-                                onClick={() => router.push('/dashboard/Users')}
+                                onClick={() => router.push('/dashboard/Inventaris')}
                             >
                                 Cancel
                             </Button>
