@@ -29,13 +29,13 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
     return (
         <div className={`min-h-screen bg-custom-jhitam text-custom-jputih shadow-lg fixed transition-all duration-300 ${isOpen ? 'w-60' : 'w-20'}`}>
             <div className="flex flex-col">
-                <div className="bg-custom-jhitam flex space-x-2 items-center px-4 py-6">
+                <Link className="bg-custom-jhitam flex space-x-2 items-center px-4 py-6" href="/dashboard">
                     <Image src="/Logo.png" width={30} height={30} />
                     {isOpen && <span className="text-custom-jputih text-xl font-semibold">Joy WMS</span>}
-                </div>
+                </Link>
             </div>
             <nav className="flex flex-col gap-4 px-3 py-6">
-                <Link className="flex items-center space-x-2 bg-slate-950 rounded-lg p-2" href="/dashboard/Home/overview">
+                <Link className="flex items-center space-x-2 bg-slate-950 rounded-lg p-2" href="/dashboard">
                     <Home className="w-4 h-4" />
                     {isOpen && <span className="text-md font-semibold">Home</span>}
                 </Link>
