@@ -8,7 +8,7 @@ export default function Home() {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push('/dashboard/Home/overview');
+    router.push('/dashboard');
   };
 
   return (
