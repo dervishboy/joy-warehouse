@@ -24,28 +24,33 @@ export default function TambahInventaris() {
     };
 
     return (
-            <div className='px-3 py-4'>
-                <Paper className="p-4">
-                <Typography variant="h5" component="h2" gutterBottom>
+        <div className='px-3 py-4'>
+            <Paper className="p-4">
+                <Typography className='text-2xl font-semibold mb-8'>
                     Tambah Data Inventaris
                 </Typography>
-                <form onSubmit={handleSubmit}>
-                    <Grid container spacing={2}>
+                <form onSubmit={handleSubmit} className='ml-2'>
+                    <Grid container spacing={3}>
                         <Grid item xs={12}>
+                            <Typography className='mb-2'>
+                                Nama Barang :
+                            </Typography>
                             <TextField
                                 fullWidth
-                                variant="outlined"
-                                label="Nama Barang"
+                                variant="filled"
                                 name="nama_barang"
                                 value={formData.nama_barang}
                                 onChange={handleChange}
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography className='mb-2'>
+                                Jumlah :
+                            </Typography>
                             <TextField
                                 fullWidth
-                                variant="outlined"
-                                label="Jumlah"
+                                variant="filled"
+                                type='number'
                                 name="quantity"
                                 value={formData.quantity}
                                 onChange={handleChange}
@@ -53,10 +58,12 @@ export default function TambahInventaris() {
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography className='mb-2'>
+                                Satuan :
+                            </Typography>
                             <TextField
                                 fullWidth
-                                variant="outlined"
-                                label="Satuan"
+                                variant="filled"
                                 name="satuan"
                                 value={formData.satuan}
                                 onChange={handleChange}
@@ -82,6 +89,6 @@ export default function TambahInventaris() {
                     </Grid>
                 </form>
             </Paper>
-            </div>
+        </div>
     );
 }

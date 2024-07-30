@@ -152,7 +152,6 @@ export default function TambahPesanan() {
 
     return (
         <div className='px-3 py-4'>
-            <Container className='p-4'>
                 <Paper className="p-4">
                     <h2 className="text-2xl font-semibold mb-4">Tambah Pesanan</h2>
                     <form onSubmit={handleSubmit}>
@@ -178,7 +177,7 @@ export default function TambahPesanan() {
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography>Estimated Time:</Typography>
+                                <Typography>Estimasi Penyelesaian:</Typography>
                                 <TextField
                                     name="estimatedTime"
                                     type="date"
@@ -193,7 +192,7 @@ export default function TambahPesanan() {
                             <Box key={index} display="flex" mt={3}>
                                 <Box flex={1} mr={2}>
                                     <Typography className='font-bold'>PRODUCT {index + 1}</Typography>
-                                    <Paper className="p-4 mb-4">
+                                    <Paper className="p-4 mb-4 mt-3">
                                         <Grid container spacing={3}>
                                             <Grid item xs={12}>
                                                 <Typography>Kode Produk:</Typography>
@@ -221,7 +220,7 @@ export default function TambahPesanan() {
                                                     name="deskripsi"
                                                     variant="outlined"
                                                     multiline
-                                                    rows={8}
+                                                    rows={9}
                                                     fullWidth
                                                     value={product.deskripsi}
                                                     onChange={(e) => handleChange(e, index, 'deskripsi', true)}
@@ -237,9 +236,9 @@ export default function TambahPesanan() {
                                     </Paper>
                                 </Box>
                                 <Box flex={1} ml={2}>
-                                    <Typography className='font-bold'>MATERIALS</Typography>
+                                    <Typography className='font-bold'>MATERIAL</Typography>
                                     {product.materials.map((material, materialIndex) => (
-                                        <Paper className="p-2 mb-2" key={materialIndex}>
+                                        <Paper className="p-2 mb-2 mt-3" key={materialIndex}>
                                             <Grid container spacing={1} alignItems="center">
                                                 <Grid item xs={12} sm={6}>
                                                     <Typography>Material {materialIndex + 1}:</Typography>
@@ -321,7 +320,6 @@ export default function TambahPesanan() {
                         </Grid>
                     </form>
                 </Paper>
-            </Container>
         </div>
     );
 }
