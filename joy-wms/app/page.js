@@ -12,17 +12,17 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = () => {
-    if (username === 'admin' && password === 'password') {
-      localStorage.setItem('role', 'admin');
-      router.push('/dashboard/admin');
-    } else if (username === 'staff' && password === 'password') {
-      localStorage.setItem('role', 'staff');
-      router.push('/dashboard/staff-gudang');
-    } else {
-      setError('Invalid username or password');
-    }
-  };
+  // const handleLogin = () => {
+  //   if (username === 'admin' && password === 'password') {
+  //     localStorage.setItem('role', 'admin');
+  //     router.push('/dashboard/admin');
+  //   } else if (username === 'staff' && password === 'password') {
+  //     localStorage.setItem('role', 'staff');
+  //     router.push('/dashboard/staff-gudang');
+  //   } else {
+  //     setError('Invalid username or password');
+  //   }
+  // };
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" sx={{ height: '100vh' }}>
