@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, TablePagination, InputAdornment, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TextField, TablePagination, InputAdornment } from "@mui/material";
 import { CirclePlus, Pencil, Trash2, Search, FolderCog } from 'lucide-react';
 
 export default function Materials() {
@@ -46,37 +46,6 @@ export default function Materials() {
 
     const handleClickOpen = () => {
         setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-        setFormData({
-            kode_bahan: '',
-            nama_bahan: '',
-            satuan: '',
-            custom_satuan: ''
-        });
-        setCustomSatuan(false);
-    };
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        if (name === 'satuan' && value === 'custom') {
-            setCustomSatuan(true);
-        } else if (name === 'satuan') {
-            setCustomSatuan(false);
-            setFormData({ ...formData, custom_satuan: '' });
-        }
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleCustomSatuanChange = (event) => {
-        setFormData({ ...formData, custom_satuan: event.target.value, satuan: event.target.value });
-    };
-
-    const handleSubmit = () => {
-        console.log('Form Data:', formData);
-        handleClose();
     };
 
     const handleSearchChange = (event) => {
@@ -189,63 +158,6 @@ export default function Materials() {
                     />
                 </Paper>
             </div>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Tambah Bahan Baku</DialogTitle>
-                <DialogContent>
-                    <DialogContentText className='mb-8'>
-                        Tambahan data bahan baku baru
-                    </DialogContentText>
-                    <TextField className='mb-4'
-                        autoFocus
-                        name="kode_bahan"
-                        placeholder="Kode Bahan Baku"
-                        type="text"
-                        variant='filled'
-                        value={formData.kode_bahan}
-                        onChange={handleChange}
-                        fullWidth
-                    />
-                    <TextField className='mb-4'
-                        name="nama_bahan"
-                        placeholder='Nama Bahan Baku'
-                        type="text"
-                        variant='filled'
-                        value={formData.nama_bahan}
-                        onChange={handleChange}
-                        fullWidth
-                    />
-                    <FormControl className='mb-4' variant="filled" fullWidth>
-                        <InputLabel id="satuan-label">Satuan</InputLabel>
-                        <Select
-                            labelId="satuan-label"
-                            id="satuan"
-                            name="satuan"
-                            value={customSatuan ? "custom" : formData.satuan}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value="pcs">Pcs</MenuItem>
-                            <MenuItem value="meter">Meter</MenuItem>
-                            <MenuItem value="lembar">Lembar</MenuItem>
-                            <MenuItem value="custom">Custom</MenuItem>
-                        </Select>
-                    </FormControl>
-                    {customSatuan && (
-                        <TextField
-                            name="custom_satuan"
-                            placeholder='Masukkan satuan custom'
-                            type="text"
-                            variant='filled'
-                            value={formData.custom_satuan}
-                            onChange={handleCustomSatuanChange}
-                            fullWidth
-                        />
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color='primary'>Batal</Button>
-                    <Button onClick={handleSubmit} color='primary'>Simpan</Button>
-                </DialogActions>
-            </Dialog>
         </div>
     );
 }

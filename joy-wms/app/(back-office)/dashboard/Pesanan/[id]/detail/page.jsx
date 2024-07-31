@@ -2,21 +2,21 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Container, Grid, Paper, Typography, Box, Divider } from "@mui/material";
+import { Container, Grid, Paper, Typography, Box, Divider, Button, Select, MenuItem, FormControl } from "@mui/material";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function LihatDetailPesanan() {
     const [orderDetails, setOrderDetails] = useState(null);
+    const [newStatus, setNewStatus] = useState('');
 
     const { id } = useParams();
 
     useEffect(() => {
-        // Fetch order details by id and set state
         const fetchOrder = async () => {
-            // Mock API call
             const order = {
                 nama_pemesan: 'John Doe',
                 kode_pesanan: 'ORD001',
-                estimatedTime: '2023-08-01',
+                estimatedTime: '01/12/2024',
                 status: 'PENDING',
                 products: [
                     {
@@ -44,12 +44,23 @@ export default function LihatDetailPesanan() {
         fetchOrder();
     }, [id]);
 
+    const handleStatusChange = (event) => {
+        setNewStatus(event.target.value);
+    };
+
+    const handleUpdateStatus = () => {
+        if (newStatus) {
+            setOrderDetails(prevDetails => ({ ...prevDetails, status: newStatus }));
+            setNewStatus('');
+        }
+    };
+
     if (!orderDetails) {
         return <div>Loading...</div>;
     }
 
     return (
-        <Container className='px-3 py-4'>
+        <div className='px-3 py-4'>
             <Paper className="p-4">
                 <h2 className="text-2xl font-semibold mb-4">Detail Pesanan</h2>
                 <Grid container spacing={3}>
@@ -66,12 +77,39 @@ export default function LihatDetailPesanan() {
                         <Typography>{orderDetails.estimatedTime}</Typography>
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <div>
+                        <div className='mb-8'>
                             <h4 className='mb-1'>Status:</h4>
                             <span className='bg-yellow-400 rounded-md p-1 border border-neutral-800 text-sm font-semibold'>
                                 {orderDetails.status}
                             </span>
                         </div>
+                        <Grid container spacing={2} alignItems="center">
+                            <Grid item xs={6}>
+                                <FormControl fullWidth>
+                                    <Select
+                                        variant='outlined'
+                                        size='small'
+                                        value={newStatus}
+                                        onChange={handleStatusChange}
+                                    >
+                                        <MenuItem value="PENDING">PENDING</MenuItem>
+                                        <MenuItem value="PROCESSING">PROCESSING</MenuItem>
+                                        <MenuItem value="COMPLETED">COMPLETED</MenuItem>
+                                        <MenuItem value="CANCELLED">CANCELLED</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Button
+                                    variant='contained'
+                                    size='small'
+                                    color='primary'
+                                    onClick={handleUpdateStatus}
+                                >
+                                    Update Status
+                                </Button>
+                            </Grid>
+                        </Grid>
                     </Grid>
                 </Grid>
                 {orderDetails.products.map((product, index) => (
@@ -109,7 +147,16 @@ export default function LihatDetailPesanan() {
                         </Paper>
                     </Box>
                 ))}
+                <Button
+                    href="/dashboard/Pesanan"
+                    variant="contained"
+                    size="small"
+                    startIcon={<ArrowBackIcon />}
+                    className='bg-custom-jorange hover:bg-orange-500 text-custom-jhitam font-semibold'
+                >
+                    Kembali
+                </Button>
             </Paper>
-        </Container>
+        </div>
     );
 }

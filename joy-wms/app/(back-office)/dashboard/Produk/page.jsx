@@ -1,16 +1,12 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, TablePagination, InputAdornment } from "@mui/material";
-import { CirclePlus, Pencil, Trash2, Search, Anvil } from 'lucide-react';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TextField, TablePagination, InputAdornment } from "@mui/material";
+import { CirclePlus, Pencil, Trash2, Search, Anvil, BookUser } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Produk() {
-    const [open, setOpen] = useState(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        role: '',
-    });
+    const router = useRouter();
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -36,35 +32,12 @@ export default function Produk() {
         { id: 10, kode_produk: 'PRD-010', nama_produk: 'Produk 10', deskripsi: 'Deskripsi Produk 10' }
     ];
 
-    const handleEdit = (id) => {
-        console.log(`Edit row with id ${id}`);
+    const handleDetail = (id) => {
+        router.push(`/dashboard/Produk/${id}/detail`);
     };
 
     const handleDelete = (id) => {
         console.log(`Delete row with id ${id}`);
-    };
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-        setFormData({
-            name: '',
-            email: '',
-            role: '',
-        });
-    };
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleSubmit = () => {
-        console.log('Form Data:', formData);
-        handleClose();
     };
 
     const handleSearchChange = (event) => {
@@ -93,15 +66,7 @@ export default function Produk() {
                         <Anvil className='w-8 h-8 mr-2' />
                         <h2 className="text-2xl font-semibold">Data Produk</h2>
                     </div>
-                    <div className='flex justify-between'>
-                        <Button className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
-                            variant="outlined"
-                            size="medium"
-                            startIcon={<CirclePlus className='w-4 h-4' />}
-                            onClick={handleClickOpen}
-                        >
-                            Tambah
-                        </Button>                        
+                    <div className='text-right'>
                         <TextField
                             variant="outlined"
                             placeholder="Search"
@@ -140,22 +105,22 @@ export default function Produk() {
                                                 {column.id === 'action' ? (
                                                     <div className='items-center space-x-2 text-center'>
                                                         <Button
-                                                            className='bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold'
+                                                            className="bg-rose-400 hover:bg-red-600 cursor-pointer text-custom-jhitam font-semibold"
                                                             variant="outlined"
                                                             size="small"
-                                                            startIcon={<Pencil className='w-4 h-4' />}
-                                                            onClick={() => handleEdit(row.kode_produk)}
-                                                        >
-                                                            Edit
-                                                        </Button>
-                                                        <Button
-                                                            className='bg-red-400 hover:bg-red-500 cursor-pointer text-custom-jhitam font-semibold'
-                                                            variant="outlined"
-                                                            size="small"
-                                                            startIcon={<Trash2 className='w-4 h-4' />}
-                                                            onClick={() => handleDelete(row.kode_produk)}
+                                                            startIcon={<Trash2 />}
+                                                            onClick={() => handleDelete(row.id)}
                                                         >
                                                             Delete
+                                                        </Button>
+                                                        <Button
+                                                            className="bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold"
+                                                            variant="outlined"
+                                                            size="small"
+                                                            startIcon={<BookUser />}
+                                                            onClick={() => handleDetail(row.id)}
+                                                        >
+                                                            Lihat Detail
                                                         </Button>
                                                     </div>
                                                 ) : (
@@ -179,52 +144,6 @@ export default function Produk() {
                     />
                 </Paper>
             </div>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Tambah Produk</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Silahkan isi form berikut untuk menambahkan produk baru.
-                    </DialogContentText>
-                    <TextField
-                        margin="dense"
-                        name="kode_produk"
-                        label="Kode Produk"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={formData.kode_produk}
-                        onChange={handleChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="nama_produk"
-                        label="Nama Produk"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={formData.nama_produk}
-                        onChange={handleChange}
-                    />
-                    <TextField
-                        margin="dense"
-                        name="deskripsi"
-                        label="Deskripsi"
-                        type="text"
-                        fullWidth
-                        variant="outlined"
-                        value={formData.deskripsi}
-                        onChange={handleChange}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="error">
-                        Batal
-                    </Button>
-                    <Button onClick={handleSubmit} color="primary">
-                        Simpan
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </div>
     );
 }
