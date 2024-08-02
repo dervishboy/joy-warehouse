@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, Home, CircleUser, ShoppingCart, Component, FolderOpen, Bolt, PlusCircle } from "lucide-react";
 import Link from "next/link";
