@@ -1,4 +1,29 @@
-import app from './src/app.js';
+import express from 'express';
+import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
+import userRoutes from './src/routes/userRoutes.js';
+import authRoutes from './src/routes/authRoutes.js';
+import inventarisRoutes from './src/routes/inventarisRoutes.js';
+import materialRoutes from './src/routes/materialRoutes.js';
+import movementRoutes from './src/routes/movementMaterialRoutes.js';
+import orderRoutes from './src/routes/orderRoutes.js';
+import productRoutes from './src/routes/productRoutes.js';
+
+
+dotenv.config();
+
+const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use('/api/inventaris', inventarisRoutes);
+app.use('/api/materials', materialRoutes);
+app.use('/api/movements', movementRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5000;
 

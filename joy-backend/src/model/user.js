@@ -59,6 +59,16 @@ const User = {
             return error;
         }
     },
+    getByEmail: async (email) => {
+        try {
+            const response = await prisma.user.findUnique({
+                where: { email },
+            });
+            return response;
+        } catch (error) {
+            return error;
+        }
+    },
 };
 
 export default User;

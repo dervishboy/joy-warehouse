@@ -3,16 +3,11 @@
 import React, { useState } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TextField, TablePagination, InputAdornment } from "@mui/material";
 import { CirclePlus, Pencil, Trash2, Search, FolderCog } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Materials() {
-    const [open, setOpen] = useState(false);
-    const [formData, setFormData] = useState({
-        kode_bahan: '',
-        nama_bahan: '',
-        satuan: '',
-        custom_satuan: ''
-    });
-    const [customSatuan, setCustomSatuan] = useState(false);
+    const router = useRouter();
+
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -37,15 +32,15 @@ export default function Materials() {
     ];
 
     const handleEdit = (id) => {
-        console.log(`Edit row with id ${id}`);
+        router.push(`/dashboard/Materials/${id}/edit`);
     };
 
     const handleDelete = (id) => {
         console.log(`Delete row with id ${id}`);
     };
 
-    const handleClickOpen = () => {
-        setOpen(true);
+    const handleTambahMaterial = () => {
+        router.push('/dashboard/Materials/tambah');
     };
 
     const handleSearchChange = (event) => {
@@ -79,7 +74,7 @@ export default function Materials() {
                             variant="outlined"
                             size="medium"
                             startIcon={<CirclePlus className='w-4 h-4' />}
-                            onClick={handleClickOpen}
+                            onClick={handleTambahMaterial}
                         >
                             Tambah
                         </Button>

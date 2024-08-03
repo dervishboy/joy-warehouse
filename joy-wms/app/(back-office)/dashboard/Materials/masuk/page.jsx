@@ -3,14 +3,12 @@
 import React, { useState } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, TablePagination, InputAdornment } from "@mui/material";
 import { Plus, Pencil, Trash2, Search, FolderPlus, Printer } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function MaterialMasuk() {
-    const [open, setOpen] = useState(false);
-    const [formData, setFormData] = useState({
-        kode_bahan: '',
-        tanggal: '',
-        jumlah: '',
-    });
+    
+    const router = useRouter();
+
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -20,10 +18,9 @@ export default function MaterialMasuk() {
         { id: 'kode_bahan', name: 'Kode Bahan Baku' },
         { id: 'tanggal', name: 'Tanggal' },
         { id: 'jumlah', name: 'Jumlah' },
-        { id: 'action', name: 'Action' }
     ];
 
-    const [rows, setRows] = useState([
+    const [rows] = useState([
         { id: '1', kode_bahan: 'BRG001', tanggal: '19-September-2023', jumlah: '65' },
         { id: '2', kode_bahan: 'BRG002', tanggal: '20-September-2023', jumlah: '150' },
         { id: '3', kode_bahan: 'BRG003', tanggal: '14-Desember-2023', jumlah: '125' },
@@ -31,36 +28,10 @@ export default function MaterialMasuk() {
         { id: '5', kode_bahan: 'BRG005', tanggal: '22-Februari-2024', jumlah: '300' },
     ]);
 
-    const handleEdit = (id) => {
-        console.log(`Edit row with id ${id}`);
+    const handleTambah = () => {
+        router.push('/dashboard/Materials/masuk/tambah');
     };
 
-    const handleDelete = (id) => {
-        setRows(rows.filter(row => row.id !== id));
-    };
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-        setFormData({
-            kode_bahan: '',
-            tanggal: '',
-            jumlah: '',
-        });
-    };
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleSubmit = () => {
-        setRows([...rows, { id: (rows.length + 1).toString(), ...formData }]);
-        handleClose();
-    };
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
@@ -79,9 +50,9 @@ export default function MaterialMasuk() {
         row.kode_bahan.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handlePrint = () => {
-        console.log('Print barang masuk');
-    }
+    // const handlePrint = () => {
+    //     console.log('Print barang masuk');
+    // }
 
     return (
         <div className='px-3 py-4'>
@@ -98,11 +69,11 @@ export default function MaterialMasuk() {
                                 variant="outlined"
                                 size="medium"
                                 startIcon={<Plus className='w-4 h-4' />}
-                                onClick={handleClickOpen}
+                                onClick={() => handleTambah()}
                             >
                                 Tambah
                             </Button>
-                            <Button
+                            {/* <Button
                                 className='bg-blue-400 hover:bg-blue-500 cursor-pointer text-custom-jhitam font-semibold p-2'
                                 variant="outlined"
                                 size="medium"
@@ -110,7 +81,7 @@ export default function MaterialMasuk() {
                                 onClick={handlePrint}
                             >
                                 Cetak Barang Masuk
-                            </Button>
+                            </Button> */}
                         </div>
                         <TextField
                             variant="outlined"
@@ -144,31 +115,10 @@ export default function MaterialMasuk() {
                             </TableHead>
                             <TableBody>
                                 {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                                    <TableRow key={row.kode_bahan}>
+                                    <TableRow key={row.id}>
                                         {columns.map((column) => (
                                             <TableCell className='text-sm font-semibold text-center' key={column.id}>
-                                                {column.id === 'action' ? (
-                                                    <div className='items-center space-x-2 text-center'>
-                                                        <Button
-                                                            className='bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold'
-                                                            variant="outlined"
-                                                            size="small"
-                                                            startIcon={<Pencil className='w-4 h-4' />}
-                                                            onClick={() => handleEdit(row.id)}
-                                                        >
-                                                            Edit
-                                                        </Button>
-                                                        <Button
-                                                            className='bg-red-400 hover:bg-red-500 cursor-pointer text-custom-jhitam font-semibold'
-                                                            variant="outlined"
-                                                            size="small"
-                                                            startIcon={<Trash2 className='w-4 h-4' />}
-                                                            onClick={() => handleDelete(row.id)}
-                                                        >
-                                                            Delete
-                                                        </Button>
-                                                    </div>
-                                                ) : row[column.id]}
+                                                {row[column.id]}
                                             </TableCell>
                                         ))}
                                     </TableRow>
@@ -187,45 +137,6 @@ export default function MaterialMasuk() {
                     />
                 </Paper>
             </div>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Tambah Barang Masuk</DialogTitle>
-                <DialogContent>
-                    <DialogContentText className='mb-8'>
-                        Masukkan data barang yang ingin ditambahkan.
-                    </DialogContentText>
-                    <TextField className='mb-4'
-                        autoFocus
-                        name="kode_bahan"
-                        placeholder="Kode Barang"
-                        type="text"
-                        variant='filled'
-                        value={formData.kode_bahan}
-                        onChange={handleChange}
-                        fullWidth
-                    />
-                    <TextField className='mb-4'
-                        name="tanggal"
-                        type="date"
-                        variant='filled'
-                        value={formData.tanggal}
-                        onChange={handleChange}
-                        fullWidth
-                    />
-                    <TextField className='mb-4'
-                        name="jumlah"
-                        placeholder="Jumlah"
-                        type="number"
-                        variant='filled'
-                        value={formData.jumlah}
-                        onChange={handleChange}
-                        fullWidth
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color='primary'>Batal</Button>
-                    <Button onClick={handleSubmit} color='primary'>Simpan</Button>
-                </DialogActions>
-            </Dialog>
         </div>
     );
 }

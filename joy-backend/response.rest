@@ -109,24 +109,21 @@ Content-Type: application/json
     ]
 }
 
-
-###
-POST http://localhost:5000/api/products
-Content-Type: application/json
-
-{
-    "kode_produk": "PROD-1",
-    "nama_produk": "Product 1",
-    "deskripsi": "Ini adalah deskripsi dari product 1",
-    "materials": [
-        { "material_id": 1,  "quantity": 3 },
-        { "material_id": 2, "quantity": 100 }
-    ]
-}
-
 ###
 GET http://localhost:5000/api/products
 
 
 ###
 GET http://localhost:5000/api/orders
+
+###
+POST http://localhost:5000/api/auth/login
+
+Content-Type: application/json
+{
+    "email": "test1@test.com",
+    "password": "test123"
+}
+
+###
+POST http://localhost:5000/api/auth/logout
