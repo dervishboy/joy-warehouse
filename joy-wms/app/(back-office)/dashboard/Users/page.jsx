@@ -30,7 +30,7 @@ export default function Users() {
     ];
 
     const handleEdit = (id) => {
-        console.log(`Edit row with id ${id}`);
+        router.push(`/dashboard/Users/${id}/edit`);
     };
 
     const handleDelete = (id) => {

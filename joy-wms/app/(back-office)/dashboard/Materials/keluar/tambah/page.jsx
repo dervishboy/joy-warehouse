@@ -1,94 +1,112 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Container, Paper, Grid, TextField, Button, Typography } from "@mui/material";
 import { useRouter } from 'next/navigation';
+import { Container, Grid, Paper, TextField, Button, Typography } from "@mui/material";
+import { Plus, ArrowLeft } from 'lucide-react';
 
 export default function TambahMaterialKeluar() {
     const router = useRouter();
-    const [formData, setFormData] = useState({
-        nama_barang: '',
-        quantity: '',
-        satuan: '',
+
+    const [formValues, setFormValues] = useState({
+        kode_bahan: '',
+        tanggal: '',
+        jumlah: '',
     });
 
-    const handleChange = (event) => {
+    const handleInputChange = (event) => {
         const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+        setFormValues({ ...formValues, [name]: value });
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log('Form Data:', formData);
+        const response = await fetch('/api/movements/out', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formValues),
+        });
+
+        if (response.ok) {
+            // Handle successful form submission
+            router.push('/dashboard/Materials/keluar');
+        } else {
+            // Handle form submission error
+            console.error('Failed to submit form');
+        }
+    };
+
+    const handleBack = () => {
         router.push('/dashboard/Materials/keluar');
     };
 
     return (
-        <div className='px-3 py-4'>
-            <Paper className="p-4">
-                <Typography className='text-2xl font-semibold mb-8'>
-                    Tambah Data Inventaris
-                </Typography>
-                <form onSubmit={handleSubmit} className='ml-2'>
-                    <Grid container spacing={3}>
+        <Container maxWidth="md">
+            <Paper className="p-4 mt-4">
+                <div className="mb-4">
+                    <Typography variant="h4" className="flex items-center mb-4">
+                        Tambah Stok Keluar
+                    </Typography>
+                </div>
+                <form onSubmit={handleSubmit}>
+                    <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <Typography className='mb-2'>
-                                Nama Barang :
-                            </Typography>
                             <TextField
                                 fullWidth
-                                variant="filled"
-                                name="nama_barang"
-                                value={formData.nama_barang}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography className='mb-2'>
-                                Jumlah :
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                variant="filled"
-                                type='number'
-                                name="quantity"
-                                value={formData.quantity}
-                                onChange={handleChange}
+                                placeholder='Kode Bahan'
+                                name="kode_bahan"
+                                value={formValues.kode_bahan}
+                                onChange={handleInputChange}
                                 required
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography className='mb-2'>
-                                Satuan :
-                            </Typography>
                             <TextField
                                 fullWidth
-                                variant="filled"
-                                name="satuan"
-                                value={formData.satuan}
-                                onChange={handleChange}
+                                placeholder='Jumlah'
+                                name="jumlah"
+                                type="number"
+                                value={formValues.jumlah}
+                                onChange={handleInputChange}
                                 required
                             />
                         </Grid>
-                        <Grid item xs={12} className="text-right space-x-2">
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                            >
-                                Submit
-                            </Button>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                name="tanggal"
+                                type="date"
+                                value={formValues.tanggal}
+                                onChange={handleInputChange}
+                                InputLabelProps={{ shrink: true }}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12} className="flex justify-end space-x-2">
                             <Button
                                 variant="contained"
                                 color="secondary"
-                                onClick={() => router.push('/dashboard/Materials/keluar')}
+                                size='small'
+                                onClick={handleBack}
+                                startIcon={<ArrowLeft className='w-4 h-4' />}
                             >
-                                Cancel
+                                Kembali
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size='small'
+                                type="submit"
+                                startIcon={<Plus className='w-4 h-4' />}
+                            >
+                                Tambah
                             </Button>
                         </Grid>
                     </Grid>
                 </form>
             </Paper>
-        </div>
+        </Container>
     );
 }

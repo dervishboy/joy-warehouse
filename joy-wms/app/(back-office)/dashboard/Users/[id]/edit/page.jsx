@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, TextField, MenuItem, Select, FormControl, InputLabel, Container, Typography, Paper, Grid } from "@mui/material";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const roles = [
     { value: 'Super Admin', label: 'Super Admin' },
@@ -11,17 +11,32 @@ const roles = [
     { value: 'Staff Produksi', label: 'Staff Produksi' },
 ];
 
-export default function AddUser() {
+export default function EditUser() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const userId = searchParams.get('id');
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [role, setRole] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    useEffect(() => {
+        if (userId) {
+            const userData = {
+                name: 'Sample User',
+                email: 'sample@test.com',
+                role: 'Admin'
+            };
+            setName(userData.name);
+            setEmail(userData.email);
+            setRole(userData.role);
+        }
+    }, [userId]);
+
     const handleSave = () => {
-        // Handle save logic here, e.g., send data to API
-        console.log({ name, email, role, password, confirmPassword });
+        console.log({ userId, name, email, role, password, confirmPassword });
         router.push('/dashboard/Users');
     };
 
@@ -33,7 +48,7 @@ export default function AddUser() {
         <Container component="main" maxWidth>
             <Paper elevation={3} className="p-4 mt-4">
                 <Typography className='text-2xl font-semibold mb-4'>
-                    Tambah User
+                    Edit User
                 </Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
