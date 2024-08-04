@@ -11,6 +11,7 @@ export default function Layout({ children }) {
         setIsOpen(!isOpen);
     };
 
+
     return (
         <div className="flex">
             <Sidebar isOpen={isOpen} toggleSidebar={toggleSidebar} />
