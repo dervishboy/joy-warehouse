@@ -84,23 +84,23 @@ POST http://localhost:5000/api/orders
 Content-Type: application/json
 
 {
-    "nama_pemesan": "PT.ABCDE",
-    "kode_pesanan": "P002",
-    "estimatedTime": "2021-12-31T00:00:00.000Z",
+    "nama_pemesan": "PT.XYZ",
+    "kode_pesanan": "P003",
+    "estimatedTime": "2021-12-31",
     "products": [
         {
-            "kode_produk": "PROD-3",
-            "nama_produk": "Product 3",
-            "deskripsi": "Description of product 3",
+            "kode_produk": "PROD-5",
+            "nama_produk": "Product 5",
+            "deskripsi": "Description of product 5",
             "productMaterials": [
                 { "material_id": 1, "quantity": 1 },
                 { "material_id": 4, "quantity": 1 }
             ]
         },
         {
-            "kode_produk": "PROD-4",
-            "nama_produk": "Product 4",
-            "deskripsi": "Description of product 4",
+            "kode_produk": "PROD-6",
+            "nama_produk": "Product 6",
+            "deskripsi": "Description of product 6",
             "productMaterials": [
                 { "material_id": 1, "quantity": 1 },
                 { "material_id": 4, "quantity": 1 }

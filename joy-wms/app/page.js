@@ -10,8 +10,8 @@ import Image from 'next/image';
 export default function Login() {
   const router = useRouter();
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleLogin = () => {

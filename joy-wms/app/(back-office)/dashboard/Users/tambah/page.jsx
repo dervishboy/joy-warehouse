@@ -42,7 +42,7 @@ export default function AddUser() {
                             required
                             fullWidth
                             id="name"
-                            label="Name"
+                            placeholder='Name'
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
