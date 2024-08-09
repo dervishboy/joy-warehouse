@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import { UserRound } from "lucide-react";
@@ -6,18 +6,17 @@ import { UserRound } from "lucide-react";
 export default function Header({ title }) {
     const [isOpen, setIsOpen] = useState(false);
 
-
     const handleToggle = () => {
         setIsOpen(!isOpen);
-    }
+    };
 
     const handleLogout = () => {
-        console.log('Logout');
+        console.log("Logout");
         setIsOpen(false);
-    }
+    };
 
     return (
-        <div className="bg-custom-jputih h-16 flex items-center justify-between px-8 border-b border-slate-300 shadow-xl sticky top-0 z-10">
+        <div className="bg-custom-jputih h-16 flex items-center justify-between px-8 border-b border-slate-300 shadow-xl sticky top-0 z-10 overflow-hidden">
             <div className="flex">
                 {/* Title Page */}
                 <h1 className="font-semibold">Page | {title}</h1>
