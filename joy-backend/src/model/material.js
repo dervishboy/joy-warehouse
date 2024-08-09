@@ -3,16 +3,27 @@ import { response } from 'express';
 const prisma = new PrismaClient();
 
 const Material = {
-    getAll: async ({ searchQuery }) => {
+    getAll: async ({ searchQuery, page, rowsPerPage }) => {
         try {
-            const response = await prisma.material.findMany({
-                where: searchQuery ? {
+            const whereClause = searchQuery
+                ? {
                     nama_material: {
                         contains: searchQuery,
-                    }
-                } : {}
+                    },
+                }
+                : {};
+
+            const totalMaterials = await prisma.material.count({
+                where: whereClause,
             });
-            return response;
+
+            const materials = await prisma.material.findMany({
+                where: whereClause,
+                skip: page * rowsPerPage,
+                take: rowsPerPage,
+            });
+
+            return { materials, totalMaterials };
         } catch (error) {
             throw new Error(`Failed to get materials: ${error.message}`);
         }

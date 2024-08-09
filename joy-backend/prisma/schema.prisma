@@ -107,6 +107,5 @@ enum MovementType {
 
 enum Role {
   ADMIN
-  STAFF_PRODUKSI
   STAFF_GUDANG
 }

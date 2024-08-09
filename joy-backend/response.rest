@@ -51,8 +51,8 @@ Content-Type: application/json
 
 {
     "kode_material": "M003",
-    "nama_material": "Akrilik",
-    "satuan": "Lembar"
+    "nama_material": "Kabel",
+    "satuan": "Cm"
 }
 
 ###
@@ -63,7 +63,7 @@ POST http://localhost:5000/api/movements/in
 Content-Type: application/json
 
 {
-    "material_id": 4,
+    "material_id": 1,
     "quantity": 5
 }
 

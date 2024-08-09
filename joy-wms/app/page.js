@@ -5,24 +5,32 @@ import { Container, Box, Typography, TextField, Button, Alert, AlertTitle, Alert
 import { useRouter } from 'next/navigation';
 import { Lock, VisibilityOff, Visibility, Person, ErrorOutline } from '@mui/icons-material';
 import Image from 'next/image';
+import axios from 'axios';
 
 
 export default function Login() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = () => {
-    if (username === 'admin' && password === 'password') {
-      localStorage.setItem('role', 'admin');
-      router.push('/dashboard/admin');
-    } else if (username === 'staff' && password === 'password') {
-      localStorage.setItem('role', 'staff');
-      router.push('/dashboard/staff');
-    } else {
-      setError('Invalid username or password');
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email,
+        password
+      });
+      console.log(response);
+      if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
+        router.push('/dashboard');
+      } else {
+        setError('Invalid username or password');
+      }
+    }
+    catch (err) {
+      console.log(err);
     }
   };
 
@@ -54,9 +62,9 @@ export default function Login() {
               <TextField
                 fullWidth
                 margin="normal"
-                placeholder='Username'
+                placeholder='Email'
                 variant="outlined"
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">

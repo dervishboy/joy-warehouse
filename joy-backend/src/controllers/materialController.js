@@ -3,9 +3,22 @@ import Material from "../model/material.js";
 const MaterialController = {
     getMaterials: async (req, res) => {
         try {
-            const searchQuery = req.query.nama_material || '';
-            const response = await Material.getAll({searchQuery});
-            res.json(response);
+            const searchQuery = req.query.searchQuery || '';
+            const page = parseInt(req.query.page, 10) || 0;
+            const rowsPerPage = parseInt(req.query.rowsPerPage, 10) || 10;
+
+            const { materials, totalMaterials } = await Material.getAll({
+                searchQuery,
+                page,
+                rowsPerPage,
+            });
+
+            res.json({
+                materials,
+                totalMaterials,
+                currentPage: page,
+                rowsPerPage,
+            });
         } catch (error) {
             console.error('Error in getMaterials:', error);
             res.status(500).json({ error: error.message });

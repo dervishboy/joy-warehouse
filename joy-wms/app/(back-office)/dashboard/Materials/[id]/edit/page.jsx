@@ -1,38 +1,38 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Container, Grid, Paper, TextField, Button, Typography } from "@mui/material";
 import { Pencil, ArrowLeft } from 'lucide-react';
+import axios from 'axios';
 
 export default function EditMaterial() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const id = searchParams.get('id');
+    const { id } = useParams();
 
     const [formValues, setFormValues] = useState({
-        kode_bahan: '',
-        nama_bahan: '',
-        jumlah: '',
+        kode_material: '',
+        nama_material: '',
+        quantity: '',
         satuan: '',
     });
 
-    useEffect(() => {
-        // Fetch material details and set form values
-        const fetchMaterial = async () => {
-            // TODO: Replace with your actual API endpoint
-            const response = await fetch(`/api/materials/${id}`);
-            const data = await response.json();
-
-            setFormValues({
-                kode_bahan: data.kode_bahan,
-                nama_bahan: data.nama_bahan,
-                jumlah: data.jumlah,
-                satuan: data.satuan,
-            });
+    const fetchMaterial = async (id) => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/materials/${id}`);
+                setFormValues({
+                    kode_material: response.data.kode_material,
+                    nama_material: response.data.nama_material,
+                    quantity: response.data.quantity,
+                    satuan: response.data.satuan,
+                });
+            } catch (error) {
+                console.error('Error fetching material:', error);
+            }
         };
-
-        fetchMaterial();
+    
+    useEffect(() => {
+        fetchMaterial(id);
     }, [id]);
 
     const handleInputChange = (event) => {
@@ -42,22 +42,20 @@ export default function EditMaterial() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        // TODO: Replace with your actual API endpoint
-        const response = await fetch(`/api/materials/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formValues),
-        });
-
-        if (response.ok) {
-            // Handle successful form submission
-            router.push('/dashboard/Materials');
-        } else {
-            // Handle form submission error
-            console.error('Failed to submit form');
+        try {
+            const response = await axios.put(`http://localhost:5000/api/materials/${id}`,
+                {
+                    kode_material: formValues.kode_material,
+                    nama_material: formValues.nama_material,
+                    quantity: formValues.quantity,
+                    satuan: formValues.satuan,
+                }
+            );
+            if (response.status === 200) {
+                router.push('/dashboard/Materials');
+            }
+        } catch (error) {
+            console.error('Error in handleSubmit:', error);
         }
     };
 
@@ -79,8 +77,8 @@ export default function EditMaterial() {
                             <Typography>Kode Bahan :</Typography>
                             <TextField
                                 fullWidth
-                                name="kode_bahan"
-                                value={formValues.kode_bahan}
+                                name="kode_material"
+                                value={formValues.kode_material}
                                 onChange={handleInputChange}
                                 required
                             />
@@ -89,8 +87,8 @@ export default function EditMaterial() {
                             <Typography>Nama Bahan Baku :</Typography>
                             <TextField
                                 fullWidth
-                                name="nama_bahan"
-                                value={formValues.nama_bahan}
+                                name="nama_material"
+                                value={formValues.nama_material}
                                 onChange={handleInputChange}
                                 required
                             />
@@ -99,9 +97,9 @@ export default function EditMaterial() {
                             <Typography>Jumlah :</Typography>
                             <TextField
                                 fullWidth
-                                name="jumlah"
+                                name="quantity"
                                 type="number"
-                                value={formValues.jumlah}
+                                value={formValues.quantity}
                                 onChange={handleInputChange}
                                 required
                             />
