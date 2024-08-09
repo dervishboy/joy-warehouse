@@ -76,9 +76,9 @@ export default function EditMaterial() {
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
+                            <Typography>Kode Bahan :</Typography>
                             <TextField
                                 fullWidth
-                                placeholder='Kode Bahan'
                                 name="kode_bahan"
                                 value={formValues.kode_bahan}
                                 onChange={handleInputChange}
@@ -86,9 +86,9 @@ export default function EditMaterial() {
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography>Nama Bahan Baku :</Typography>
                             <TextField
                                 fullWidth
-                                placeholder='Nama Bahan Baku'
                                 name="nama_bahan"
                                 value={formValues.nama_bahan}
                                 onChange={handleInputChange}
@@ -96,9 +96,9 @@ export default function EditMaterial() {
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography>Jumlah :</Typography>
                             <TextField
                                 fullWidth
-                                placeholder='Jumlah'
                                 name="jumlah"
                                 type="number"
                                 value={formValues.jumlah}
@@ -107,9 +107,9 @@ export default function EditMaterial() {
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography>Satuan :</Typography>
                             <TextField
                                 fullWidth
-                                placeholder='Satuan'
                                 name="satuan"
                                 value={formValues.satuan}
                                 onChange={handleInputChange}

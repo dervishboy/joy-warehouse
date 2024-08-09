@@ -120,7 +120,7 @@ export default function Materials() {
                                                             variant="outlined"
                                                             size="small"
                                                             startIcon={<Pencil className='w-4 h-4' />}
-                                                            onClick={() => handleEdit(row.kode_bahan)}
+                                                            onClick={() => handleEdit(row.id)}
                                                         >
                                                             Edit
                                                         </Button>

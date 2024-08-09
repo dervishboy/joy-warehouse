@@ -37,7 +37,7 @@ export default function Inventaris() {
     };
 
     const handleEdit = (id) => {
-        console.log(`Edit row with id ${id}`);
+        router.push(`/dashboard/Inventaris/${id}/edit`);
     };
 
     const handleDelete = (id) => {

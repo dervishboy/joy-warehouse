@@ -2,11 +2,18 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Container, Grid, Paper, TextField, Button, Typography } from "@mui/material";
+import { Container, Grid, Paper, TextField, Button, Typography, Select, MenuItem, FormControl } from "@mui/material";
 import { Plus, ArrowLeft } from 'lucide-react';
 
 export default function TambahMaterialKeluar() {
     const router = useRouter();
+
+    // Hardcoded materials data
+    const materials = [
+        { id: 1, kode: 'MAT001', nama: 'Material A' },
+        { id: 2, kode: 'MAT002', nama: 'Material B' },
+        { id: 3, kode: 'MAT003', nama: 'Material C' },
+    ];
 
     const [formValues, setFormValues] = useState({
         kode_bahan: '',
@@ -21,19 +28,11 @@ export default function TambahMaterialKeluar() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const response = await fetch('/api/movements/out', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formValues),
-        });
-
-        if (response.ok) {
-            // Handle successful form submission
+        console.log('Form Values:', formValues);
+        if (formValues.kode_bahan && formValues.tanggal && formValues.jumlah) {
+            alert('Form submitted successfully!');
             router.push('/dashboard/Materials/keluar');
         } else {
-            // Handle form submission error
             console.error('Failed to submit form');
         }
     };
@@ -43,29 +42,36 @@ export default function TambahMaterialKeluar() {
     };
 
     return (
-        <Container maxWidth="md">
+        <Container maxWidth>
             <Paper className="p-4 mt-4">
                 <div className="mb-4">
-                    <Typography variant="h4" className="flex items-center mb-4">
+                    <Typography variant="h4" className="flex items-center mb-8 font-semibold">
                         Tambah Stok Keluar
                     </Typography>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                placeholder='Kode Bahan'
-                                name="kode_bahan"
-                                value={formValues.kode_bahan}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <Typography>Kode Material :</Typography>
+                            <FormControl fullWidth>
+                                <Select
+                                    name="kode_bahan"
+                                    value={formValues.kode_bahan}
+                                    onChange={handleInputChange}
+                                >
+                                    {materials.map((material) => (
+                                        <MenuItem key={material.id} value={material.kode}>
+                                            {material.kode} - {material.nama}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography>Jumlah :</Typography>
                             <TextField
                                 fullWidth
-                                placeholder='Jumlah'
+                                placeholder='Masukkan Jumlah Material'
                                 name="jumlah"
                                 type="number"
                                 value={formValues.jumlah}
@@ -74,6 +80,7 @@ export default function TambahMaterialKeluar() {
                             />
                         </Grid>
                         <Grid item xs={12}>
+                            <Typography>Tanggal :</Typography>
                             <TextField
                                 fullWidth
                                 name="tanggal"

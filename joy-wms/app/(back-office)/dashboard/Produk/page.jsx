@@ -114,7 +114,7 @@ export default function Produk() {
                                                             Delete
                                                         </Button>
                                                         <Button
-                                                            className="bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold"
+                                                            className="bg-sky-500 hover:bg-sky-600 cursor-pointer text-custom-jhitam font-semibold"
                                                             variant="outlined"
                                                             size="small"
                                                             startIcon={<BookUser />}

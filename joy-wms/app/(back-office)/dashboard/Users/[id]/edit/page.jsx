@@ -52,36 +52,37 @@ export default function EditUser() {
                 </Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
+                        <Typography> Nama : </Typography>
                         <TextField
                             variant="outlined"
                             required
                             fullWidth
                             id="name"
-                            label="Name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
                     </Grid>
                     <Grid item xs={12}>
+                        <Typography> Email : </Typography>
                         <TextField
                             variant="outlined"
                             required
                             fullWidth
                             id="email"
-                            label="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </Grid>
                     <Grid item xs={12}>
+                        <Typography> Role : </Typography>
                         <FormControl variant="outlined" fullWidth>
-                            <InputLabel id="role-label">Role</InputLabel>
+                            <InputLabel id="role-label"></InputLabel>
                             <Select
                                 labelId="role-label"
                                 id="role"
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
-                                label="Role"
+                                size='small'
                             >
                                 {roles.map((role) => (
                                     <MenuItem key={role.value} value={role.value}>
@@ -92,24 +93,24 @@ export default function EditUser() {
                         </FormControl>
                     </Grid>
                     <Grid item xs={12}>
+                        <Typography> Password : </Typography>
                         <TextField
                             variant="outlined"
                             required
                             fullWidth
                             id="password"
-                            label="Password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </Grid>
                     <Grid item xs={12}>
+                        <Typography> Confirm Password : </Typography>
                         <TextField
                             variant="outlined"
                             required
                             fullWidth
                             id="confirmPassword"
-                            label="Confirm Password"
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}

@@ -118,7 +118,7 @@ export default function Users() {
                                             <Button className='bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold'
                                                 variant="contained"
                                                 size="small"
-                                                endIcon={<Pencil className='w-4 h-4' />}
+                                                startIcon={<Pencil className='w-4 h-4' />}
                                                 onClick={() => handleEdit(row.id)}
                                             >
                                                 Edit

@@ -30,43 +30,41 @@ export default function AddUser() {
     };
 
     return (
-        <Container component="main" maxWidth>
-            <Paper elevation={3} className="p-4 mt-4">
-                <Typography className='text-2xl font-semibold mb-4'>
-                    Tambah User
-                </Typography>
+        <div className='px-3 py-4'>
+            <Paper className="p-4">
+                <h2 className="text-2xl font-semibold mb-4">Tambah User</h2>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
+                        <Typography>
+                            Nama :
+                        </Typography>
                         <TextField
                             variant="outlined"
-                            required
                             fullWidth
                             id="name"
-                            placeholder='Name'
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
                     </Grid>
                     <Grid item xs={12}>
+                        <Typography>Email :</Typography>
                         <TextField
                             variant="outlined"
-                            required
                             fullWidth
                             id="email"
-                            label="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <FormControl variant="outlined" fullWidth>
-                            <InputLabel id="role-label">Role</InputLabel>
+                        <Typography className='mb-2'>Role :</Typography>
+                        <FormControl variant="outlined" size='small' fullWidth>
+                            <InputLabel id="role-label"></InputLabel>
                             <Select
                                 labelId="role-label"
                                 id="role"
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
-                                label="Role"
                             >
                                 {roles.map((role) => (
                                     <MenuItem key={role.value} value={role.value}>
@@ -77,31 +75,31 @@ export default function AddUser() {
                         </FormControl>
                     </Grid>
                     <Grid item xs={12}>
+                        <Typography>Password :</Typography>
                         <TextField
                             variant="outlined"
                             required
                             fullWidth
                             id="password"
-                            label="Password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </Grid>
                     <Grid item xs={12}>
+                        <Typography>Confirm Password :</Typography>
                         <TextField
                             variant="outlined"
                             required
                             fullWidth
                             id="confirmPassword"
-                            label="Confirm Password"
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                     </Grid>
                 </Grid>
-                <div className="flex justify-end mt-4">
+                <div className="flex justify-end mt-8">
                     <Button onClick={handleCancel} color="secondary" className='mr-2'>
                         Cancel
                     </Button>
@@ -110,6 +108,6 @@ export default function AddUser() {
                     </Button>
                 </div>
             </Paper>
-        </Container>
+        </div>
     );
 }

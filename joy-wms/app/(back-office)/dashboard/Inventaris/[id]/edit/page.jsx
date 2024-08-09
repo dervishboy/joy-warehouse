@@ -27,7 +27,7 @@ export default function TambahInventaris() {
         <div className='px-3 py-4'>
             <Paper className="p-4">
                 <Typography className='text-2xl font-semibold mb-8'>
-                    Tambah Data Inventaris
+                    Edit Inventaris
                 </Typography>
                 <form onSubmit={handleSubmit} className='ml-2'>
                     <Grid container spacing={2}>
