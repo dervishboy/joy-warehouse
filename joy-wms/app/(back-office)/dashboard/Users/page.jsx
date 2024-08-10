@@ -1,12 +1,16 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TextField, TablePagination, InputAdornment } from "@mui/material";
 import { CirclePlus, Pencil, Trash2, Search, BookUser } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 export default function Users() {
     const router = useRouter();
+
+    const [users, setUsers] = useState([]);
+    const [totalUsers, setTotalUsers] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -19,22 +23,37 @@ export default function Users() {
         { id: 'action', name: 'Action' }
     ];
 
-    const rows = [
-        { id: 1, name: 'Mayene', email: 'mayene@test.com', role: 'Super Admin', action: '' },
-        { id: 2, name: 'Dun', email: 'dun@test.com', role: 'Super Admin', action: '' },
-        { id: 3, name: 'Dharma', email: 'dharma@test.com', role: 'Super Admin', action: '' },
-        { id: 4, name: 'Fuzi', email: 'fuzi@test.com', role: 'Admin', action: '' },
-        { id: 5, name: 'Lu Bu', email: 'lubu@test.com', role: 'Admin', action: '' },
-        { id: 6, name: 'Li Xin', email: 'lixin@test.com', role: 'Staff Gudang', action: '' },
-        { id: 7, name: 'Allain', email: 'allain@test.com', role: 'Staff Produksi', action: '' },
-    ];
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/users', {
+                    params: {
+                        searchQuery: searchTerm,
+                        page,
+                        rowsPerPage
+                    }
+                });
+                setUsers(response.data.users);
+                setTotalUsers(response.data.totalUsers);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+
+        fetchUsers();
+    }, [searchTerm, page, rowsPerPage]);
 
     const handleEdit = (id) => {
         router.push(`/dashboard/Users/${id}/edit`);
     };
 
-    const handleDelete = (id) => {
-        console.log(`Delete row with id ${id}`);
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:5000/api/users/${id}`);
+            setUsers(users.filter(user => user.id !== id));
+        } catch (error) {
+            console.error('Error deleting user:', error);
+        }
     };
 
     const handleAdd = () => {
@@ -54,11 +73,16 @@ export default function Users() {
         setPage(0);
     };
 
-    const filteredRows = rows.filter((row) =>
-        row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.role.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const formatRole = (role) => {
+        switch (role) {
+            case 'ADMIN':
+                return 'Admin';
+            case 'STAFF_GUDANG':
+                return 'Staff Gudang';
+            default:
+                return role;
+        }
+    };
 
     return (
         <div className='px-3 py-4'>
@@ -108,12 +132,12 @@ export default function Users() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                                {users.map((row, index) => (
                                     <TableRow key={row.id}>
-                                        <TableCell className='text-sm font-semibold text-center'>{row.id}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{page * rowsPerPage + index + 1}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{row.name}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{row.email}</TableCell>
-                                        <TableCell className='text-sm font-semibold text-center'>{row.role}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{formatRole(row.role)}</TableCell>
                                         <TableCell className='items-center space-x-2 text-center'>
                                             <Button className='bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold'
                                                 variant="contained"
@@ -140,7 +164,7 @@ export default function Users() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={filteredRows.length}
+                        count={totalUsers}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

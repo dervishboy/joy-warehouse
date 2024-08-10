@@ -4,9 +4,22 @@ import bcrypt from 'bcryptjs';
 const UserController = {
     getUsers: async (req, res) => {
         try {
-            const searchQuery = req.query.name || '';
-            const response = await User.getAll({searchQuery});
-            res.json(response);
+            const searchQuery = req.query.searchQuery || '';
+            const page = parseInt(req.query.page, 10) || 0;
+            const rowsPerPage = parseInt(req.query.rowsPerPage, 10) || 10;
+
+            const { users, totalUsers } = await User.getAll({
+                searchQuery,
+                page,
+                rowsPerPage,
+            });
+
+            res.json({
+                users,
+                totalUsers,
+                currentPage: page,
+                rowsPerPage,
+            });
         } catch (error) {
             console.error('Error in getUsers:', error);
             res.status(500).json({ error: error.message });

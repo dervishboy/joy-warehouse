@@ -2,16 +2,26 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const Inventaris = {
-    getAll: async ({ searchQuery }) => {
+    getAll: async ({ searchQuery, page, rowsPerPage }) => {
         try {
-            const response = await prisma.inventaris.findMany({
-                where: searchQuery ? {
-                    nama_barang: {
+            const whereClause = searchQuery
+                ? {
+                    nama_inventaris: {
                         contains: searchQuery,
-                    }
-                } : {}
+                    },
+                }
+                : {};
+
+            const totalInventaris = await prisma.inventaris.count({
+                where: whereClause,
             });
-            return response;
+        
+            const inventaris = await prisma.inventaris.findMany({
+                where: whereClause,
+                skip: page * rowsPerPage,
+                take: rowsPerPage,
+            });
+            return { inventaris, totalInventaris };
         } catch (error) {
             throw new Error(`Failed to get inventaris: ${error.message}`);
         }

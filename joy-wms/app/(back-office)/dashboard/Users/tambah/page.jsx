@@ -1,113 +1,153 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Button, TextField, MenuItem, Select, FormControl, InputLabel, Container, Typography, Paper, Grid } from "@mui/material";
+import { Container, Grid, Paper, TextField, Button, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Plus, ArrowLeft } from 'lucide-react';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-const roles = [
-    { value: 'Super Admin', label: 'Super Admin' },
-    { value: 'Admin', label: 'Admin' },
-    { value: 'Staff Gudang', label: 'Staff Gudang' },
-    { value: 'Staff Produksi', label: 'Staff Produksi' },
-];
+const roleLabels = {
+    ADMIN: 'Admin',
+    STAFF_GUDANG: 'Staff Gudang',
+};
 
-export default function AddUser() {
+const roleOptions = Object.entries(roleLabels).map(([value, label]) => ({
+    value,
+    label,
+}));
+
+export default function TambahUser() {
     const router = useRouter();
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [role, setRole] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [formValues, setFormValues] = useState({
+        name: '',
+        email: '',
+        role: '',
+        password: '',
+        confirmPassword: '',
+    });
 
-    const handleSave = () => {
-        // Handle save logic here, e.g., send data to API
-        console.log({ name, email, role, password, confirmPassword });
-        router.push('/dashboard/Users');
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setFormValues({ ...formValues, [name]: value });
     };
 
-    const handleCancel = () => {
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:5000/api/users',
+                {
+                    name: formValues.name,
+                    email: formValues.email,
+                    role: formValues.role,
+                    password: formValues.password,
+                }
+            );
+            if (response.status === 201) {
+                router.push('/dashboard/Users');
+            }
+        } catch (error) {
+            console.error('Error in handleSubmit:', error);
+        };
+    };
+
+    const handleBack = () => {
         router.push('/dashboard/Users');
     };
 
     return (
-        <div className='px-3 py-4'>
-            <Paper className="p-4">
-                <h2 className="text-2xl font-semibold mb-4">Tambah User</h2>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Typography>
-                            Nama :
-                        </Typography>
-                        <TextField
-                            variant="outlined"
-                            fullWidth
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Typography>Email :</Typography>
-                        <TextField
-                            variant="outlined"
-                            fullWidth
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Typography className='mb-2'>Role :</Typography>
-                        <FormControl variant="outlined" size='small' fullWidth>
-                            <InputLabel id="role-label"></InputLabel>
-                            <Select
-                                labelId="role-label"
-                                id="role"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                            >
-                                {roles.map((role) => (
-                                    <MenuItem key={role.value} value={role.value}>
-                                        {role.label}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Typography>Password :</Typography>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Typography>Confirm Password :</Typography>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            id="confirmPassword"
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                    </Grid>
-                </Grid>
-                <div className="flex justify-end mt-8">
-                    <Button onClick={handleCancel} color="secondary" className='mr-2'>
-                        Cancel
-                    </Button>
-                    <Button onClick={handleSave} color="primary" variant="contained">
-                        Save
-                    </Button>
+        <Container maxWidth>
+            <Paper className="p-4 mt-4">
+                <div className="mb-4">
+                    <Typography variant="h4" className="flex items-center mb-4 text-2xl font-semibold">
+                        Tambah User
+                    </Typography>
                 </div>
+                <form onSubmit={handleSubmit}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <Typography>Nama :</Typography>
+                            <TextField
+                                fullWidth
+                                name="name"
+                                value={formValues.name}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography>Email :</Typography>
+                            <TextField
+                                fullWidth
+                                name="email"
+                                value={formValues.email}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography className='mb-2'>Role :</Typography>
+                            <FormControl variant="outlined" size='small' fullWidth>
+                                <Select
+                                    labelId="role-label"
+                                    id="role"
+                                    name="role"
+                                    value={formValues.role}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    {roleOptions.map((role) => (
+                                        <MenuItem key={role.value} value={role.value}>
+                                            {role.label}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography>Password :</Typography>
+                            <TextField
+                                fullWidth
+                                name="password"
+                                type="password"
+                                value={formValues.password}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography>Confirm Password :</Typography>
+                            <TextField
+                                fullWidth
+                                name="confirmPassword"
+                                type="password"
+                                value={formValues.confirmPassword}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12} className="flex justify-end space-x-2">
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                size='small'
+                                onClick={handleBack}
+                                startIcon={<ArrowLeft className='w-4 h-4' />}
+                            >
+                                Kembali
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size='small'
+                                type="submit"
+                                startIcon={<Plus className='w-4 h-4' />}
+                            >
+                                Tambah
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </form>
             </Paper>
-        </div>
+        </Container>
     );
 }

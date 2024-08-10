@@ -2,8 +2,8 @@ POST http://localhost:5000/api/users
 Content-Type: application/json
 
 {
-    "email": "test1@test.com",
-    "name": "Test",
+    "email": "test2@test.com",
+    "name": "Testt",
     "password": "test123",
     "role": "ADMIN"
 }
@@ -40,7 +40,7 @@ GET http://localhost:5000/api/users
 GET http://localhost:5000/api/users?name=Test
 
 ###
-GET http://localhost:5000/api/inventaris/1
+GET http://localhost:5000/api/inventaris
 
 ###
 GET http://localhost:5000/api/inventaris/search?nama_barang=Gerinda

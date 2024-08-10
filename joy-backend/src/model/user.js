@@ -2,16 +2,26 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const User = {
-    getAll : async ({searchQuery}) => {
+    getAll : async ({searchQuery, page, rowsPerPage}) => {
         try {
-            const response = await prisma.user.findMany({
-                where: searchQuery ? {
-                    name: {
-                        contains: searchQuery,
-                    }
-                } : {}
+            const whereClause = searchQuery 
+            ? {
+                name: {
+                    contains: searchQuery,
+                },
+            } : {};
+
+            const totalUsers = await prisma.user.count({
+                where: whereClause,
             });
-            return response;
+
+            const users = await prisma.user.findMany({
+                where: whereClause,
+                skip: page * rowsPerPage,
+                take: rowsPerPage,
+            });
+
+            return { users, totalUsers };
         } catch (error) {   
             throw new Error(`Failed to get users: ${error.message}`);
         }
