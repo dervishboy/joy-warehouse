@@ -6,7 +6,7 @@ const Inventaris = {
         try {
             const whereClause = searchQuery
                 ? {
-                    nama_inventaris: {
+                    nama_barang: {
                         contains: searchQuery,
                     },
                 }

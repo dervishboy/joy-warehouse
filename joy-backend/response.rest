@@ -27,9 +27,9 @@ POST http://localhost:5000/api/inventaris
 Content-Type: application/json
 
 {
-    "nama_barang": "Kain",
-    "quantity": 20,
-    "satuan": "Meter"
+    "nama_barang": "Gerinda",
+    "quantity": 1,
+    "satuan": "Pcs"
 }
 
 

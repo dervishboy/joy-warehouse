@@ -1,26 +1,58 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Paper, Grid, TextField, Button, Typography } from "@mui/material";
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
+import axios from 'axios';
 
-export default function TambahInventaris() {
+export default function EditInventaris() {
     const router = useRouter();
+    const { id } = useParams();
+
     const [formData, setFormData] = useState({
         nama_barang: '',
         quantity: '',
         satuan: '',
     });
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/inventaris/${id}`);
+                setFormData({
+                    nama_barang: response.data.nama_barang,
+                    quantity: response.data.quantity,
+                    satuan: response.data.satuan,
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        if (id) {
+            fetchData();
+        }
+    }, [id]);
+
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log('Form Data:', formData);
-        router.push('/dashboard/Inventaris');
+        try {
+            const response = await axios.put(`http://localhost:5000/api/inventaris/${id}`, {
+                nama_barang: formData.nama_barang,
+                quantity: Number(formData.quantity),
+                satuan: formData.satuan,
+            });
+            if (response.status === 200) {
+                router.push('/dashboard/Inventaris');
+            }
+        } catch (error) {
+            console.error('Error updating inventaris:', error);
+        }
     };
 
     return (
@@ -41,6 +73,7 @@ export default function TambahInventaris() {
                                 name="nama_barang"
                                 value={formData.nama_barang}
                                 onChange={handleChange}
+                                required
                             />
                         </Grid>
                         <Grid item xs={12}>

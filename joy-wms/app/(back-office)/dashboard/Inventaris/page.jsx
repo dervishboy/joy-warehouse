@@ -1,51 +1,81 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, TablePagination, InputAdornment } from "@mui/material";
-import { CirclePlus, Pencil, Trash2, Warehouse, Search } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import {
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Button,
+    TextField,
+    TablePagination,
+    InputAdornment
+} from "@mui/material";
+import { CirclePlus, Pencil, Trash2, Search, Warehouse } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 export default function Inventaris() {
     const router = useRouter();
 
-    const columns = [
-        { id: 'id', name: '#' },
-        { id: 'kode_barang', name: 'Kode Barang' },
-        { id: 'nama_barang', name: 'Nama Barang' },
-        { id: 'jumlah', name: 'Jumlah' },
-        { id: 'satuan', name: 'Satuan' },
-        { id: 'action', name: 'Action' }
-    ];
-
-    const initialRows = [
-        { id: '1', kode_barang: 'BRG001', nama_barang: 'Akrilik', jumlah: '47', satuan: 'Lembar' },
-        { id: '2', kode_barang: 'BRG002', nama_barang: 'Lampu', jumlah: '123', satuan: 'Pcs' },
-        { id: '3', kode_barang: 'BRG003', nama_barang: 'Kabel', jumlah: '15', satuan: 'Meter' },
-        { id: '4', kode_barang: 'BRG004', nama_barang: 'Kain', jumlah: '100', satuan: 'Meter' },
-        { id: '5', kode_barang: 'BRG005', nama_barang: 'Kertas', jumlah: '500', satuan: 'Lembar' },
-        { id: '6', kode_barang: 'BRG006', nama_barang: 'Keramik', jumlah: '100', satuan: 'Meter' },
-        { id: '7', kode_barang: 'BRG007', nama_barang: 'Kaca', jumlah: '50', satuan: 'Meter' },
-    ];
-
-    const [rows, setRows] = useState(initialRows);
+    const [inventaris, setInventaris] = useState([]);
+    const [totalInventaris, setTotalInventaris] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const handleAdd = () => {
-        router.push(`/dashboard/Inventaris/tambah`);
-    };
+    const columns = [
+        { id: 'index', name: '#' },
+        { id: 'nama_barang', name: 'Nama Barang' },
+        { id: 'quantity', name: 'Jumlah' },
+        { id: 'satuan', name: 'Satuan' },
+        { id: 'action', name: 'Action' }
+    ];
+
+    useEffect(() => {
+        const fetchInventaris = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/inventaris', {
+                    params: {
+                        searchQuery: searchTerm,
+                        page,
+                        rowsPerPage
+                    }
+                });
+                setInventaris(response.data.inventaris);
+                setTotalInventaris(response.data.totalInventaris);
+            } catch (error) {
+                console.error('Error fetching inventaris:', error);
+            }
+        };
+
+        fetchInventaris();
+    }, [searchTerm, page, rowsPerPage]);
 
     const handleEdit = (id) => {
         router.push(`/dashboard/Inventaris/${id}/edit`);
     };
 
-    const handleDelete = (id) => {
-        setRows(rows.filter(row => row.id !== id));
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:5000/api/inventaris/${id}`);
+            setInventaris((prevInventaris) => prevInventaris.filter((item) => item.id !== id));
+            setTotalInventaris((prevTotal) => prevTotal - 1);
+        } catch (error) {
+            console.error('Error deleting inventaris:', error);
+        }
+    };
+
+    const handleTambahInventaris = () => {
+        router.push('/dashboard/Inventaris/tambah');
     };
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
+        setPage(0);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -57,11 +87,6 @@ export default function Inventaris() {
         setPage(0);
     };
 
-    const filteredRows = rows.filter((row) =>
-        row.kode_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.nama_barang.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
     return (
         <div className='px-3 py-4'>
             <div className="px-4 py-4">
@@ -71,28 +96,29 @@ export default function Inventaris() {
                         <h2 className="text-2xl font-semibold">Data Inventaris</h2>
                     </div>
                     <div className='flex justify-between'>
-                            <Button className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
-                                variant="outlined"
-                                size="medium"
-                                startIcon={<CirclePlus className='w-4 h-4' />}
-                                onClick={handleAdd}
-                            >
-                                Tambah
-                            </Button>
-                            <TextField
-                                variant="outlined"
-                                placeholder="Search"
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <Search />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </div>
+                        <Button
+                            className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
+                            variant="outlined"
+                            size="medium"
+                            startIcon={<CirclePlus className='w-4 h-4' />}
+                            onClick={handleTambahInventaris}
+                        >
+                            Tambah
+                        </Button>
+                        <TextField
+                            variant="outlined"
+                            placeholder="Search"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <Search />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </div>
                 </div>
                 <Paper>
                     <TableContainer sx={{ maxHeight: 500 }}>
@@ -110,8 +136,8 @@ export default function Inventaris() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                                    <TableRow key={row.kode_barang}>
+                                {inventaris.map((row, index) => (
+                                    <TableRow key={row.id}>
                                         {columns.map((column) => (
                                             <TableCell className='text-sm font-semibold text-center' key={column.id}>
                                                 {column.id === 'action' ? (
@@ -135,6 +161,8 @@ export default function Inventaris() {
                                                             Delete
                                                         </Button>
                                                     </div>
+                                                ) : column.id === 'index' ? (
+                                                    page * rowsPerPage + index + 1
                                                 ) : row[column.id]}
                                             </TableCell>
                                         ))}
@@ -146,7 +174,7 @@ export default function Inventaris() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={filteredRows.length}
+                        count={totalInventaris}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

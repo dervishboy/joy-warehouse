@@ -13,7 +13,6 @@ export default function EditMaterial() {
     const [formValues, setFormValues] = useState({
         kode_material: '',
         nama_material: '',
-        quantity: '',
         satuan: '',
     });
 
@@ -23,7 +22,6 @@ export default function EditMaterial() {
                 setFormValues({
                     kode_material: response.data.kode_material,
                     nama_material: response.data.nama_material,
-                    quantity: response.data.quantity,
                     satuan: response.data.satuan,
                 });
             } catch (error) {
@@ -47,7 +45,6 @@ export default function EditMaterial() {
                 {
                     kode_material: formValues.kode_material,
                     nama_material: formValues.nama_material,
-                    quantity: formValues.quantity,
                     satuan: formValues.satuan,
                 }
             );
@@ -89,17 +86,6 @@ export default function EditMaterial() {
                                 fullWidth
                                 name="nama_material"
                                 value={formValues.nama_material}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography>Jumlah :</Typography>
-                            <TextField
-                                fullWidth
-                                name="quantity"
-                                type="number"
-                                value={formValues.quantity}
                                 onChange={handleInputChange}
                                 required
                             />

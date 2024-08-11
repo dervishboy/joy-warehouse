@@ -1,25 +1,42 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Container, Paper, Grid, TextField, Button, Typography } from "@mui/material";
+import { Paper, Grid, TextField, Button, Typography } from "@mui/material";
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 export default function TambahInventaris() {
     const router = useRouter();
-    const [formData, setFormData] = useState({
+
+    const [formValue, setFormValue] = useState({
         nama_barang: '',
         quantity: '',
-        satuan: '',
+        satuan: ''
     });
 
-    const handleChange = (event) => {
+    const handleInputChange = (event) => {
         const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+        setFormValue({ ...formValue, [name]: value });
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log('Form Data:', formData);
+        try {
+            const response = await axios.post('http://localhost:5000/api/inventaris', {
+                nama_barang: formValue.nama_barang,
+                quantity: Number(formValue.quantity),
+                satuan: formValue.satuan
+            });
+            console.log(response);
+            if (response.status === 201) {
+                router.push('/dashboard/Inventaris');
+            }
+        } catch (error) {
+            console.error('Error in handleSubmit:', error);
+        }
+    };
+
+    const handleBack = () => {
         router.push('/dashboard/Inventaris');
     };
 
@@ -37,10 +54,10 @@ export default function TambahInventaris() {
                             </Typography>
                             <TextField
                                 fullWidth
-                                variant="outlined"
                                 name="nama_barang"
-                                value={formData.nama_barang}
-                                onChange={handleChange}
+                                onChange={handleInputChange}
+                                value={formValue.nama_barang}
+                                required
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -49,11 +66,10 @@ export default function TambahInventaris() {
                             </Typography>
                             <TextField
                                 fullWidth
-                                variant="outlined"
                                 type='number'
                                 name="quantity"
-                                value={formData.quantity}
-                                onChange={handleChange}
+                                onChange={handleInputChange}
+                                value={formValue.quantity}
                                 required
                             />
                         </Grid>
@@ -63,27 +79,26 @@ export default function TambahInventaris() {
                             </Typography>
                             <TextField
                                 fullWidth
-                                variant="outlined"
                                 name="satuan"
-                                value={formData.satuan}
-                                onChange={handleChange}
+                                onChange={handleInputChange}
+                                value={formValue.satuan}
                                 required
                             />
                         </Grid>
                         <Grid item xs={12} className="text-right space-x-2">
                             <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleBack}
+                            >
+                                Back
+                            </Button>
+                            <Button
                                 type="submit"
                                 variant="contained"
                                 color="primary"
                             >
-                                Submit
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                onClick={() => router.push('/dashboard/Inventaris')}
-                            >
-                                Cancel
+                                Tambah
                             </Button>
                         </Grid>
                     </Grid>
