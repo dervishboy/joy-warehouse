@@ -23,13 +23,53 @@ const MaterialInOutController = {
         }
     },
 
-    getAllMovement: async (req, res) => {
+    getAllMaterialIn: async (req, res) => {
         try {
-            const searchQuery = req.query.type || '';
-            const response = await MaterialMovement.getAll({ searchQuery });
-            res.json(response);
+            const searchQuery = req.query.searchQuery || '';
+            const month = req.query.month || '';
+            const page = parseInt(req.query.page, 10) || 0;
+            const rowsPerPage = parseInt(req.query.rowsPerPage, 10) || 10;
+
+            const { materialsMasuk, totalMasuk } = await MaterialMovement.getAllMasuk({
+                searchQuery,
+                month,
+                page,
+                rowsPerPage,
+            });
+            res.json({
+                materialsMasuk,
+                totalMasuk,
+                currentPage: page,
+                rowsPerPage,
+            });
+
         } catch (error) {
-            console.error('Error in getAllMovement:', error);
+            console.error('Error in getAllMaterialIn:', error);
+            res.status(500).json({ error: error.message });
+        }
+    },
+
+    getAllMaterialOut: async (req, res) => {
+        try {
+            const searchQuery = req.query.searchQuery || '';
+            const month = req.query.month || '';
+            const page = parseInt(req.query.page, 10) || 0;
+            const rowsPerPage = parseInt(req.query.rowsPerPage, 10) || 10;
+
+            const { materialsKeluar, totalKeluar } = await MaterialMovement.getAllKeluar({
+                searchQuery,
+                month,
+                page,
+                rowsPerPage,
+            });
+            res.json({
+                materialsKeluar,
+                totalKeluar,
+                currentPage: page,
+                rowsPerPage,
+            });
+        } catch (error) {
+            console.error('Error in getAllMaterialOut:', error);
             res.status(500).json({ error: error.message });
         }
     },

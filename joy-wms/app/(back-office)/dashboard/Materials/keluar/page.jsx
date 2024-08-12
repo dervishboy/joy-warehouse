@@ -68,15 +68,6 @@ export default function MaterialsKeluar() {
                             >
                                 Tambah
                             </Button>
-                            {/* <Button
-                                className='bg-blue-400 hover:bg-blue-500 cursor-pointer text-custom-jhitam font-semibold p-2'
-                                variant="outlined"
-                                size="medium"
-                                startIcon={<Printer className='w-4 h-4' />}
-                                onClick={handlePrint}
-                            >
-                                Cetak Barang Keluar
-                            </Button> */}
                         </div>
                         <TextField
                             variant="outlined"

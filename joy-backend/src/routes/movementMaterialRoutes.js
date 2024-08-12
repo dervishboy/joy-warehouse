@@ -5,7 +5,8 @@ const router = express.Router();
 
 router.post('/in', MaterialInOutController.materialIn);
 router.post('/out', MaterialInOutController.materialOut);
-router.get('/', MaterialInOutController.getAllMovement);
+router.get('/in', MaterialInOutController.getAllMaterialIn);
+router.get('/out', MaterialInOutController.getAllMaterialOut);
 router.get('/:id', MaterialInOutController.getMaterialMovementById);
 
 export default router;

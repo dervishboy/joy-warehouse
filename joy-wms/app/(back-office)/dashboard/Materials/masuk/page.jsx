@@ -1,58 +1,76 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, TablePagination, InputAdornment } from "@mui/material";
-import { Plus, Pencil, Trash2, Search, FolderPlus, Printer } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TablePagination, TextField, InputAdornment } from "@mui/material";
+import { Plus, Search, FolderPlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+
+const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    const day = String(date.getDate()).padStart(2, '0');
+    const monthNames = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+};
 
 export default function MaterialMasuk() {
-    
     const router = useRouter();
 
+    const [materialsMasuk, setMaterialsMasuk] = useState([]);
+    const [totalMasuk, setTotalMasuk] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const columns = [
-        { id: 'id', name: '#' },
-        { id: 'kode_bahan', name: 'Kode Bahan Baku' },
-        { id: 'tanggal', name: 'Tanggal' },
-        { id: 'jumlah', name: 'Jumlah' },
+        { id: 'index', name: '#' },
+        { id: 'material.kode_material', name: 'Kode Material' },
+        { id: 'material.nama_material', name: 'Nama Material' },
+        { id: 'date', name: 'Tanggal Masuk' },
+        { id: 'quantity', name: 'Jumlah' },
     ];
 
-    const [rows] = useState([
-        { id: '1', kode_bahan: 'BRG001', tanggal: '19-September-2023', jumlah: '65' },
-        { id: '2', kode_bahan: 'BRG002', tanggal: '20-September-2023', jumlah: '150' },
-        { id: '3', kode_bahan: 'BRG003', tanggal: '14-Desember-2023', jumlah: '125' },
-        { id: '4', kode_bahan: 'BRG004', tanggal: '15-Januari-2024', jumlah: '80' },
-        { id: '5', kode_bahan: 'BRG005', tanggal: '22-Februari-2024', jumlah: '300' },
-    ]);
+    useEffect(() => {
+        const fetchMaterialsMasuk = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/movements/in', {
+                    params: {
+                        searchQuery: searchTerm,
+                        page,
+                        rowsPerPage
+                    }
+                });
+                setMaterialsMasuk(response.data.materialsMasuk);
+                setTotalMasuk(response.data.totalMasuk);
+            } catch (error) {
+                console.error('Error fetching materials masuk:', error);
+            }
+        }
+        fetchMaterialsMasuk();
+    }, [searchTerm, page, rowsPerPage]);
 
     const handleTambah = () => {
         router.push('/dashboard/Materials/masuk/tambah');
-    };
+    }
 
-
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
-
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setPage(0);
+    }
+    
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
-    };
+    }
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
-    };
-
-    const filteredRows = rows.filter((row) =>
-        row.kode_bahan.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    // const handlePrint = () => {
-    //     console.log('Print barang masuk');
-    // }
+    }
 
     return (
         <div className='px-3 py-4'>
@@ -60,7 +78,7 @@ export default function MaterialMasuk() {
                 <div className="mb-2">
                     <div className='flex items-center mb-4'>
                         <FolderPlus className='w-8 h-8 mr-2' />
-                        <h2 className="text-2xl font-semibold">Barang Masuk</h2>
+                        <h2 className="text-2xl font-semibold">Material Masuk</h2>
                     </div>
                     <div className='flex justify-between'>
                         <div className='flex space-x-2'>
@@ -69,19 +87,10 @@ export default function MaterialMasuk() {
                                 variant="outlined"
                                 size="medium"
                                 startIcon={<Plus className='w-4 h-4' />}
-                                onClick={() => handleTambah()}
+                                onClick={handleTambah}
                             >
                                 Tambah
                             </Button>
-                            {/* <Button
-                                className='bg-blue-400 hover:bg-blue-500 cursor-pointer text-custom-jhitam font-semibold p-2'
-                                variant="outlined"
-                                size="medium"
-                                startIcon={<Printer className='w-4 h-4' />}
-                                onClick={handlePrint}
-                            >
-                                Cetak Barang Masuk
-                            </Button> */}
                         </div>
                         <TextField
                             variant="outlined"
@@ -114,13 +123,13 @@ export default function MaterialMasuk() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                                    <TableRow key={row.id}>
-                                        {columns.map((column) => (
-                                            <TableCell className='text-sm font-semibold text-center' key={column.id}>
-                                                {row[column.id]}
-                                            </TableCell>
-                                        ))}
+                                {materialsMasuk.map((material, index) => (
+                                    <TableRow key={material._id}>
+                                        <TableCell className='text-sm font-semibold text-center'>{index + 1}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{material.material.kode_material}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{material.material.nama_material}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{formatDate(material.date)}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{material.quantity}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -129,7 +138,7 @@ export default function MaterialMasuk() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={filteredRows.length}
+                        count={totalMasuk}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

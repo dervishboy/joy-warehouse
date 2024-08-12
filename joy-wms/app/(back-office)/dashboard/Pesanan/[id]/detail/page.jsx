@@ -25,7 +25,10 @@ export default function LihatDetailPesanan() {
                         deskripsi: 'Description A',
                         materials: [
                             { nama_material: 'Akrilik', quantity: '10', satuan: 'Lembar' },
-                            { nama_material: 'Kabel', quantity: '20', satuan: 'Meter' }
+                            { nama_material: 'Kabel', quantity: '20', satuan: 'Meter' },
+                            { nama_material: 'Lampu', quantity: '5', satuan: 'Pcs' },
+                            { nama_material: 'Kotak', quantity: '2', satuan: 'Pcs' },
+                            { nama_material: 'Baut', quantity: '10', satuan: 'Pcs' }
                         ]
                     },
                     {
@@ -94,8 +97,7 @@ export default function LihatDetailPesanan() {
                                     >
                                         <MenuItem value="PENDING">PENDING</MenuItem>
                                         <MenuItem value="PROCESSING">PROCESSING</MenuItem>
-                                        <MenuItem value="COMPLETED">COMPLETED</MenuItem>
-                                        <MenuItem value="CANCELLED">CANCELLED</MenuItem>
+                                        <MenuItem value="DONE">DONE</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>

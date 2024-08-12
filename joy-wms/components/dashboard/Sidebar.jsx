@@ -10,7 +10,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
     const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(false);
 
     const materialLinks = [
-        { name: "Data Bahan Baku", href: "/dashboard/Materials" },
+        { name: "Data Material", href: "/dashboard/Materials" },
         { name: "Stok Masuk", href: "/dashboard/Materials/masuk" },
         { name: "Stok Keluar", href: "/dashboard/Materials/keluar" },
     ];
@@ -35,7 +35,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
             <nav className="flex flex-col gap-4 px-3 py-6">
                 <Link className="flex items-center space-x-2 bg-slate-950 rounded-lg p-2" href="/dashboard">
                     <Home className="w-4 h-4" />
-                    {isOpen && <span className="text-md font-semibold">Home</span>}
+                    {isOpen && <span className="text-md font-semibold">Dashboard</span>}
                 </Link>
                 <Link className="p-2 flex items-center space-x-2" href="/dashboard/Users">
                     <CircleUser className="w-4 h-4" />
@@ -57,7 +57,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
                     <CollapsibleTrigger className="flex justify-between items-center w-full cursor-pointer">
                         <div className="p-2 flex items-center space-x-2">
                             <Bolt className="w-4 h-4" />
-                            {isOpen && <span className="text-md font-semibold">Bahan Baku</span>}
+                            {isOpen && <span className="text-md font-semibold">Material</span>}
                         </div>
                         {isOpen && <ChevronRight className="w-4 h-4" />}
                     </CollapsibleTrigger>

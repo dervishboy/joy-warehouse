@@ -29,8 +29,8 @@ export default function Materials() {
 
     const columns = [
         { id: 'index', name: '#' },
-        { id: 'kode_material', name: 'Kode Bahan Baku' },
-        { id: 'nama_material', name: 'Nama Bahan Baku' },
+        { id: 'kode_material', name: 'Kode Material' },
+        { id: 'nama_material', name: 'Nama Material' },
         { id: 'quantity', name: 'Jumlah' },
         { id: 'satuan', name: 'Satuan' },
         { id: 'action', name: 'Action' }
@@ -94,7 +94,7 @@ export default function Materials() {
                 <div className="mb-2">
                     <div className='flex items-center mb-4'>
                         <FolderCog className='w-8 h-8 mr-2' />
-                        <h2 className="text-2xl font-semibold">Data Bahan Baku</h2>
+                        <h2 className="text-2xl font-semibold">Data Material</h2>
                     </div>
                     <div className='flex justify-between'>
                         <Button

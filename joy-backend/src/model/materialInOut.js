@@ -2,18 +2,101 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const MaterialMovement = {
-    getAll: async ({ searchQuery }) => {
+    getAllMasuk: async ({ searchQuery, month, page, rowsPerPage }) => {
         try {
-            const response = await prisma.materialMovement.findMany({
-                where: searchQuery ? {
-                    type: {
-                        equals: searchQuery.toUpperCase(),
-                    },
-                } : {}
+            const whereClause = {
+                AND: [
+                    searchQuery
+                        ? {
+                            material: {
+                                nama_material: {
+                                    contains: searchQuery,
+                                },
+                            },
+                        }
+                        : {},
+                    month
+                        ? {
+                            date: {
+                                gte: new Date(`${month}-01`),
+                                lt: new Date(`${month}-01`),
+                            },
+                        }
+                        : {},
+                ],
+            };
+
+            const totalMasuk = await prisma.materialMovement.count({
+                where: {
+                    ...whereClause,
+                    type: 'MASUK',
+                },
             });
-            return response;
+
+            const materialsMasuk = await prisma.materialMovement.findMany({
+                where: {
+                    ...whereClause,
+                    type: 'MASUK',
+                },
+                skip: page * rowsPerPage,
+                take: rowsPerPage,
+                include: {
+                    material: true,
+                },
+            });
+
+            return { materialsMasuk, totalMasuk };
         } catch (error) {
-            throw new Error(`Failed to get material movements: ${error.message}`);
+            throw new Error(`Failed to get materials masuk: ${error.message}`);
+        }
+    },
+
+    getAllKeluar: async ({ searchQuery, month, page, rowsPerPage }) => {
+        try {
+            const whereClause = {
+                AND: [
+                    searchQuery
+                        ? {
+                            material: {
+                                nama_material: {
+                                    contains: searchQuery,
+                                },
+                            },
+                        }
+                        : {},
+                    month
+                        ? {
+                            date: {
+                                gte: new Date(`${month}-01`),
+                                lt: new Date(`${month}-01`),
+                            },
+                        }
+                        : {},
+                ],
+            };
+
+            const totalKeluar = await prisma.materialMovement.count({
+                where: {
+                    ...whereClause,
+                    type: 'KELUAR',
+                },
+            });
+
+            const materialsKeluar = await prisma.materialMovement.findMany({
+                where: {
+                    ...whereClause,
+                    type: 'KELUAR',
+                },
+                skip: page * rowsPerPage,
+                take: rowsPerPage,
+                include: {
+                    material: true,
+                },
+            });
+
+            return { materialsKeluar, totalKeluar };
+        } catch (error) {
+            throw new Error(`Failed to get materials keluar: ${error.message}`);
         }
     },
     createIn: async (data) => {

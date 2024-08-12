@@ -1,3 +1,10 @@
+
+GET http://localhost:5000/api/movements/in
+
+###
+GET http://localhost:5000/api/movements/out
+
+###
 POST http://localhost:5000/api/users
 Content-Type: application/json
 
@@ -73,7 +80,7 @@ Content-Type: application/json
 
 {
     "material_id": 1,
-    "quantity": 50
+    "quantity": 3
 }
 
 ###
