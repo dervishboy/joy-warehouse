@@ -1,35 +1,66 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, TablePagination, InputAdornment } from "@mui/material";
 import { Plus, Pencil, Trash2, Search, FolderOutput, Printer } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+
+const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    const day = String(date.getDate()).padStart(2, '0');
+    const monthNames = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+};
 
 export default function MaterialsKeluar() {
-    const columns = [
-        { id: 'id', name: '#' },
-        { id: 'kode_bahan', name: 'Kode Bahan Baku' },
-        { id: 'tanggal', name: 'Tanggal' },
-        { id: 'jumlah', name: 'Jumlah' }
-    ];
-
-    const [rows] = useState([
-        { id: '1', kode_bahan: 'BRG001', tanggal: '19-September-2023', jumlah: '47' },
-        { id: '2', kode_bahan: 'BRG002', tanggal: '20-September-2023', jumlah: '123' },
-        { id: '3', kode_bahan: 'BRG003', tanggal: '14-Desember-2023', jumlah: '15' },
-    ]);
-
     const router = useRouter();
-    const handleAdd = () => {
-        router.push('/dashboard/Materials/keluar/tambah');
-    };
 
+    const [materialsKeluar, setMaterialsKeluar] = useState([]);
+    const [totalKeluar, setTotalKeluar] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
+    const columns = [
+        { id: 'id', name: '#' },
+        { id: 'material.kode_material', name: 'Kode Material' },
+        { id: 'material.nama_material', name: 'Nama Material' },
+        { id: 'date', name: 'Tanggal Keluar' },
+        { id: 'quantity', name: 'Jumlah' },
+    ];
+
+    useEffect(() => {
+        const fetchMaterialsKeluar = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/movements/out', {
+                    params: {
+                        searchQuery: searchTerm,
+                        page,
+                        rowsPerPage
+                    }
+                });
+                setMaterialsKeluar(response.data.materialsKeluar);
+                setTotalKeluar(response.data.totalKeluar);
+            } catch (error) {
+                console.error('Error fetching materials keluar:', error);
+            }
+        }
+        fetchMaterialsKeluar();
+    }, [searchTerm, page, rowsPerPage]);
+
+    const handleAdd = () => {
+        router.push('/dashboard/Materials/keluar/tambah');
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setPage(0);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -39,15 +70,8 @@ export default function MaterialsKeluar() {
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
-    };
+    }
 
-    // const handlePrint = () => {
-    //     console.log('Print Barang Keluar');
-    // };
-
-    const filteredRows = rows.filter((row) =>
-        row.kode_bahan.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     return (
         <div className='px-3 py-4'>
@@ -100,14 +124,14 @@ export default function MaterialsKeluar() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                                    <TableRow key={row.id}>
-                                    {columns.map((column) => (
-                                        <TableCell className='text-sm font-semibold text-center' key={column.id}>
-                                            {row[column.id]}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
+                                {materialsKeluar.map((materialKeluar, index) => (
+                                    <TableRow key={materialKeluar.id}>
+                                        <TableCell className='text-sm font-semibold text-center'>{index + 1}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{materialKeluar.material.kode_material}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{materialKeluar.material.nama_material}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{formatDate(materialKeluar.date)}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{materialKeluar.quantity}</TableCell>
+                                    </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
@@ -115,7 +139,7 @@ export default function MaterialsKeluar() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={filteredRows.length}
+                        count={totalKeluar}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

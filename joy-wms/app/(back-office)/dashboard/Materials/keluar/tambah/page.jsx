@@ -1,39 +1,61 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Container, Grid, Paper, TextField, Button, Typography, Select, MenuItem, FormControl } from "@mui/material";
 import { Plus, ArrowLeft } from 'lucide-react';
+import axios from 'axios';
 
 export default function TambahMaterialKeluar() {
     const router = useRouter();
 
-    // Hardcoded materials data
-    const materials = [
-        { id: 1, kode: 'MAT001', nama: 'Material A' },
-        { id: 2, kode: 'MAT002', nama: 'Material B' },
-        { id: 3, kode: 'MAT003', nama: 'Material C' },
-    ];
-
     const [formValues, setFormValues] = useState({
-        kode_bahan: '',
-        tanggal: '',
-        jumlah: '',
+        material_id: '',
+        quantity: ''
     });
+
+    const [materials, setMaterials] = useState([]);
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/api/materials')
+            .then(response => {
+                console.log('Fetched materials:', response.data);
+                setMaterials(response.data.materials);
+            })
+            .catch(error => {
+                console.error('Error fetching materials:', error);
+            });
+    }, []);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormValues({ ...formValues, [name]: value });
+
+        if (name === "material_id") {
+            const selectedMaterial = materials.find(material => material.id === parseInt(value));
+            if (selectedMaterial) {
+                setFormValues(prevValues => ({
+                    ...prevValues,
+                    kode_material: selectedMaterial.kode_material,
+                    nama_material: selectedMaterial.nama_material
+                }));
+            }
+        }
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log('Form Values:', formValues);
-        if (formValues.kode_bahan && formValues.tanggal && formValues.jumlah) {
-            alert('Form submitted successfully!');
-            router.push('/dashboard/Materials/keluar');
-        } else {
-            console.error('Failed to submit form');
+        try {
+            const response = await axios.post('http://localhost:5000/api/movements/out', {
+                material_id: formValues.material_id,
+                quantity: Number(formValues.quantity)
+            });
+            console.log(response);
+            if (response.status === 201) {
+                router.push('/dashboard/Materials/keluar');
+            }
+        } catch (error) {
+            console.error('Error in handleSubmit:', error);
         }
     };
 
@@ -43,70 +65,72 @@ export default function TambahMaterialKeluar() {
 
     return (
         <Container maxWidth>
-            <Paper className="p-4 mt-4">
-                <div className="mb-4">
-                    <Typography variant="h4" className="flex items-center mb-8 font-semibold">
-                        Tambah Stok Keluar
-                    </Typography>
-                </div>
-                <form onSubmit={handleSubmit}>
+            <Paper className="p-4">
+                <Typography className='text-2xl font-semibold mb-8'>
+                    Tambah Material Keluar
+                </Typography>
+                <form onSubmit={handleSubmit} className='ml-2'>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <Typography>Kode Material :</Typography>
-                            <FormControl fullWidth>
+                            <Typography className='mb-2'>
+                                Kode Material :
+                            </Typography>
+                            <FormControl fullWidth size='small'>
                                 <Select
-                                    name="kode_bahan"
-                                    value={formValues.kode_bahan}
+                                    name="material_id"
+                                    value={formValues.material_id}
                                     onChange={handleInputChange}
+                                    required
                                 >
                                     {materials.map((material) => (
-                                        <MenuItem key={material.id} value={material.kode}>
-                                            {material.kode} - {material.nama}
+                                        <MenuItem key={material.id} value={material.id}>
+                                            {material.kode_material} - {material.nama_material}
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
-                        </Grid>
+                        {/* </Grid>
                         <Grid item xs={12}>
-                            <Typography>Jumlah :</Typography>
+                            <Typography className='mb-2'>
+                                Tanggal Masuk :
+                            </Typography>
                             <TextField
                                 fullWidth
-                                placeholder='Masukkan Jumlah Material'
-                                name="jumlah"
-                                type="number"
-                                value={formValues.jumlah}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography>Tanggal :</Typography>
-                            <TextField
-                                fullWidth
-                                name="tanggal"
+                                name="date"
                                 type="date"
-                                value={formValues.tanggal}
                                 onChange={handleInputChange}
-                                InputLabelProps={{ shrink: true }}
+                                value={formValues.date}
+                                required
+                            /> */}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography className='mb-2'>
+                                Jumlah :
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                type='number'
+                                name="quantity"
+                                onChange={handleInputChange}
+                                value={formValues.quantity}
                                 required
                             />
                         </Grid>
-                        <Grid item xs={12} className="flex justify-end space-x-2">
+                        <Grid item xs={12} className='flex justify-between'>
                             <Button
+                                onClick={handleBack}
                                 variant="contained"
                                 color="secondary"
-                                size='small'
-                                onClick={handleBack}
-                                startIcon={<ArrowLeft className='w-4 h-4' />}
+                                startIcon={<ArrowLeft />}
+                                className="ml-2"
                             >
                                 Kembali
                             </Button>
                             <Button
+                                type="submit"
                                 variant="contained"
                                 color="primary"
-                                size='small'
-                                type="submit"
-                                startIcon={<Plus className='w-4 h-4' />}
+                                startIcon={<Plus />}
                             >
                                 Tambah
                             </Button>
