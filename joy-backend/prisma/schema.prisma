@@ -75,6 +75,7 @@ model Order {
   kode_pesanan  String
   status        StatusOrder @default(PENDING)    
   estimatedTime DateTime
+  totalHarga    Float
   orderProducts OrderProduct[]
   invoices      Invoice[]
 }

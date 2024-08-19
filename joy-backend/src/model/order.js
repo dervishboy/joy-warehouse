@@ -3,9 +3,38 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const Order = {
-    getAll: async () => {
+    getAll: async ({ searchQuery, page, rowsPerPage }) => {
         try {
-            return await prisma.order.findMany({
+            const whereClause = searchQuery
+                ? {
+                    OR: [
+                        {
+                            nama_pemesan: {
+                                contains: searchQuery,
+                            },
+                        },
+                        {
+                            kode_pesanan: {
+                                contains: searchQuery,
+                            },
+                        },
+                        {
+                            status: {
+                                contains: searchQuery,
+                            },
+                        },
+                    ],
+                }
+                : {};
+    
+            const totalOrders = await prisma.order.count({
+                where: whereClause,
+            });
+    
+            const orders = await prisma.order.findMany({
+                where: whereClause,
+                skip: page * rowsPerPage,
+                take: rowsPerPage,
                 include: {
                     orderProducts: {
                         include: {
@@ -13,19 +42,22 @@ const Order = {
                                 include: {
                                     productMaterials: {
                                         include: {
-                                            material: true
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                                            material: true,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             });
+    
+            return { orders, totalOrders };
         } catch (error) {
             throw new Error(`Failed to get orders: ${error.message}`);
         }
     },
+    
 
     getById: async (id) => {
         try {
@@ -53,7 +85,7 @@ const Order = {
     },
 
     create: async (data) => {
-        const { nama_pemesan, kode_pesanan, estimatedTime, products } = data;
+        const { nama_pemesan, kode_pesanan, estimatedTime, products, totalHarga } = data;
 
         try {
             const createdOrder = await prisma.order.create({
@@ -61,21 +93,39 @@ const Order = {
                     nama_pemesan,
                     kode_pesanan,
                     estimatedTime: new Date(estimatedTime),
+                    totalHarga: parseFloat(totalHarga),
                     orderProducts: {
                         create: await Promise.all(products.map(async product => {
-                            const createdProduct = await prisma.product.create({
-                                data: {
-                                    kode_produk: product.kode_produk,
-                                    nama_produk: product.nama_produk,
-                                    deskripsi: product.deskripsi,
-                                    productMaterials: {
-                                        create: product.productMaterials.map(material => ({
-                                            material: { connect: { id: material.material_id } },
-                                            quantity: material.quantity
-                                        }))
-                                    }
-                                }
+                            let existingProduct = await prisma.product.findUnique({
+                                where: { kode_produk: product.kode_produk }
                             });
+                            if (!existingProduct) {
+                                existingProduct = await prisma.product.create({
+                                    data: {
+                                        kode_produk: product.kode_produk,
+                                        nama_produk: product.nama_produk,
+                                        deskripsi: product.deskripsi,
+                                        productMaterials: {
+                                            create: product.productMaterials.map(material => ({
+                                                material: { connect: { id: material.material_id } },
+                                                quantity: material.quantity
+                                            }))
+                                        }
+                                    }
+                                });
+                            } else {
+                                await prisma.productMaterial.deleteMany({
+                                    where: { product_id: existingProduct.id }
+                                });
+
+                                await prisma.productMaterial.createMany({
+                                    data: product.productMaterials.map(material => ({
+                                        product_id: existingProduct.id,
+                                        material_id: material.material_id,
+                                        quantity: material.quantity
+                                    }))
+                                });
+                            }
                             for (const material of product.productMaterials) {
                                 await prisma.material.update({
                                     where: { id: material.material_id },
@@ -95,7 +145,7 @@ const Order = {
                             }
 
                             return {
-                                product_id: createdProduct.id
+                                product_id: existingProduct.id
                             };
                         }))
                     }
@@ -137,13 +187,80 @@ const Order = {
 
     delete: async (id) => {
         try {
-            return await prisma.order.delete({
+            const order = await prisma.order.findUnique({
                 where: { id: parseInt(id) },
+                include: {
+                    orderProducts: {
+                        include: {
+                            product: {
+                                include: {
+                                    productMaterials: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+    
+            if (!order) {
+                throw new Error('Order not found');
+            }
+    
+            return await prisma.$transaction(async (prisma) => {
+                for (const orderProduct of order.orderProducts) {
+                    for (const productMaterial of orderProduct.product.productMaterials) {
+                        const materialMovement = await prisma.materialMovement.findMany({
+                            where: {
+                                material_id: productMaterial.material_id,
+                                type: 'KELUAR',
+                                date: {
+                                    gte: order.createdAt,
+                                },
+                            }
+                        });
+                        await prisma.material.update({
+                            where: { id: productMaterial.material_id },
+                            data: {
+                                quantity: {
+                                    increment: productMaterial.quantity,
+                                }
+                            }
+                        });
+                        await prisma.materialMovement.deleteMany({
+                            where: {
+                                id: {
+                                    in: materialMovement.map((movement) => movement.id),
+                                }
+                            }
+                        });
+                    }
+                }
+                await prisma.orderProduct.deleteMany({
+                    where: { order_id: parseInt(id) },
+                });
+    
+                const productIds = order.orderProducts.map(op => op.product.id);
+    
+                await prisma.productMaterial.deleteMany({
+                    where: { product_id: { in: productIds } }
+                });
+    
+                await prisma.product.deleteMany({
+                    where: { id: { in: productIds } }
+                });
+    
+                return await prisma.order.delete({
+                    where: { id: parseInt(id) },
+                });
             });
         } catch (error) {
+            console.error(`Failed to delete order: ${error.message}`);
             throw new Error(`Failed to delete order: ${error.message}`);
         }
     },
+    
+
+    
 };
 
 export default Order;

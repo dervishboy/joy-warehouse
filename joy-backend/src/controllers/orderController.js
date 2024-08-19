@@ -3,13 +3,30 @@ import Order from '../model/order.js';
 const OrderController = {
     getOrders: async (req, res) => {
         try {
-            const response = await Order.getAll();
-            res.json(response);
+            const searchQuery = req.query.searchQuery || '';
+            const page = parseInt(req.query.page, 10) || 0;
+            const rowsPerPage = parseInt(req.query.rowsPerPage, 10) || 10;
+
+            const { orders, totalOrders } = await Order.getAll({
+                searchQuery,
+                page,
+                rowsPerPage,
+            });
+
+            res.json({
+                orders,
+                totalOrders,
+                currentPage: page,
+                rowsPerPage,
+            });
+
+            
         } catch (error) {
             console.error('Error in getOrders:', error);
             res.status(500).json({ error: error.message });
         }
     },
+    
     getOrderById: async (req, res) => {
         try {
             const order = await Order.getById(req.params.id);

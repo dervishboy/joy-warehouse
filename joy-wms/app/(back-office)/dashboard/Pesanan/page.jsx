@@ -1,35 +1,72 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TablePagination, InputAdornment, TextField } from "@mui/material";
 import { CirclePlus, Pencil, Trash2, Search, ShoppingBasket, BookUser } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
-const dummyData = [
-    { id: 1, kode_pesanan: 'PSN-001', qty: 1, total_harga: 100000, status: 'Pending', id_produk: 1, nama_produk: 'Produk A', deskripsi_produk: 'Deskripsi Produk A', estimasi_waktu_pengerjaan: '2 hari' },
-    { id: 2, kode_pesanan: 'PSN-002', qty: 2, total_harga: 200000, status: 'Done', id_produk: 2, nama_produk: 'Produk B', deskripsi_produk: 'Deskripsi Produk B', estimasi_waktu_pengerjaan: '3 hari' },
-];
+const formatRupiah = (amount) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+    }).format(amount);
+};
 
 export default function Pesanan() {
+    const router = useRouter();
+
+    const [orders, setOrders] = useState([]);
+    const [totalOrders, setTotalOrders] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const router = useRouter();
 
     const columns = [
+        { id: 'index', name: '#' },
+        { id: 'nama_pemesan', name: 'Nama Pemesan' },
         { id: 'kode_pesanan', name: 'Kode Pesanan' },
-        { id: 'qty', name: 'Qty' },
-        { id: 'total_harga', name: 'Total Harga' },
+        { id: 'totalHarga', name: 'Total Harga' },
         { id: 'status', name: 'Status' },
-        { id: 'action', name: 'Action' }
+        { id: 'actions', name: 'Actions' }
     ];
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/orders', {
+                    params: {
+                        searchQuery: searchTerm,
+                        page,
+                        rowsPerPage
+                    }
+                });
+                setOrders(response.data.orders);
+                setTotalOrders(response.data.totalOrders);
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            }
+        };
+
+        fetchOrders();
+    }, [searchTerm, page, rowsPerPage]);
 
     const handleEdit = (id) => {
         router.push(`/dashboard/Pesanan/${id}/edit`);
     };
 
     const handleDelete = (id) => {
-        console.log(`Delete row with id ${id}`);
+        if (window.confirm('Are you sure you want to delete this order?')) {
+            axios.delete(`http://localhost:5000/api/orders/${id}`)
+                .then(response => {
+                    console.log('Deleted order:', response);
+                    const updatedOrders = orders.filter(order => order.id !== id);
+                    setOrders(updatedOrders);
+                })
+                .catch(error => {
+                    console.error('Error deleting order:', error);
+                });
+        }
     };
 
     const handleAdd = () => {
@@ -42,6 +79,7 @@ export default function Pesanan() {
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
+        setPage(0);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -52,11 +90,6 @@ export default function Pesanan() {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-
-    const filteredRows = dummyData.filter((row) =>
-        row.kode_pesanan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.status.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     return (
         <div className='px-3 py-4'>
@@ -107,13 +140,14 @@ export default function Pesanan() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                                {orders.map((row, index) => (
                                     <TableRow key={row.id}>
-                                        <TableCell className="text-sm font-semibold text-center">{row.kode_pesanan}</TableCell>
-                                        <TableCell className="text-sm font-semibold text-center">{row.qty}</TableCell>
-                                        <TableCell className="text-sm font-semibold text-center">{row.total_harga}</TableCell>
-                                        <TableCell className="text-sm font-semibold text-center">{row.status}</TableCell>
-                                        <TableCell className="items-center space-x-2 text-center">
+                                        <TableCell className='text-sm font-semibold text-center'>{index + 1}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{row.nama_pemesan}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{row.kode_pesanan}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{formatRupiah(row.totalHarga)}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{row.status}</TableCell>
+                                        <TableCell className='items-center space-x-2 text-center'>
                                             <Button
                                                 className="bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold"
                                                 variant="outlined"
@@ -150,7 +184,7 @@ export default function Pesanan() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={filteredRows.length}
+                        count={totalOrders}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
