@@ -2,9 +2,24 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const Product = {
-    getAll: async () => {
+    getAll: async ({searchQuery, page, rowsPerPage}) => {
         try {
-            return await prisma.product.findMany({
+            const whereClause = searchQuery ? {
+                OR: [
+                    { kode_produk: { contains: searchQuery } },
+                    { nama_produk: { contains: searchQuery } },
+                ],
+            } : {};
+            
+
+            const totalProducts = await prisma.product.count({
+                where: whereClause,
+            });
+
+            const products = await prisma.product.findMany({
+                where: whereClause,
+                skip: page * rowsPerPage,
+                take: rowsPerPage,
                 include: {
                     productMaterials: {
                         include: {
@@ -13,6 +28,7 @@ const Product = {
                     }
                 }
             });
+            return { products, totalProducts };
         } catch (error) {
             throw new Error(`Failed to get products: ${error.message}`);
         }

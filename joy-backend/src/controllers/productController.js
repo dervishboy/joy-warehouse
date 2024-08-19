@@ -3,8 +3,23 @@ import Product from "../model/product.js";
 const ProductController = {
     getProducts: async (req, res) => {
         try {
-            const response = await Product.getAll();
-            res.json(response);
+            const searchQuery = req.query.searchQuery || '';
+            const page = parseInt(req.query.page, 10) || 0;
+            const rowsPerPage = parseInt(req.query.rowsPerPage, 10) || 10;
+
+            const { products, totalProducts } = await Product.getAll({
+                searchQuery,
+                page,
+                rowsPerPage,
+            });
+
+            res.json({
+                products,
+                totalProducts,
+                currentPage: page,
+                rowsPerPage,
+            });
+
         } catch (error) {
             console.error('Error in getProducts:', error);
             res.status(500).json({ error: error.message });

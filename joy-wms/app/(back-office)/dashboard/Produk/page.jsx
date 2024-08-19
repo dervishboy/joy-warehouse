@@ -1,62 +1,65 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TextField, TablePagination, InputAdornment } from "@mui/material";
 import { CirclePlus, Pencil, Trash2, Search, Anvil, BookUser } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 export default function Produk() {
     const router = useRouter();
+
+    const [products, setProducts] = useState([]);
+    const [totalProducts, setTotalProducts] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const columns = [
-        { id: 'id', name: '#' },
+        { id: 'index', name: '#' },
         { id: 'kode_produk', name: 'Kode Produk' },
         { id: 'nama_produk', name: 'Nama Produk' },
         { id: 'deskripsi', name: 'Deskripsi' },
-        { id: 'action', name: 'Action' }
+        { id: 'actions', name: 'Actions' }
     ];
 
-    const rows = [
-        { id: 1, kode_produk: 'PRD-001', nama_produk: 'Produk 1', deskripsi: 'Deskripsi Produk 1' },
-        { id: 2, kode_produk: 'PRD-002', nama_produk: 'Produk 2', deskripsi: 'Deskripsi Produk 2' },
-        { id: 3, kode_produk: 'PRD-003', nama_produk: 'Produk 3', deskripsi: 'Deskripsi Produk 3' },
-        { id: 4, kode_produk: 'PRD-004', nama_produk: 'Produk 4', deskripsi: 'Deskripsi Produk 4' },
-        { id: 5, kode_produk: 'PRD-005', nama_produk: 'Produk 5', deskripsi: 'Deskripsi Produk 5' },
-        { id: 6, kode_produk: 'PRD-006', nama_produk: 'Produk 6', deskripsi: 'Deskripsi Produk 6' },
-        { id: 7, kode_produk: 'PRD-007', nama_produk: 'Produk 7', deskripsi: 'Deskripsi Produk 7' },
-        { id: 8, kode_produk: 'PRD-008', nama_produk: 'Produk 8', deskripsi: 'Deskripsi Produk 8' },
-        { id: 9, kode_produk: 'PRD-009', nama_produk: 'Produk 9', deskripsi: 'Deskripsi Produk 9' },
-        { id: 10, kode_produk: 'PRD-010', nama_produk: 'Produk 10', deskripsi: 'Deskripsi Produk 10' }
-    ];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/products', {
+                    params: {
+                        searchQuery: searchTerm,
+                        page,
+                        rowsPerPage
+                    }
+                });
+                setProducts(response.data.products);
+                setTotalProducts(response.data.totalProducts);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
+
+        fetchProducts();
+    }, [searchTerm, page, rowsPerPage]);
 
     const handleDetail = (id) => {
         router.push(`/dashboard/Produk/${id}/detail`);
-    };
+    }
 
-    const handleDelete = (id) => {
-        console.log(`Delete row with id ${id}`);
-    };
-
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setPage(0);
+    }
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
-    };
+    }
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
-    };
-
-    const filteredRows = rows.filter((row) =>
-        row.kode_produk.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.nama_produk.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    }
 
     return (
         <div className='px-3 py-4'>
@@ -98,36 +101,23 @@ export default function Produk() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                                    <TableRow key={row.kode_produk}>
-                                        {columns.map((column) => (
-                                            <TableCell className='text-sm font-semibold text-center' key={column.id}>
-                                                {column.id === 'action' ? (
-                                                    <div className='items-center space-x-2 text-center'>
-                                                        <Button
-                                                            className="bg-rose-400 hover:bg-red-600 cursor-pointer text-custom-jhitam font-semibold"
-                                                            variant="outlined"
-                                                            size="small"
-                                                            startIcon={<Trash2 />}
-                                                            onClick={() => handleDelete(row.id)}
-                                                        >
-                                                            Delete
-                                                        </Button>
-                                                        <Button
-                                                            className="bg-sky-500 hover:bg-sky-600 cursor-pointer text-custom-jhitam font-semibold"
-                                                            variant="outlined"
-                                                            size="small"
-                                                            startIcon={<BookUser />}
-                                                            onClick={() => handleDetail(row.id)}
-                                                        >
-                                                            Lihat Detail
-                                                        </Button>
-                                                    </div>
-                                                ) : (
-                                                    row[column.id]
-                                                )}
-                                            </TableCell>
-                                        ))}
+                                {products.map((product, index) => (
+                                    <TableRow key={product.id} hover>
+                                        <TableCell className='text-sm font-semibold text-center'>{index + 1}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{product.kode_produk}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{product.nama_produk}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{product.deskripsi}</TableCell>
+                                        <TableCell className='items-center text-center'>
+                                            <Button
+                                                className="bg-sky-500 hover:bg-sky-600 cursor-pointer text-custom-jhitam font-semibold"
+                                                variant="outlined"
+                                                size="small"
+                                                startIcon={<BookUser />}
+                                                onClick={() => handleDetail(row.id)}
+                                            >
+                                                Lihat Detail
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -136,7 +126,7 @@ export default function Produk() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={filteredRows.length}
+                        count={totalProducts}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
