@@ -51,9 +51,9 @@ export default function Pesanan() {
         fetchOrders();
     }, [searchTerm, page, rowsPerPage]);
 
-    const handleEdit = (id) => {
-        router.push(`/dashboard/Pesanan/${id}/edit`);
-    };
+    // const handleEdit = (id) => {
+    //     router.push(`/dashboard/Pesanan/${id}/edit`);
+    // };
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this order?')) {
@@ -77,8 +77,8 @@ export default function Pesanan() {
         router.push(`/dashboard/Pesanan/${id}/detail`);
     };
 
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
         setPage(0);
     };
 
@@ -148,7 +148,7 @@ export default function Pesanan() {
                                         <TableCell className='text-sm font-semibold text-center'>{formatRupiah(row.totalHarga)}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{row.status}</TableCell>
                                         <TableCell className='items-center space-x-2 text-center'>
-                                            <Button
+                                            {/* <Button
                                                 className="bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold"
                                                 variant="outlined"
                                                 size="small"
@@ -156,7 +156,7 @@ export default function Pesanan() {
                                                 onClick={() => handleEdit(row.id)}
                                             >
                                                 Edit
-                                            </Button>
+                                            </Button> */}
                                             <Button
                                                 className="bg-rose-400 hover:bg-red-600 cursor-pointer text-custom-jhitam font-semibold"
                                                 variant="outlined"

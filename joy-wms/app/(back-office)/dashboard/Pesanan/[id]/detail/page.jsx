@@ -1,65 +1,86 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Container, Grid, Paper, Typography, Box, Divider, Button, Select, MenuItem, FormControl } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import axios from 'axios';
+
+const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    const day = String(date.getDate()).padStart(2, '0');
+    const monthNames = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+};
 
 export default function LihatDetailPesanan() {
-    const [orderDetails, setOrderDetails] = useState(null);
+    const router = useRouter();
+    const { id } = useParams();
+    const [orderDetails, setOrderDetails] = useState({
+        nama_pemesan: '',
+        kode_pesanan: '',
+        estimatedTime: '',
+        totalHarga: '',
+        status: '',
+        orderProducts: [
+            {
+                product: {
+                    kode_produk: '',
+                    nama_produk: '',
+                    deskripsi: '',
+                    productMaterials: [
+                        {
+                            material: {
+                                nama_material: '',
+                                quantity: '',
+                                satuan: '',
+                            },
+                        },
+                    ],
+                },
+            },
+        ],
+    });
     const [newStatus, setNewStatus] = useState('');
 
-    const { id } = useParams();
-
     useEffect(() => {
-        const fetchOrder = async () => {
-            const order = {
-                nama_pemesan: 'John Doe',
-                kode_pesanan: 'ORD001',
-                estimatedTime: '01/12/2024',
-                status: 'PENDING',
-                products: [
-                    {
-                        kode_produk: 'PROD001',
-                        nama_produk: 'Product A',
-                        deskripsi: 'Description A',
-                        materials: [
-                            { nama_material: 'Akrilik', quantity: '10', satuan: 'Lembar' },
-                            { nama_material: 'Kabel', quantity: '20', satuan: 'Meter' },
-                            { nama_material: 'Lampu', quantity: '5', satuan: 'Pcs' },
-                            { nama_material: 'Kotak', quantity: '2', satuan: 'Pcs' },
-                            { nama_material: 'Baut', quantity: '10', satuan: 'Pcs' }
-                        ]
-                    },
-                    {
-                        kode_produk: 'PROD002',
-                        nama_produk: 'Product B',
-                        deskripsi: 'Description B',
-                        materials: [
-                            { nama_material: 'Lampu', quantity: '5', satuan: 'Pcs' }
-                        ]
-                    }
-                ]
-            };
-            setOrderDetails(order);
+        const fetchOrderDetails = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/orders/${id}`);
+                setOrderDetails(response.data);
+            } catch (error) {
+                console.error('Error fetching order details:', error);
+            }
         };
 
-        fetchOrder();
+        fetchOrderDetails();
     }, [id]);
 
-    const handleStatusChange = (event) => {
-        setNewStatus(event.target.value);
-    };
+    const handleStatusChange = (e) => {
+        setNewStatus(e.target.value);
+    }
 
-    const handleUpdateStatus = () => {
-        if (newStatus) {
-            setOrderDetails(prevDetails => ({ ...prevDetails, status: newStatus }));
-            setNewStatus('');
+    const handleUpdateStatus = async () => {
+        try {
+            await axios.patch(`http://localhost:5000/api/orders/${id}/status`, {
+                status: newStatus,
+            });
+            setOrderDetails({
+                ...orderDetails,
+                status: newStatus,
+            });
+        } catch (error) {
+            console.error('Error updating order status:', error);
         }
-    };
+    }
 
-    if (!orderDetails) {
-        return <div>Loading...</div>;
+    const handleBack = () => {
+        router.push('/dashboard/Pesanan');
     }
 
     return (
@@ -77,12 +98,16 @@ export default function LihatDetailPesanan() {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <Typography>Estimasi Penyelesaian:</Typography>
-                        <Typography>{orderDetails.estimatedTime}</Typography>
+                        <Typography>{formatDate(orderDetails.estimatedTime)}</Typography>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <div className='mb-8'>
                             <h4 className='mb-1'>Status:</h4>
-                            <span className='bg-yellow-400 rounded-md p-1 border border-neutral-800 text-sm font-semibold'>
+                            <span className={`rounded-md p-1 border border-neutral-800 text-sm font-semibold ${
+                                orderDetails.status === 'PENDING' ? 'bg-yellow-400' :
+                                orderDetails.status === 'DONE' ? 'bg-green-400' :
+                                'bg-red-400'
+                            }`}>
                                 {orderDetails.status}
                             </span>
                         </div>
@@ -96,8 +121,8 @@ export default function LihatDetailPesanan() {
                                         onChange={handleStatusChange}
                                     >
                                         <MenuItem value="PENDING">PENDING</MenuItem>
-                                        <MenuItem value="PROCESSING">PROCESSING</MenuItem>
                                         <MenuItem value="DONE">DONE</MenuItem>
+                                        <MenuItem value="CANCELLED">CANCELLED</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -114,7 +139,7 @@ export default function LihatDetailPesanan() {
                         </Grid>
                     </Grid>
                 </Grid>
-                {orderDetails.products.map((product, index) => (
+                {orderDetails.orderProducts.map((orderProduct, index) => (
                     <Box key={index} mt={3} mb={3}>
                         <Paper elevation={3} className="p-4 mb-4">
                             <Typography variant="h5" className='font-bold mb-2'>Product {index + 1}</Typography>
@@ -122,25 +147,25 @@ export default function LihatDetailPesanan() {
                             <Grid container spacing={3}>
                                 <Grid item xs={12} sm={6}>
                                     <Typography>Kode Produk:</Typography>
-                                    <Typography>{product.kode_produk}</Typography>
+                                    <Typography>{orderProduct.product.kode_produk}</Typography>
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <Typography>Nama Produk:</Typography>
-                                    <Typography>{product.nama_produk}</Typography>
+                                    <Typography>{orderProduct.product.nama_produk}</Typography>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Typography>Deskripsi Produk:</Typography>
-                                    <Typography>{product.deskripsi}</Typography>
+                                    <Typography>{orderProduct.product.deskripsi}</Typography>
                                 </Grid>
                             </Grid>
                             <Box mt={3}>
                                 <Typography className='mb-2'>Materials</Typography>
                                 <Grid container spacing={3}>
-                                    {product.materials.map((material, materialIndex) => (
+                                    {orderProduct.product.productMaterials.map((productMaterial, materialIndex) => (
                                         <Grid item xs={12} sm={4} key={materialIndex}>
                                             <Paper elevation={1} className="p-2 mb-2">
-                                                <Typography variant="body1"><strong>{material.nama_material}</strong></Typography>
-                                                <Typography variant="body2">Quantity: {material.quantity} {material.satuan}</Typography>
+                                                <Typography variant="body1"><strong>{productMaterial.material.nama_material}</strong></Typography>
+                                                <Typography variant="body2">Quantity: {productMaterial.quantity} {productMaterial.material.satuan}</Typography>
                                             </Paper>
                                         </Grid>
                                     ))}
@@ -150,7 +175,7 @@ export default function LihatDetailPesanan() {
                     </Box>
                 ))}
                 <Button
-                    href="/dashboard/Pesanan"
+                    onClick={handleBack}
                     variant="contained"
                     size="small"
                     startIcon={<ArrowBackIcon />}

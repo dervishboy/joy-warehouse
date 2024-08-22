@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Container, Grid, Paper, TextField, Button, MenuItem, Select, FormControl, IconButton, Typography, Box, InputAdornment } from "@mui/material";
+import { Container, Grid, Paper, Typography, Box, Divider, Button, TextField, Select, MenuItem, FormControl, IconButton, InputAdornment } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { CircleMinus } from 'lucide-react';
 import axios from 'axios';
@@ -35,7 +35,7 @@ export default function TambahPesanan() {
     useEffect(() => {
         const fetchMaterials = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/materials');
+                const response = await axios.get('http://localhost:5000/api/materials?rowsPerPage=-1');
                 setMaterials(response.data.materials);
             } catch (error) {
                 console.error('Error fetching materials:', error);
@@ -157,16 +157,14 @@ export default function TambahPesanan() {
     };
 
     return (
-        <Container>
-            <Typography variant="h4" gutterBottom>
-                Tambah Pesanan
-            </Typography>
-            <Paper elevation={3} style={{ padding: '20px' }}>
+        <div className='px-3 py-4'>
+            <Paper className="p-4">
+                <h2 className="text-2xl font-semibold mb-4">Tambah Pesanan</h2>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
+                            <Typography variant="body1">Nama Pemesan</Typography>
                             <TextField
-                                label="Nama Pemesan"
                                 name="nama_pemesan"
                                 value={formData.nama_pemesan}
                                 onChange={(e) => handleChange(e)}
@@ -175,8 +173,8 @@ export default function TambahPesanan() {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
+                            <Typography variant="body1">Kode Pesanan</Typography>
                             <TextField
-                                label="Kode Pesanan"
                                 name="kode_pesanan"
                                 value={formData.kode_pesanan}
                                 onChange={(e) => handleChange(e)}
@@ -185,8 +183,8 @@ export default function TambahPesanan() {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
+                            <Typography variant="body1">Estimasi Waktu</Typography>
                             <TextField
-                                label="Estimated Time"
                                 name="estimatedTime"
                                 type="datetime-local"
                                 value={formData.estimatedTime}
@@ -199,8 +197,8 @@ export default function TambahPesanan() {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
+                            <Typography variant="body1">Total Harga</Typography>
                             <TextField
-                                label="Total Harga"
                                 name="totalHarga"
                                 type="number"
                                 value={formData.totalHarga}
@@ -215,127 +213,158 @@ export default function TambahPesanan() {
                     </Grid>
 
                     {formData.products.map((product, index) => (
-                        <Box key={index} mt={3} mb={3}>
-                            <Typography variant="h6">
-                                Produk {index + 1}
-                            </Typography>
-                            <Paper elevation={2} style={{ padding: '20px' }}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            label="Kode Produk"
-                                            name="kode_produk"
-                                            value={product.kode_produk}
-                                            onChange={(e) => handleChange(e, index, 'kode_produk', true)}
-                                            fullWidth
-                                            required
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            label="Nama Produk"
-                                            name="nama_produk"
-                                            value={product.nama_produk}
-                                            onChange={(e) => handleChange(e, index, 'nama_produk', true)}
-                                            fullWidth
-                                            required
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            label="Deskripsi"
-                                            name="deskripsi"
-                                            value={product.deskripsi}
-                                            onChange={(e) => handleChange(e, index, 'deskripsi', true)}
-                                            fullWidth
-                                            multiline
-                                            rows={3}
-                                            required
-                                        />
-                                    </Grid>
-
-                                    {product.productMaterials.map((material, materialIndex) => (
-                                        <Grid container spacing={2} key={materialIndex}>
-                                            <Grid item xs={12} sm={6}>
-                                                <FormControl fullWidth required>
-                                                    <Select
-                                                        value={material.material_id}
-                                                        onChange={(e) => handleChange(e, index, 'material_id', true, materialIndex)}
-                                                        displayEmpty
-                                                    >
-                                                        <MenuItem value="">
-                                                            <em>Pilih Material</em>
-                                                        </MenuItem>
-                                                        {materials.map((mat) => (
-                                                            <MenuItem key={mat.id} value={mat.id}>
-                                                                {mat.kode_material} - {mat.nama_material}
-                                                            </MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                </FormControl>
-                                            </Grid>
-                                            <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    label="Quantity"
-                                                    name="quantity"
-                                                    type="number"
-                                                    value={material.quantity}
-                                                    onChange={(e) => handleChange(e, index, 'quantity', true, materialIndex)}
-                                                    fullWidth
-                                                    required
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} sm={6} className="flex items-center">
-                                                <IconButton onClick={() => removeMaterial(index, materialIndex)}>
-                                                    <CircleMinus />
-                                                    <Typography className='ml-2'>Hapus Material</Typography>
-                                                </IconButton>
-                                            </Grid>
+                        <Box key={index} mt={3} display="flex">
+                            <Box flex={1} mr={2}>
+                                <Typography variant="h6" className="text-md font-semibold">
+                                    PRODUK {index + 1}
+                                </Typography>
+                                <Paper elevation={3} className="p-4 mb-4">
+                                    <Grid container spacing={3}>
+                                        <Grid item xs={12} sm={6}>
+                                            <Typography variant="body1">Kode Produk</Typography>
+                                            <TextField
+                                                name="kode_produk"
+                                                value={product.kode_produk}
+                                                onChange={(e) => handleChange(e, index, 'kode_produk', true)}
+                                                fullWidth
+                                                required
+                                            />
                                         </Grid>
-                                    ))}
-                                </Grid>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<AddCircleOutlineIcon />}
-                                    onClick={() => addMaterial(index)}
-                                    style={{ marginTop: '10px' }}
-                                >
-                                    Tambah Material
-                                </Button>
-                            </Paper>
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                onClick={() => removeProduct(index)}
-                                style={{ marginTop: '10px' }}
-                            >
-                                Hapus Produk
-                            </Button>
+                                        <Grid item xs={12} sm={6}>
+                                            <Typography variant="body1">Nama Produk</Typography>
+                                            <TextField
+                                                name="nama_produk"
+                                                value={product.nama_produk}
+                                                onChange={(e) => handleChange(e, index, 'nama_produk', true)}
+                                                fullWidth
+                                                required
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Typography variant="body1">Deskripsi</Typography>
+                                            <TextField
+                                                name="deskripsi"
+                                                value={product.deskripsi}
+                                                onChange={(e) => handleChange(e, index, 'deskripsi', true)}
+                                                fullWidth
+                                                multiline
+                                                rows={3}
+                                                required
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} className='flex justify-end'>
+                                            <Button
+                                                variant="contained"
+                                                color="secondary"
+                                                startIcon={<CircleMinus />}
+                                                onClick={() => removeProduct(index)}
+                                            >
+                                                Hapus Produk
+                                            </Button>
+                                        </Grid>
+
+
+                                    </Grid>
+                                </Paper>
+                            </Box>
+                            <Box flex={1} mr={2}>
+                                <Paper elevation={3} className="p-4 mb-4">
+                                    <Grid container spacing={2}>
+                                        {product.productMaterials.map((material, materialIndex) => (
+                                            <Grid container spacing={2} key={materialIndex}>
+                                                <Grid item xs={12} sm={6}>
+                                                    <FormControl fullWidth required>
+                                                        <Typography variant="body1">Material</Typography>
+                                                        <Select
+                                                            value={material.material_id}
+                                                            onChange={(e) => handleChange(e, index, 'material_id', true, materialIndex)}
+                                                            displayEmpty
+                                                            size='small'
+                                                            MenuProps={{
+                                                                PaperProps: {
+                                                                    style: {
+                                                                        maxHeight: 48 * 4.5 + 8,
+                                                                        width: 250,
+                                                                    },
+                                                                },
+                                                            }}
+                                                        >
+                                                            <MenuItem value="">
+                                                                <em>Pilih Material</em>
+                                                            </MenuItem>
+                                                            {materials.map((mat) => (
+                                                                <MenuItem key={mat.id} value={mat.id}>
+                                                                    {mat.kode_material} - {mat.nama_material}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item xs={12} sm={6}>
+                                                    <Typography variant="body1">Quantity</Typography>
+                                                    <TextField
+                                                        name="quantity"
+                                                        type="number"
+                                                        value={material.quantity}
+                                                        onChange={(e) => handleChange(e, index, 'quantity', true, materialIndex)}
+                                                        fullWidth
+                                                        required
+                                                        InputProps={{
+                                                            endAdornment: <InputAdornment position="end">{materials.find(mat => mat.id === material.material_id)?.satuan}</InputAdornment>
+                                                        }}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12} sm={6}>
+                                                    <IconButton onClick={() => removeMaterial(index, materialIndex)}>
+                                                        <CircleMinus />
+                                                        <Typography className='ml-2'>Hapus Material</Typography>
+                                                    </IconButton>
+                                                </Grid>
+                                                <Grid item xs={12} sm={6}>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        startIcon={<AddCircleOutlineIcon />}
+                                                        onClick={() => addMaterial(index)}
+                                                    >
+                                                        Tambah Material
+                                                    </Button>
+                                                </Grid>
+                                            </Grid>
+                                        ))}
+
+                                        <Grid item xs={12}>
+
+                                        </Grid>
+                                    </Grid>
+                                </Paper>
+                            </Box>
                         </Box>
                     ))}
 
                     <Button
                         variant="contained"
                         color="primary"
+                        fullWidth
                         startIcon={<AddCircleOutlineIcon />}
                         onClick={addProduct}
-                        fullWidth
-                        style={{ marginTop: '10px' }}
                     >
                         Tambah Produk
                     </Button>
+
+                    <Divider className="my-6" />
 
                     <Button
                         variant="contained"
                         color="primary"
                         type="submit"
-                        fullWidth
-                        style={{ marginTop: '20px' }}
+                        startIcon={<AddCircleOutlineIcon />}
+                        className="bg-custom-jorange hover:bg-orange-500 text-custom-jhitam font-semibold"
                     >
-                        Simpan Pesanan
+                        Tambah Pesanan
                     </Button>
                 </form>
             </Paper>
-        </Container>
+        </div>
     );
 }

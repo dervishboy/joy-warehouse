@@ -97,8 +97,8 @@ model Invoice {
 
 enum StatusOrder {
   PENDING
-  SELESAI
-  DIKIRIM
+  CANCELLED
+  DONE
 }
 
 enum MovementType {

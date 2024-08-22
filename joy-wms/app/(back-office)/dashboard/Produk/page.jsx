@@ -113,7 +113,7 @@ export default function Produk() {
                                                 variant="outlined"
                                                 size="small"
                                                 startIcon={<BookUser />}
-                                                onClick={() => handleDetail(row.id)}
+                                                onClick={() => handleDetail(product.id)}
                                             >
                                                 Lihat Detail
                                             </Button>

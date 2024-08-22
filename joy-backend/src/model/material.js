@@ -12,22 +12,22 @@ const Material = {
                     },
                 }
                 : {};
-
+    
             const totalMaterials = await prisma.material.count({
                 where: whereClause,
             });
-
             const materials = await prisma.material.findMany({
                 where: whereClause,
-                skip: page * rowsPerPage,
-                take: rowsPerPage,
+                skip: rowsPerPage === -1 ? 0 : page * rowsPerPage,
+                take: rowsPerPage === -1 ? undefined : rowsPerPage,
             });
-
+    
             return { materials, totalMaterials };
         } catch (error) {
             throw new Error(`Failed to get materials: ${error.message}`);
         }
     },
+    
     getById: async (id) => {
         try {
             const response = await prisma.material.findUnique({

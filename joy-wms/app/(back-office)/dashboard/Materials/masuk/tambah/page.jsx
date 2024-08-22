@@ -17,7 +17,7 @@ export default function TambahMaterialMasuk() {
     const [materials, setMaterials] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/materials')
+        axios.get('http://localhost:5000/api/materials?rowsPerPage=-1')
             .then(response => {
                 console.log('Fetched materials:', response.data);
                 setMaterials(response.data.materials);
@@ -81,6 +81,14 @@ export default function TambahMaterialMasuk() {
                                     value={formValues.material_id}
                                     onChange={handleInputChange}
                                     required
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 48 * 4.5 + 8,
+                                                width: 250,
+                                            },
+                                        },
+                                    }}
                                 >
                                     {materials.map((material) => (
                                         <MenuItem key={material.id} value={material.id}>
@@ -89,19 +97,6 @@ export default function TambahMaterialMasuk() {
                                     ))}
                                 </Select>
                             </FormControl>
-                        {/* </Grid>
-                        <Grid item xs={12}>
-                            <Typography className='mb-2'>
-                                Tanggal Masuk :
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                name="date"
-                                type="date"
-                                onChange={handleInputChange}
-                                value={formValues.date}
-                                required
-                            /> */}
                         </Grid>
                         <Grid item xs={12}>
                             <Typography className='mb-2'>

@@ -6,13 +6,13 @@ const MaterialController = {
             const searchQuery = req.query.searchQuery || '';
             const page = parseInt(req.query.page, 10) || 0;
             const rowsPerPage = parseInt(req.query.rowsPerPage, 10) || 10;
-
+    
             const { materials, totalMaterials } = await Material.getAll({
                 searchQuery,
                 page,
                 rowsPerPage,
             });
-
+    
             res.json({
                 materials,
                 totalMaterials,
@@ -24,6 +24,7 @@ const MaterialController = {
             res.status(500).json({ error: error.message });
         }
     },
+    
 
     createMaterial: async (req, res) => {
         const data = req.body;

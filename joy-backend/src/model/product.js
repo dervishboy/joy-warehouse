@@ -35,7 +35,7 @@ const Product = {
     },
     getById: async (id) => {
         try {
-            return await prisma.product.findUnique({
+            const product = await prisma.product.findUnique({
                 where: { id: parseInt(id) },
                 include: {
                     productMaterials: {
@@ -45,6 +45,7 @@ const Product = {
                     }
                 }
             });
+            return product;
         } catch (error) {
             throw new Error(`Failed to get product: ${error.message}`);
         }

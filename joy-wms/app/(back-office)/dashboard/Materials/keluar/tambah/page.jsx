@@ -17,7 +17,7 @@ export default function TambahMaterialKeluar() {
     const [materials, setMaterials] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/materials')
+        axios.get('http://localhost:5000/api/materials?rowsPerPage=-1')
             .then(response => {
                 console.log('Fetched materials:', response.data);
                 setMaterials(response.data.materials);
@@ -81,6 +81,14 @@ export default function TambahMaterialKeluar() {
                                     value={formValues.material_id}
                                     onChange={handleInputChange}
                                     required
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 48 * 4.5 + 8,
+                                                width: 250,
+                                            },
+                                        },
+                                    }}
                                 >
                                     {materials.map((material) => (
                                         <MenuItem key={material.id} value={material.id}>

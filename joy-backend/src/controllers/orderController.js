@@ -59,6 +59,14 @@ const OrderController = {
             res.status(500).json({ error: error.message });
         }
     },
+    updateStatus: async (req, res) => {
+        try {
+            const order = await Order.updateStatus(req.params.id, req.body.status);
+            res.json(order);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
 };
 
 export default OrderController;

@@ -185,6 +185,17 @@ const Order = {
         }
     },
 
+    updateStatus: async (id, status) => {
+        try {
+            return await prisma.order.update({
+                where: { id: parseInt(id) },
+                data: { status },
+            });
+        } catch (error) {
+            throw new Error(`Failed to update order status: ${error.message}`);
+        }
+    },
+    
     delete: async (id) => {
         try {
             const order = await prisma.order.findUnique({
@@ -209,15 +220,21 @@ const Order = {
             return await prisma.$transaction(async (prisma) => {
                 for (const orderProduct of order.orderProducts) {
                     for (const productMaterial of orderProduct.product.productMaterials) {
-                        const materialMovement = await prisma.materialMovement.findMany({
+                        const materialMovements = await prisma.materialMovement.findMany({
                             where: {
                                 material_id: productMaterial.material_id,
                                 type: 'KELUAR',
-                                date: {
-                                    gte: order.createdAt,
-                                },
+                                quantity: productMaterial.quantity,
+                                material: {
+                                    productMaterials: {
+                                        some: {
+                                            product_id: orderProduct.product_id,
+                                        }
+                                    }
+                                }
                             }
                         });
+    
                         await prisma.material.update({
                             where: { id: productMaterial.material_id },
                             data: {
@@ -226,28 +243,41 @@ const Order = {
                                 }
                             }
                         });
+    
                         await prisma.materialMovement.deleteMany({
                             where: {
                                 id: {
-                                    in: materialMovement.map((movement) => movement.id),
+                                    in: materialMovements.map(movement => movement.id),
                                 }
                             }
                         });
                     }
                 }
+
+                const productIds = order.orderProducts.map(op => op.product.id);
                 await prisma.orderProduct.deleteMany({
                     where: { order_id: parseInt(id) },
                 });
+                for (const productId of productIds) {
+                    const isSharedProduct = await prisma.orderProduct.count({
+                        where: {
+                            product_id: productId,
+                            NOT: {
+                                order_id: parseInt(id)
+                            }
+                        }
+                    });
     
-                const productIds = order.orderProducts.map(op => op.product.id);
+                    if (isSharedProduct === 0) {
+                        await prisma.productMaterial.deleteMany({
+                            where: { product_id: productId }
+                        });
     
-                await prisma.productMaterial.deleteMany({
-                    where: { product_id: { in: productIds } }
-                });
-    
-                await prisma.product.deleteMany({
-                    where: { id: { in: productIds } }
-                });
+                        await prisma.product.deleteMany({
+                            where: { id: productId }
+                        });
+                    }
+                }
     
                 return await prisma.order.delete({
                     where: { id: parseInt(id) },
@@ -258,8 +288,6 @@ const Order = {
             throw new Error(`Failed to delete order: ${error.message}`);
         }
     },
-    
-
     
 };
 
