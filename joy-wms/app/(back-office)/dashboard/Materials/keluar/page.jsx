@@ -126,7 +126,7 @@ export default function MaterialsKeluar() {
                             <TableBody>
                                 {materialsKeluar.map((materialKeluar, index) => (
                                     <TableRow key={materialKeluar.id}>
-                                        <TableCell className='text-sm font-semibold text-center'>{index + 1}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{page * rowsPerPage + index + 1}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{materialKeluar.material.kode_material}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{materialKeluar.material.nama_material}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{formatDate(materialKeluar.date)}</TableCell>

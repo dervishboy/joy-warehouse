@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Container, Grid, Paper, Typography, Box, Divider, Button, TextField, Select, MenuItem, FormControl, IconButton, InputAdornment } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { CircleMinus } from 'lucide-react';
+import { CircleMinus, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 export default function TambahPesanan() {
@@ -156,6 +156,10 @@ export default function TambahPesanan() {
         }
     };
 
+    const handleBack = () => {
+        router.push('/dashboard/Pesanan');
+    };
+
     return (
         <div className='px-3 py-4'>
             <Paper className="p-4">
@@ -163,7 +167,7 @@ export default function TambahPesanan() {
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
-                            <Typography variant="body1">Nama Pemesan</Typography>
+                            <Typography variant="body1">Nama Pemesan :</Typography>
                             <TextField
                                 name="nama_pemesan"
                                 value={formData.nama_pemesan}
@@ -173,7 +177,7 @@ export default function TambahPesanan() {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <Typography variant="body1">Kode Pesanan</Typography>
+                            <Typography variant="body1">Kode Pesanan :</Typography>
                             <TextField
                                 name="kode_pesanan"
                                 value={formData.kode_pesanan}
@@ -183,7 +187,7 @@ export default function TambahPesanan() {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <Typography variant="body1">Estimasi Waktu</Typography>
+                            <Typography variant="body1">Estimasi Waktu :</Typography>
                             <TextField
                                 name="estimatedTime"
                                 type="datetime-local"
@@ -197,7 +201,7 @@ export default function TambahPesanan() {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <Typography variant="body1">Total Harga</Typography>
+                            <Typography variant="body1">Total Harga :</Typography>
                             <TextField
                                 name="totalHarga"
                                 type="number"
@@ -221,7 +225,7 @@ export default function TambahPesanan() {
                                 <Paper elevation={3} className="p-4 mb-4">
                                     <Grid container spacing={3}>
                                         <Grid item xs={12} sm={6}>
-                                            <Typography variant="body1">Kode Produk</Typography>
+                                            <Typography variant="body1">Kode Produk :</Typography>
                                             <TextField
                                                 name="kode_produk"
                                                 value={product.kode_produk}
@@ -231,7 +235,7 @@ export default function TambahPesanan() {
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
-                                            <Typography variant="body1">Nama Produk</Typography>
+                                            <Typography variant="body1">Nama Produk :</Typography>
                                             <TextField
                                                 name="nama_produk"
                                                 value={product.nama_produk}
@@ -241,29 +245,23 @@ export default function TambahPesanan() {
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Typography variant="body1">Deskripsi</Typography>
+                                            <Typography variant="body1">Deskripsi / Catatan :</Typography>
                                             <TextField
                                                 name="deskripsi"
                                                 value={product.deskripsi}
                                                 onChange={(e) => handleChange(e, index, 'deskripsi', true)}
                                                 fullWidth
                                                 multiline
-                                                rows={3}
+                                                rows={6}
                                                 required
                                             />
                                         </Grid>
                                         <Grid item xs={12} className='flex justify-end'>
-                                            <Button
-                                                variant="contained"
-                                                color="secondary"
-                                                startIcon={<CircleMinus />}
-                                                onClick={() => removeProduct(index)}
-                                            >
-                                                Hapus Produk
-                                            </Button>
+                                            <IconButton onClick={() => removeProduct(index)}>
+                                                <CircleMinus />
+                                                <Typography className='ml-2'>Hapus Produk</Typography>
+                                            </IconButton>
                                         </Grid>
-
-
                                     </Grid>
                                 </Paper>
                             </Box>
@@ -274,7 +272,7 @@ export default function TambahPesanan() {
                                             <Grid container spacing={2} key={materialIndex}>
                                                 <Grid item xs={12} sm={6}>
                                                     <FormControl fullWidth required>
-                                                        <Typography variant="body1">Material</Typography>
+                                                        <Typography variant="body1">Material :</Typography>
                                                         <Select
                                                             value={material.material_id}
                                                             onChange={(e) => handleChange(e, index, 'material_id', true, materialIndex)}
@@ -301,7 +299,7 @@ export default function TambahPesanan() {
                                                     </FormControl>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Typography variant="body1">Quantity</Typography>
+                                                    <Typography variant="body1">Quantity :</Typography>
                                                     <TextField
                                                         name="quantity"
                                                         type="number"
@@ -320,12 +318,12 @@ export default function TambahPesanan() {
                                                         <Typography className='ml-2'>Hapus Material</Typography>
                                                     </IconButton>
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
+                                                <Grid item xs={12} sm={6} className='flex justify-end'>
                                                     <Button
                                                         variant="contained"
-                                                        color="secondary"
                                                         startIcon={<AddCircleOutlineIcon />}
                                                         onClick={() => addMaterial(index)}
+                                                        className='bg-custom-jorange hover:bg-orange-500 text-custom-jhitam font-semibold'
                                                     >
                                                         Tambah Material
                                                     </Button>
@@ -344,25 +342,36 @@ export default function TambahPesanan() {
 
                     <Button
                         variant="contained"
-                        color="primary"
                         fullWidth
                         startIcon={<AddCircleOutlineIcon />}
                         onClick={addProduct}
+                        className='bg-custom-jorange hover:bg-orange-500 text-custom-jhitam font-semibold'
                     >
                         Tambah Produk
                     </Button>
 
                     <Divider className="my-6" />
 
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        startIcon={<AddCircleOutlineIcon />}
-                        className="bg-custom-jorange hover:bg-orange-500 text-custom-jhitam font-semibold"
-                    >
-                        Tambah Pesanan
-                    </Button>
+                    <Grid item xs={12} className='flex justify-between'>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={handleBack}
+                            startIcon={<ArrowLeft />}
+                            className="mr-2 bg-custom-jorange hover:bg-orange-500 text-custom-jhitam font-semibold"
+                        >
+                            Kembali
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<AddCircleOutlineIcon />}
+                            className="bg-custom-jorange hover:bg-orange-500 text-custom-jhitam font-semibold"
+                        >
+                            Tambah Pesanan
+                        </Button>
+                    </Grid>
                 </form>
             </Paper>
         </div>

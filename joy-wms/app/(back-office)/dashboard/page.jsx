@@ -7,7 +7,6 @@ export default function Dashboard() {
     return (
         <div className="px-4 py-4">
             <Paper className="p-4 space-y-2">
-                <h2 className="text-2xl font-semibold mb-4">Selamat Datang !!!</h2>
                 <Box sx={{ border: '2px solid gray' }}>
                     <ActivityCard />
                 </Box>

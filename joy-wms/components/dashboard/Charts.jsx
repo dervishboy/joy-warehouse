@@ -42,7 +42,7 @@ export default function Charts() {
 
                 const labels = sortedData.map(key => {
                     const [year, month] = key.split('-').map(Number);
-                    return new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+                    return new Date(year, month).toLocaleString('id-ID', { month: 'long', year: 'numeric' });
                 });
 
                 const data = sortedData.map(key => monthlyData[key]);
@@ -51,7 +51,7 @@ export default function Charts() {
                     labels,
                     datasets: [
                         {
-                            label: "Total Harga per Bulan",
+                            label: "Pendapatan per Bulan",
                             backgroundColor: "rgba(0, 123, 255, 0.5)",
                             borderColor: "rgba(0, 123, 255, 1)",
                             data,
@@ -131,7 +131,7 @@ export default function Charts() {
                 <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
                     <div className="flex flex-wrap items-center">
                         <div className="relative w-full max-w-full flex-grow flex-1">
-                            <h2 className="text-black text-md font-semibold">Total Harga per Bulan</h2>
+                            <h2 className="text-black text-md font-semibold">Pendapatan per Bulan</h2>
                         </div>
                     </div>
                 </div>

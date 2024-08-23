@@ -125,7 +125,9 @@ export default function MaterialMasuk() {
                             <TableBody>
                                 {materialsMasuk.map((material, index) => (
                                     <TableRow key={material._id}>
-                                        <TableCell className='text-sm font-semibold text-center'>{index + 1}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>
+                                            {page * rowsPerPage + index + 1}
+                                        </TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{material.material.kode_material}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{material.material.nama_material}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{formatDate(material.date)}</TableCell>

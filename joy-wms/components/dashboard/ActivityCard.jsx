@@ -1,58 +1,54 @@
 import React from "react";
-import { IndentDecrease } from "lucide-react";
+import { Clock, CheckCircle, XCircle, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 
 export default function ActivityCard() {
     return (
-        <div className="p-4">
-            <div className="col-span-8">
-                <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-3">
-                    <div className="flex items-center p-4 border-2 border-custom-jhitam bg-yellow-500 hover:bg-yellow-600 rounded-lg shadow-xs mt-4 cursor-pointer">
-                        <div className="p-3 mr-4 text-custom-jhitam bg-custom-jhitam rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z" /><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8" /></svg>
-                        </div>
-                        <div>
-                            <p className="text-md font-medium text-custom-jhitam">PENDING</p>
-                            <p className="text-lg font-semibold text-custom-jhitam"> 24 Order </p>
-                        </div>
-                    </div>
-                    <div className="flex items-center p-4 border-2 border-custom-jhitam bg-green-600 hover:bg-green-700 rounded-lg shadow-xs mt-4 cursor-pointer">
-                        <div className="p-3 mr-4 text-white bg-custom-jhitam rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2V22M5 9h14M19 13H5M7 17h10M7 5h10" /></svg>
-                        </div>
-                        <div>
-                            <p className="text-md font-medium text-custom-jhitam">DONE</p>
-                            <p className="text-lg font-semibold text-custom-jhitam">24 Order</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center p-4 border-2 border-custom-jhitam bg-red-600 hover:bg-red-700 rounded-lg shadow-xs mt-4 cursor-pointer">
-                        <div className="p-3 mr-4 text-white bg-custom-jhitam rounded-full">
-                            <IndentDecrease />
-                        </div>
-                        <div>
-                            <p className="text-md font-medium text-custom-jhitam">CANCELLED</p>
-                            <p className="text-lg font-semibold text-custom-jhitam"> 24 Order </p>
-                        </div>
-                    </div>
-                    <div className="flex items-center p-4 border-2 border-custom-jhitam bg-cyan-600 hover:bg-cyan-700 rounded-lg shadow-xs mt-4 cursor-pointer">
-                        <div className="p-3 mr-4 text-white bg-custom-jhitam rounded-full">
-                            <IndentDecrease />
-                        </div>
-                        <div>
-                            <p className="text-md font-medium text-custom-jhitam">TOTAL STOK MASUK</p>
-                            <p className="text-lg font-semibold text-custom-jhitam"> 24 Order </p>
-                        </div>
-                    </div>
-                    <div className="flex items-center p-4 border-2 border-custom-jhitam bg-custom-jorange hover:bg-c-700 rounded-lg shadow-xs mt-4 cursor-pointer">
-                        <div className="p-3 mr-4 text-white bg-custom-jhitam rounded-full">
-                            <IndentDecrease />
-                        </div>
-                        <div>
-                            <p className="text-md font-medium text-custom-jhitam">TOTAL STOK KELUAR</p>
-                            <p className="text-lg font-semibold text-custom-jhitam"> 24 Order </p>
-                        </div>
-                    </div>
+        <div className="p-4 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="flex items-center p-4  border-2 border-gray-500 bg-yellow-100 hover:bg-yellow-200 rounded-lg shadow-xs cursor-pointer">
+                <div className="p-3 mr-4 bg-yellow-500 text-white rounded-full">
+                    <Clock size={24} />
+                </div>
+                <div>
+                    <p className="text-md font-medium text-gray-800">PENDING</p>
+                    <p className="text-lg font-semibold text-gray-900">3 Order</p>
                 </div>
             </div>
+            <div className="flex items-center p-4 border-2 border-gray-500 bg-green-200 hover:bg-green-300 rounded-lg shadow-xs cursor-pointer">
+                <div className="p-3 mr-4 bg-green-500 text-white rounded-full">
+                    <CheckCircle size={24} />
+                </div>
+                <div>
+                    <p className="text-md font-medium text-gray-800">DONE</p>
+                    <p className="text-lg font-semibold text-gray-900">0 Order</p>
+                </div>
+            </div>
+            <div className="flex items-center p-4 border-2 border-gray-500 bg-red-200 hover:bg-red-300 rounded-lg shadow-xs cursor-pointer">
+                <div className="p-3 mr-4 bg-red-500 text-white rounded-full">
+                    <XCircle size={24} />
+                </div>
+                <div>
+                    <p className="text-md font-medium text-gray-800">CANCELLED</p>
+                    <p className="text-lg font-semibold text-gray-900">0 Order</p>
+                </div>
+            </div>
+            {/* <div className="flex items-center p-4 border-2 border-gray-500 bg-blue-200 hover:bg-blue-300 rounded-lg shadow-xs cursor-pointer">
+                <div className="p-3 mr-4 bg-blue-500 text-white rounded-full">
+                    <ArrowDownCircle size={24} />
+                </div>
+                <div>
+                    <p className="text-md font-medium text-gray-800">TOTAL STOK MASUK</p>
+                    <p className="text-lg font-semibold text-gray-900">24 </p>
+                </div>
+            </div>
+            <div className="flex items-center p-4 border-2 border-gray-500 bg-orange-200 hover:bg-orange-300 rounded-lg shadow-xs cursor-pointer">
+                <div className="p-3 mr-4 bg-orange-500 text-white rounded-full">
+                    <ArrowUpCircle size={24} />
+                </div>
+                <div>
+                    <p className="text-md font-medium text-gray-800">TOTAL STOK KELUAR</p>
+                    <p className="text-lg font-semibold text-gray-900">24 Order</p>
+                </div>
+            </div> */}
         </div>
     );
 }
