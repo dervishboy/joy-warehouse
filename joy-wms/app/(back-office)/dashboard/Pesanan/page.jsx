@@ -23,7 +23,7 @@ export default function Pesanan() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const columns = [
-        { id: 'index', name: '#' },
+        { id: 'index', name: 'No' },
         { id: 'nama_pemesan', name: 'Nama Pemesan' },
         { id: 'kode_pesanan', name: 'Kode Pesanan' },
         { id: 'totalHarga', name: 'Total Harga' },

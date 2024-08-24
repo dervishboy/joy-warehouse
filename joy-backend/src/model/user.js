@@ -1,15 +1,18 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from 'bcryptjs';
+
 const prisma = new PrismaClient();
 
 const User = {
-    getAll : async ({searchQuery, page, rowsPerPage}) => {
+    getAll: async ({ searchQuery, page, rowsPerPage }) => {
         try {
-            const whereClause = searchQuery 
-            ? {
-                name: {
-                    contains: searchQuery,
-                },
-            } : {};
+            const whereClause = searchQuery
+                ? {
+                    name: {
+                        contains: searchQuery,
+                    },
+                }
+                : {};
 
             const totalUsers = await prisma.user.count({
                 where: whereClause,
@@ -22,7 +25,7 @@ const User = {
             });
 
             return { users, totalUsers };
-        } catch (error) {   
+        } catch (error) {
             throw new Error(`Failed to get users: ${error.message}`);
         }
     },
@@ -33,7 +36,7 @@ const User = {
             });
             return response;
         } catch (error) {
-            return error;
+            throw new Error(`Failed to get user by ID: ${error.message}`);
         }
     },
     create: async (data) => {
@@ -43,20 +46,33 @@ const User = {
             });
             return response;
         } catch (error) {
-            return error;
+            throw new Error(`Failed to create user: ${error.message}`);
         }
     },
     update: async (id, data) => {
         try {
+            if (data.newPassword && data.oldPassword) {
+                const user = await prisma.user.findUnique({
+                    where: { id: parseInt(id) },
+                });
+
+                if (!user) throw new Error('User not found');
+
+                const isMatch = await bcrypt.compare(data.oldPassword, user.password);
+                if (!isMatch) throw new Error('Old password is incorrect');
+
+                data.password = await bcrypt.hash(data.newPassword, 10);
+                delete data.oldPassword;
+                delete data.newPassword;
+            }
+
             const response = await prisma.user.update({
                 where: { id: parseInt(id) },
-                data: {
-                    ...data,
-                },
+                data,
             });
             return response;
         } catch (error) {
-            return error;
+            throw new Error(`Failed to update user: ${error.message}`);
         }
     },
     delete: async (id) => {
@@ -66,7 +82,7 @@ const User = {
             });
             return response;
         } catch (error) {
-            return error;
+            throw new Error(`Failed to delete user: ${error.message}`);
         }
     },
     getByEmail: async (email) => {
@@ -76,7 +92,7 @@ const User = {
             });
             return response;
         } catch (error) {
-            return error;
+            throw new Error(`Failed to get user by email: ${error.message}`);
         }
     },
 };

@@ -55,7 +55,7 @@ export default function Charts() {
                             backgroundColor: "rgba(0, 123, 255, 0.5)",
                             borderColor: "rgba(0, 123, 255, 1)",
                             data,
-                            fill: false, 
+                            fill: false,
                         },
                     ],
                 });
@@ -94,12 +94,18 @@ export default function Charts() {
                             {
                                 ticks: {
                                     fontColor: "black",
+                                    padding: 5,
                                 },
                                 display: true,
                                 gridLines: {
                                     display: false,
                                     color: "rgba(33, 37, 41, 0.3)",
                                     zeroLineColor: "rgba(0, 0, 0, 0)",
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Bulan',
+                                    fontColor: 'black',
                                 },
                             },
                         ],
@@ -108,12 +114,22 @@ export default function Charts() {
                                 ticks: {
                                     fontColor: "black",
                                     beginAtZero: true,
+                                    maxTicksLimit: 10,
+                                    stepSize: 100000,
+                                    callback: function (value) {
+                                        return value.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+                                    },
                                 },
                                 display: true,
                                 gridLines: {
                                     borderDash: [3],
                                     color: "rgba(33, 37, 41, 0.15)",
                                     zeroLineColor: "rgba(33, 37, 41, 0)",
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Total Harga (Rp)',
+                                    fontColor: 'black',
                                 },
                             },
                         ],
@@ -131,12 +147,12 @@ export default function Charts() {
                 <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
                     <div className="flex flex-wrap items-center">
                         <div className="relative w-full max-w-full flex-grow flex-1">
-                            <h2 className="text-black text-md font-semibold">Pendapatan per Bulan</h2>
+                            <h2 className="text-black text-md font-semibold mb-4">Estimasi Pendapatan per Bulan (Berdasarkan Total Harga Pesanan)</h2>
                         </div>
                     </div>
                 </div>
-                <div className="p-4 flex-auto">
-                    <div className="relative h-200-px">
+                <div className="block w-full overflow-x-auto">
+                    <div className="relative h-96">
                         <canvas id="line-chart"></canvas>
                     </div>
                 </div>

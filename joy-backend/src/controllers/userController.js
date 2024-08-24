@@ -29,7 +29,7 @@ const UserController = {
         const data = req.body;
         try {
             const hashedPassword = await bcrypt.hash(data.password, 10);
-            const response = await User.create({...data, password: hashedPassword});
+            const response = await User.create({ ...data, password: hashedPassword });
             res.status(201).json(response);
         } catch (error) {
             console.error('Error in createUser:', error);
@@ -63,7 +63,7 @@ const UserController = {
     deleteUser: async (req, res) => {
         const { id } = req.params;
         try {
-            const response = await User.delete(id);
+            await User.delete(id);
             res.send('User deleted');
         } catch (error) {
             console.error('Error in deleteUser:', error);

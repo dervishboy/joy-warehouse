@@ -132,7 +132,28 @@ export default function TambahPesanan() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+    
         try {
+            const checkOrderResponse = await axios.get(`http://localhost:5000/api/orders?kode_pesanan=${formData.kode_pesanan}`);
+            if (checkOrderResponse.data.exists) {
+                alert('Kode pesanan sudah ada. Silakan gunakan kode yang berbeda.');
+                return;
+            }
+    
+            // Check if material quantity is sufficient
+            for (let i = 0; i < formData.products.length; i++) {
+                const product = formData.products[i];
+                for (let j = 0; j < product.productMaterials.length; j++) {
+                    const material = product.productMaterials[j];
+                    const materialResponse = await axios.get(`http://localhost:5000/api/materials/${material.material_id}`);
+                    if (material.quantity > materialResponse.data.quantity) {
+                        alert(`Jumlah material ${materialResponse.data.kode_material} tidak mencukupi. Stok tersedia: ${materialResponse.data.quantity}.`);
+                        return;
+                    }
+                }
+            }
+    
+            // If all checks pass, submit the form
             const response = await axios.post('http://localhost:5000/api/orders', {
                 nama_pemesan: formData.nama_pemesan,
                 kode_pesanan: formData.kode_pesanan,
@@ -148,6 +169,7 @@ export default function TambahPesanan() {
                     }))
                 }))
             });
+    
             if (response.status === 201) {
                 router.push('/dashboard/Pesanan');
             }
@@ -155,6 +177,7 @@ export default function TambahPesanan() {
             console.error('Error in handleSubmit:', error);
         }
     };
+    
 
     const handleBack = () => {
         router.push('/dashboard/Pesanan');

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Paper, TextField, Button, Typography, FormControl, Select, MenuItem } from "@mui/material";
+import { Container, Grid, Paper, TextField, Button, Typography, FormControl, Select, MenuItem, IconButton, InputAdornment } from "@mui/material";
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
 
@@ -22,8 +23,15 @@ export default function EditUser() {
         name: '',
         email: '',
         role: '',
-        password: '',
+        oldPassword: '',
+        newPassword: '',
         confirmPassword: '',
+    });
+
+    const [showPassword, setShowPassword] = useState({
+        oldPassword: false,
+        newPassword: false,
+        confirmPassword: false,
     });
 
     const fetchUser = async (id) => {
@@ -43,21 +51,30 @@ export default function EditUser() {
         fetchUser(id);
     }, [id]);
 
-
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormValues({ ...formValues, [name]: value });
     };
 
+    const handleTogglePasswordVisibility = (field) => {
+        setShowPassword({ ...showPassword, [field]: !showPassword[field] });
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.put(`http://localhost:5000/api/users/${id}`, {
+            const updateData = {
                 name: formValues.name,
                 email: formValues.email,
                 role: formValues.role,
-                password: formValues.password
-            });
+            };
+
+            if (formValues.oldPassword && formValues.newPassword === formValues.confirmPassword) {
+                updateData.oldPassword = formValues.oldPassword;
+                updateData.newPassword = formValues.newPassword;
+            }
+
+            const response = await axios.put(`http://localhost:5000/api/users/${id}`, updateData);
             if (response.status === 200) {
                 router.push('/dashboard/Users');
             }
@@ -79,7 +96,7 @@ export default function EditUser() {
                     </Typography>
                 </div>
                 <form onSubmit={handleSubmit}>
-                    <Grid container spacing={2}>
+                    <Grid container spacing={3}>
                         <Grid item xs={12}>
                             <Typography>Nama :</Typography>
                             <TextField
@@ -88,6 +105,7 @@ export default function EditUser() {
                                 value={formValues.name}
                                 onChange={handleInputChange}
                                 required
+                                placeholder="Masukkan nama"
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -98,6 +116,7 @@ export default function EditUser() {
                                 value={formValues.email}
                                 onChange={handleInputChange}
                                 required
+                                placeholder="Masukkan email"
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -120,23 +139,75 @@ export default function EditUser() {
                             </FormControl>
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography>Password :</Typography>
+                            <Typography>Password Lama :</Typography>
                             <TextField
                                 fullWidth
-                                name="password"
-                                type="password"
-                                value={formValues.password}
+                                name="oldPassword"
+                                type={showPassword.oldPassword ? 'text' : 'password'}
+                                value={formValues.oldPassword}
                                 onChange={handleInputChange}
+                                placeholder="Masukkan password lama"
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => handleTogglePasswordVisibility('oldPassword')}
+                                                edge="end"
+                                            >
+                                                {showPassword.oldPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography>Confirm Password :</Typography>
+                            <Typography>Password Baru :</Typography>
+                            <TextField
+                                fullWidth
+                                name="newPassword"
+                                type={showPassword.newPassword ? 'text' : 'password'}
+                                value={formValues.newPassword}
+                                onChange={handleInputChange}
+                                placeholder="Masukkan password baru (opsional)"
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => handleTogglePasswordVisibility('newPassword')}
+                                                edge="end"
+                                            >
+                                                {showPassword.newPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography>Konfirmasi Password Baru :</Typography>
                             <TextField
                                 fullWidth
                                 name="confirmPassword"
-                                type="password"
+                                type={showPassword.confirmPassword ? 'text' : 'password'}
                                 value={formValues.confirmPassword}
                                 onChange={handleInputChange}
+                                placeholder="Konfirmasi password baru"
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => handleTogglePasswordVisibility('confirmPassword')}
+                                                edge="end"
+                                            >
+                                                {showPassword.confirmPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12} className="flex justify-end space-x-2">
