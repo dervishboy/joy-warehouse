@@ -12,7 +12,7 @@ const Material = {
                     },
                 }
                 : {};
-    
+
             const totalMaterials = await prisma.material.count({
                 where: whereClause,
             });
@@ -21,13 +21,13 @@ const Material = {
                 skip: rowsPerPage === -1 ? 0 : page * rowsPerPage,
                 take: rowsPerPage === -1 ? undefined : rowsPerPage,
             });
-    
+
             return { materials, totalMaterials };
         } catch (error) {
             throw new Error(`Failed to get materials: ${error.message}`);
         }
     },
-    
+
     getById: async (id) => {
         try {
             const response = await prisma.material.findUnique({
@@ -63,12 +63,30 @@ const Material = {
     },
     delete: async (id) => {
         try {
-            const response = await prisma.material.delete({
+            const MaterialWithMovements = await prisma.material.findUnique({
                 where: { id: parseInt(id) },
+                include: {
+                    movements: true,
+                },
             });
-            return response;
+
+            if (!MaterialWithMovements) {
+                throw new Error('Material not found');
+            }
+
+            await prisma.$transaction(async (prisma) => {
+                await prisma.materialMovement.deleteMany({
+                    where: {
+                        material_id: parseInt(id),
+                    },
+                });
+                await prisma.material.delete({
+                    where: { id: parseInt(id) },
+                });
+            });
+            console.log('Material deleted successfully');
         } catch (error) {
-            return error;
+            throw new Error(`Failed to delete material: ${error.message}`);
         }
     },
 };

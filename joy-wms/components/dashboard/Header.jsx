@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { UserRound } from "lucide-react";
-import axios from "axios";
+// import axios from "axios";
 
 export default function Header({ title }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -13,9 +13,6 @@ export default function Header({ title }) {
     };
 
     const handleLogout = () => {
-        axios.post("http://localhost:5000/api/auth/logout", {
-            token: localStorage.getItem("token"),
-        });
         localStorage.removeItem("token");
         window.location.href = "/";
     };

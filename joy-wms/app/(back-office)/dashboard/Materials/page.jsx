@@ -12,7 +12,9 @@ import {
     Button,
     TextField,
     TablePagination,
-    InputAdornment
+    InputAdornment,
+    Snackbar,
+    SnackbarContent
 } from "@mui/material";
 import { CirclePlus, Pencil, Trash2, Search, FolderCog } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -26,6 +28,9 @@ export default function Materials() {
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const columns = [
         { id: 'index', name: '#' },
@@ -61,12 +66,23 @@ export default function Materials() {
     };
 
     const handleDelete = async (id) => {
-        try {
-            await axios.delete(`http://localhost:5000/api/materials/${id}`);
-            setMaterials((prevMaterials) => prevMaterials.filter((material) => material.id !== id));
-            setTotalMaterials((prevTotal) => prevTotal - 1);
-        } catch (error) {
-            console.error('Error deleting material:', error);
+        const shouldDelete = confirm('Apakah anda yakin ingin menghapus material ini? Stock material juga akan terhapus.');
+        if (shouldDelete) {
+            axios.delete(`http://localhost:5000/api/materials/${id}`)
+                .then(() => {
+                    const updatedMaterials = materials.filter(material => material.id !== id);
+                    setMaterials(updatedMaterials);
+                    setTotalMaterials(totalMaterials - 1);
+                    setSnackbarMessage('Material berhasil dihapus.');
+                    setSnackbarSeverity('success');
+                    setSnackbarOpen(true);
+                })
+                .catch((error) => {
+                    console.error('Error deleting material:', error);
+                    setSnackbarMessage('Gagal menghapus material.');
+                    setSnackbarSeverity('error');
+                    setSnackbarOpen(true);
+                });
         }
     };
 
@@ -86,6 +102,10 @@ export default function Materials() {
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -183,6 +203,19 @@ export default function Materials() {
                     />
                 </Paper>
             </div>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <SnackbarContent
+                    style={{
+                        backgroundColor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+                    }}
+                    message={snackbarMessage}
+                />
+            </Snackbar>
         </div>
     );
 }
