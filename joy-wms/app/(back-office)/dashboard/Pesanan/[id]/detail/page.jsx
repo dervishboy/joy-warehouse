@@ -74,8 +74,12 @@ export default function LihatDetailPesanan() {
                 ...orderDetails,
                 status: newStatus,
             });
+
+            window.alert('Status pesanan berhasil diupdate!');
+            router.push('/dashboard/Pesanan');
         } catch (error) {
             console.error('Error updating order status:', error);
+            window.alert('Gagal mengupdate status pesanan!');
         }
     }
 

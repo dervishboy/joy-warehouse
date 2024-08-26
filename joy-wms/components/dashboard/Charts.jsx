@@ -152,7 +152,7 @@ export default function Charts() {
                     </div>
                 </div>
                 <div className="block w-full overflow-x-auto">
-                    <div className="relative h-96">
+                    <div className="relative h-80">
                         <canvas id="line-chart"></canvas>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TablePagination, InputAdornment, TextField } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TablePagination, InputAdornment, TextField, Snackbar, SnackbarContent } from "@mui/material";
 import { CirclePlus, Pencil, Trash2, Search, ShoppingBasket, BookUser } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
@@ -21,6 +21,9 @@ export default function Pesanan() {
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const columns = [
         { id: 'index', name: 'No' },
@@ -51,20 +54,22 @@ export default function Pesanan() {
         fetchOrders();
     }, [searchTerm, page, rowsPerPage]);
 
-    // const handleEdit = (id) => {
-    //     router.push(`/dashboard/Pesanan/${id}/edit`);
-    // };
-
     const handleDelete = (id) => {
-        if (window.confirm('Are you sure you want to delete this order?')) {
+        const shouldDelete = window.confirm('Apakah anda yakin ingin menghapus pesanan ini?');
+        if (shouldDelete) {
             axios.delete(`http://localhost:5000/api/orders/${id}`)
-                .then(response => {
-                    console.log('Deleted order:', response);
-                    const updatedOrders = orders.filter(order => order.id !== id);
+                .then(() => {
+                    const updatedOrders = orders.filter((order) => order.id !== id);
                     setOrders(updatedOrders);
+                    setSnackbarSeverity('success');
+                    setSnackbarMessage('Pesanan berhasil dihapus');
+                    setSnackbarOpen(true);
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error('Error deleting order:', error);
+                    setSnackbarSeverity('error');
+                    setSnackbarMessage(`Gagal menghapus pesanan: ${error.message}`);
+                    setSnackbarOpen(true);
                 });
         }
     };
@@ -73,8 +78,17 @@ export default function Pesanan() {
         router.push(`/dashboard/Pesanan/tambah`);
     };
 
-    const handleDetail = (id) => {
-        router.push(`/dashboard/Pesanan/${id}/detail`);
+    const handleDetail = async (id) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/orders/${id}`);
+            if (response.data.status === 'CANCELLED') {
+                alert('Pesanan telah dibatalkan');
+            } else {
+                router.push(`/dashboard/Pesanan/${id}/detail`);
+            }
+        } catch (error) {
+            console.error('Error fetching order details:', error);
+        }
     };
 
     const handleSearchChange = (e) => {
@@ -89,6 +103,10 @@ export default function Pesanan() {
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -146,7 +164,14 @@ export default function Pesanan() {
                                         <TableCell className='text-sm font-semibold text-center'>{row.nama_pemesan}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{row.kode_pesanan}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{formatRupiah(row.totalHarga)}</TableCell>
-                                        <TableCell className='text-sm font-semibold text-center'>{row.status}</TableCell>
+                                        <TableCell className="text-sm font-semibold text-center">
+                                            <span className={`rounded-md p-1 border border-neutral-800 text-sm font-semibold ${row.status === 'PENDING' ? 'bg-yellow-400' :
+                                                    row.status === 'DONE' ? 'bg-green-400' :
+                                                        'bg-red-400'
+                                                }`}>
+                                                {row.status}
+                                            </span>
+                                        </TableCell>
                                         <TableCell className='items-center space-x-2 text-center'>
                                             {/* <Button
                                                 className="bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold"
@@ -192,6 +217,19 @@ export default function Pesanan() {
                     />
                 </Paper>
             </div>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <SnackbarContent
+                    style={{
+                        backgroundColor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+                    }}
+                    message={snackbarMessage}
+                />
+            </Snackbar>
         </div>
     );
 }

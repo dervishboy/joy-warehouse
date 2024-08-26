@@ -7,23 +7,9 @@ const Order = {
         try {
             const whereClause = searchQuery
                 ? {
-                    OR: [
-                        {
-                            nama_pemesan: {
-                                contains: searchQuery,
-                            },
-                        },
-                        {
-                            kode_pesanan: {
-                                contains: searchQuery,
-                            },
-                        },
-                        {
-                            status: {
-                                contains: searchQuery,
-                            },
-                        },
-                    ],
+                    nama_pemesan: {
+                        contains: searchQuery,
+                    },
                 }
                 : {};
     
@@ -187,14 +173,101 @@ const Order = {
 
     updateStatus: async (id, status) => {
         try {
-            return await prisma.order.update({
+            const order = await prisma.order.findUnique({
                 where: { id: parseInt(id) },
-                data: { status },
+                include: {
+                    orderProducts: {
+                        include: {
+                            product: {
+                                include: {
+                                    productMaterials: true,
+                                },
+                            },
+                        },
+                    },
+                },
             });
+    
+            if (!order) {
+                throw new Error('Order not found');
+            }
+    
+            if (status === 'CANCELLED') {
+                return await prisma.$transaction(async (prisma) => {
+                    for (const orderProduct of order.orderProducts) {
+                        for (const productMaterial of orderProduct.product.productMaterials) {
+                            const materialMovements = await prisma.materialMovement.findMany({
+                                where: {
+                                    material_id: productMaterial.material_id,
+                                    type: 'KELUAR',
+                                    quantity: productMaterial.quantity,
+                                    material: {
+                                        productMaterials: {
+                                            some: {
+                                                product_id: orderProduct.product_id,
+                                            },
+                                        },
+                                    },
+                                },
+                            });
+                            await prisma.material.update({
+                                where: { id: productMaterial.material_id },
+                                data: {
+                                    quantity: {
+                                        increment: productMaterial.quantity,
+                                    },
+                                },
+                            });
+                            await prisma.materialMovement.deleteMany({
+                                where: {
+                                    id: {
+                                        in: materialMovements.map(movement => movement.id),
+                                    },
+                                },
+                            });
+                        }
+                    }
+                    const productIds = order.orderProducts.map(op => op.product.id);
+                    await prisma.orderProduct.deleteMany({
+                        where: { order_id: parseInt(id) },
+                    });
+    
+                    for (const productId of productIds) {
+                        const isSharedProduct = await prisma.orderProduct.count({
+                            where: {
+                                product_id: productId,
+                                NOT: {
+                                    order_id: parseInt(id),
+                                },
+                            },
+                        });
+    
+                        if (isSharedProduct === 0) {
+                            await prisma.productMaterial.deleteMany({
+                                where: { product_id: productId },
+                            });
+                            await prisma.product.deleteMany({
+                                where: { id: productId },
+                            });
+                        }
+                    }
+                    return await prisma.order.update({
+                        where: { id: parseInt(id) },
+                        data: { status: 'CANCELLED' },
+                    });
+                });
+            } else {
+                return await prisma.order.update({
+                    where: { id: parseInt(id) },
+                    data: { status },
+                });
+            }
         } catch (error) {
+            console.error(`Failed to update order status: ${error.message}`);
             throw new Error(`Failed to update order status: ${error.message}`);
         }
     },
+    
     
     delete: async (id) => {
         try {

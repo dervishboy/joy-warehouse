@@ -5,8 +5,8 @@ import { Paper, Box } from "@mui/material";
 
 export default function Dashboard() {
     return (
-        <div className="px-4 py-4">
-            <Paper className="p-4 space-y-2">
+        <div className="px-4 py-6">
+            <Paper className="p-4 space-y-4">
                 <Box sx={{ border: '2px solid gray' }}>
                     <ActivityCard />
                 </Box>
