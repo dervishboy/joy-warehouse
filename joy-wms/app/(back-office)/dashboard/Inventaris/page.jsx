@@ -33,7 +33,7 @@ export default function Inventaris() {
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const columns = [
-        { id: 'index', name: '#' },
+        { id: 'index', name: 'No' },
         { id: 'nama_barang', name: 'Nama Barang' },
         { id: 'quantity', name: 'Jumlah' },
         { id: 'satuan', name: 'Satuan' },

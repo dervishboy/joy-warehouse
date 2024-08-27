@@ -72,87 +72,99 @@ const Order = {
 
     create: async (data) => {
         const { nama_pemesan, kode_pesanan, estimatedTime, products, totalHarga } = data;
-
+    
         try {
-            const createdOrder = await prisma.order.create({
-                data: {
-                    nama_pemesan,
-                    kode_pesanan,
-                    estimatedTime: new Date(estimatedTime),
-                    totalHarga: parseFloat(totalHarga),
-                    orderProducts: {
-                        create: await Promise.all(products.map(async product => {
-                            let existingProduct = await prisma.product.findUnique({
-                                where: { kode_produk: product.kode_produk }
-                            });
-                            if (!existingProduct) {
-                                existingProduct = await prisma.product.create({
-                                    data: {
-                                        kode_produk: product.kode_produk,
-                                        nama_produk: product.nama_produk,
-                                        deskripsi: product.deskripsi,
+            const existingOrder = await prisma.order.findUnique({
+                where: { kode_pesanan }
+            });
+    
+            if (existingOrder) {
+                throw new Error('Order with this kode_pesanan already exists.');
+            }
+
+            const createdOrder = await prisma.$transaction(async (prisma) => {
+                const newOrder = await prisma.order.create({
+                    data: {
+                        nama_pemesan,
+                        kode_pesanan,
+                        estimatedTime: new Date(estimatedTime),
+                        totalHarga: parseFloat(totalHarga),
+                        orderProducts: {
+                            create: await Promise.all(products.map(async product => {
+                                let existingProduct = await prisma.product.findUnique({
+                                    where: { kode_produk: product.kode_produk }
+                                });
+                                if (!existingProduct) {
+                                    existingProduct = await prisma.product.create({
+                                        data: {
+                                            kode_produk: product.kode_produk,
+                                            nama_produk: product.nama_produk,
+                                            deskripsi: product.deskripsi,
+                                            productMaterials: {
+                                                create: product.productMaterials.map(material => ({
+                                                    material: { connect: { id: material.material_id } },
+                                                    quantity: material.quantity
+                                                }))
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    await prisma.productMaterial.deleteMany({
+                                        where: { product_id: existingProduct.id }
+                                    });
+    
+                                    await prisma.productMaterial.createMany({
+                                        data: product.productMaterials.map(material => ({
+                                            product_id: existingProduct.id,
+                                            material_id: material.material_id,
+                                            quantity: material.quantity
+                                        }))
+                                    });
+                                }
+                                for (const material of product.productMaterials) {
+                                    await prisma.material.update({
+                                        where: { id: material.material_id },
+                                        data: {
+                                            quantity: {
+                                                decrement: material.quantity
+                                            }
+                                        }
+                                    });
+                                    await prisma.materialMovement.create({
+                                        data: {
+                                            material_id: material.material_id,
+                                            quantity: material.quantity,
+                                            type: 'KELUAR'
+                                        }
+                                    });
+                                }
+    
+                                return {
+                                    product_id: existingProduct.id
+                                };
+                            }))
+                        }
+                    },
+                    include: {
+                        orderProducts: {
+                            include: {
+                                product: {
+                                    include: {
                                         productMaterials: {
-                                            create: product.productMaterials.map(material => ({
-                                                material: { connect: { id: material.material_id } },
-                                                quantity: material.quantity
-                                            }))
-                                        }
-                                    }
-                                });
-                            } else {
-                                await prisma.productMaterial.deleteMany({
-                                    where: { product_id: existingProduct.id }
-                                });
-
-                                await prisma.productMaterial.createMany({
-                                    data: product.productMaterials.map(material => ({
-                                        product_id: existingProduct.id,
-                                        material_id: material.material_id,
-                                        quantity: material.quantity
-                                    }))
-                                });
-                            }
-                            for (const material of product.productMaterials) {
-                                await prisma.material.update({
-                                    where: { id: material.material_id },
-                                    data: {
-                                        quantity: {
-                                            decrement: material.quantity
-                                        }
-                                    }
-                                });
-                                await prisma.materialMovement.create({
-                                    data: {
-                                        material_id: material.material_id,
-                                        quantity: material.quantity,
-                                        type: 'KELUAR'
-                                    }
-                                });
-                            }
-
-                            return {
-                                product_id: existingProduct.id
-                            };
-                        }))
-                    }
-                },
-                include: {
-                    orderProducts: {
-                        include: {
-                            product: {
-                                include: {
-                                    productMaterials: {
-                                        include: {
-                                            material: true
+                                            include: {
+                                                material: true
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
+                });
+    
+                return newOrder;
             });
-
+    
             return createdOrder;
         } catch (error) {
             console.error(`Failed to create order: ${error.message}`);

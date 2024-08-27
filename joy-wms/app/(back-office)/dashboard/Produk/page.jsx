@@ -16,7 +16,7 @@ export default function Produk() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const columns = [
-        { id: 'index', name: '#' },
+        { id: 'index', name: 'No' },
         { id: 'kode_produk', name: 'Kode Produk' },
         { id: 'nama_produk', name: 'Nama Produk' },
         { id: 'deskripsi', name: 'Deskripsi' },

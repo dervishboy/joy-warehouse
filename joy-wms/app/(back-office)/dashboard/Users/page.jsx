@@ -16,7 +16,7 @@ export default function Users() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const columns = [
-        { id: 'id', name: '#' },
+        { id: 'id', name: 'No' },
         { id: 'name', name: 'Name' },
         { id: 'email', name: 'Email' },
         { id: 'role', name: 'Role' },

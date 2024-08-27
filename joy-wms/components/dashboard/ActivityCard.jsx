@@ -21,12 +21,12 @@ export default function ActivityCard() {
 
                 const orders = response.data.orders;
 
-                const pending = orders.filter(order => order.status === 'PENDING').length;
+                const processing = orders.filter(order => order.status === 'PROCESSING').length;
                 const done = orders.filter(order => order.status === 'DONE').length;
                 const cancelled = orders.filter(order => order.status === 'CANCELLED').length;
 
                 setActivityData({
-                    pending,
+                    processing,
                     done,
                     cancelled,
                 });
@@ -49,8 +49,8 @@ export default function ActivityCard() {
                     <Clock size={24} />
                 </div>
                 <div>
-                    <p className="text-md font-medium text-gray-800">PENDING</p>
-                    <p className="text-lg font-semibold text-gray-900">{activityData.pending} Order</p>
+                    <p className="text-md font-medium text-gray-800">PROCESSING</p>
+                    <p className="text-lg font-semibold text-gray-900">{activityData.processing} Order</p>
                 </div>
             </div>
             <div className="flex items-center p-4 border-2 border-gray-500 bg-green-200 hover:bg-green-300 rounded-lg shadow-xs cursor-pointer">

@@ -73,7 +73,7 @@ model Order {
   id            Int       @id @default(autoincrement())
   nama_pemesan  String
   kode_pesanan  String    @unique
-  status        StatusOrder @default(PENDING)    
+  status        StatusOrder @default(PROCESSING)    
   estimatedTime DateTime
   totalHarga    Float
   orderProducts OrderProduct[]
@@ -96,7 +96,7 @@ model Invoice {
 }
 
 enum StatusOrder {
-  PENDING
+  PROCESSING
   CANCELLED
   DONE
 }

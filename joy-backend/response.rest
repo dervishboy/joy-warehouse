@@ -102,7 +102,6 @@ Content-Type: application/json
             "deskripsi": "Description of product 3",
             "productMaterials": [
                 { "material_id": 1, "quantity": 1 },
-                { "material_id": 2, "quantity": 1 }
             ]
         },
         {
@@ -111,7 +110,6 @@ Content-Type: application/json
             "deskripsi": "Description of product 4",
             "productMaterials": [
                 { "material_id": 1, "quantity": 1 },
-                { "material_id": 2, "quantity": 1 }
             ]
         }
     ]

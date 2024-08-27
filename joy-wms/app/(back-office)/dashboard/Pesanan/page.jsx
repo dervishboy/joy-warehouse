@@ -165,7 +165,7 @@ export default function Pesanan() {
                                         <TableCell className='text-sm font-semibold text-center'>{row.kode_pesanan}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{formatRupiah(row.totalHarga)}</TableCell>
                                         <TableCell className="text-sm font-semibold text-center">
-                                            <span className={`rounded-md p-1 border border-neutral-800 text-sm font-semibold ${row.status === 'PENDING' ? 'bg-yellow-400' :
+                                            <span className={`rounded-md p-1 border border-neutral-800 text-sm font-semibold ${row.status === 'PROCESSING' ? 'bg-yellow-400' :
                                                     row.status === 'DONE' ? 'bg-green-400' :
                                                         'bg-red-400'
                                                 }`}>

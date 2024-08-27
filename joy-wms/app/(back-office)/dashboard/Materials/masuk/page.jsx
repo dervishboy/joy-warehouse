@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TablePagination, TextField, InputAdornment } from "@mui/material";
-import { Plus, Search, FolderPlus } from 'lucide-react';
+import { CirclePlus, Plus, Search, FolderPlus, Circle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
@@ -28,7 +28,7 @@ export default function MaterialMasuk() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const columns = [
-        { id: 'index', name: '#' },
+        { id: 'index', name: 'No' },
         { id: 'material.kode_material', name: 'Kode Material' },
         { id: 'material.nama_material', name: 'Nama Material' },
         { id: 'date', name: 'Tanggal Masuk' },
@@ -86,7 +86,7 @@ export default function MaterialMasuk() {
                                 className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
                                 variant="outlined"
                                 size="medium"
-                                startIcon={<Plus className='w-4 h-4' />}
+                                startIcon={<CirclePlus className='w-4 h-4' />}
                                 onClick={handleTambah}
                             >
                                 Tambah
