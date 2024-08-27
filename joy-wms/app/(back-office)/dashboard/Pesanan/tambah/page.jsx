@@ -134,10 +134,25 @@ export default function TambahPesanan() {
         event.preventDefault();
     
         try {
+            // Check if kode_pesanan already exists
             const checkOrderResponse = await axios.get(`http://localhost:5000/api/orders?kode_pesanan=${formData.kode_pesanan}`);
+            console.log('checkOrderResponse:', checkOrderResponse.data); // Debugging line
+    
             if (checkOrderResponse.data.exists) {
                 alert('Kode pesanan sudah ada. Silakan gunakan kode yang berbeda.');
                 return;
+            }
+    
+            // Check if kode_produk already exists
+            for (let i = 0; i < formData.products.length; i++) {
+                const product = formData.products[i];
+                const checkProductResponse = await axios.get(`http://localhost:5000/api/orders?kode_produk=${product.kode_produk}`);
+                console.log(`checkProductResponse for ${product.kode_produk}:`, checkProductResponse.data); // Debugging line
+    
+                if (checkProductResponse.data.exists) {
+                    alert(`Kode produk ${product.kode_produk} sudah ada. Silakan gunakan kode yang berbeda untuk produk ${product.nama_produk}.`);
+                    return;
+                }
             }
     
             // Check if material quantity is sufficient
@@ -153,7 +168,7 @@ export default function TambahPesanan() {
                 }
             }
     
-            // If all checks pass, submit the form
+            // If all checks pass, create the order
             const response = await axios.post('http://localhost:5000/api/orders', {
                 nama_pemesan: formData.nama_pemesan,
                 kode_pesanan: formData.kode_pesanan,
@@ -177,6 +192,7 @@ export default function TambahPesanan() {
             console.error('Error in handleSubmit:', error);
         }
     };
+    
     
 
     const handleBack = () => {

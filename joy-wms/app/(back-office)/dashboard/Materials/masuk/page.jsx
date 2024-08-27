@@ -131,7 +131,7 @@ export default function MaterialMasuk() {
                                         <TableCell className='text-sm font-semibold text-center'>{material.material.kode_material}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{material.material.nama_material}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{formatDate(material.date)}</TableCell>
-                                        <TableCell className='text-sm font-semibold text-center'>{material.quantity}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{material.quantity} {material.material.satuan}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
     Paper,
     Table,
@@ -16,12 +16,14 @@ import {
     Snackbar,
     SnackbarContent
 } from "@mui/material";
-import { CirclePlus, Pencil, Trash2, Search, FolderCog } from 'lucide-react';
+import { CirclePlus, Pencil, Trash2, Search, FolderCog, Printer } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import ReactToPrint from 'react-to-print';
 
 export default function Materials() {
     const router = useRouter();
+    const printRef = useRef();
 
     const [materials, setMaterials] = useState([]);
     const [totalMaterials, setTotalMaterials] = useState(0);
@@ -33,12 +35,11 @@ export default function Materials() {
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const columns = [
-        { id: 'index', name: '#' },
+        { id: 'index', name: 'No' },
         { id: 'kode_material', name: 'Kode Material' },
         { id: 'nama_material', name: 'Nama Material' },
         { id: 'quantity', name: 'Jumlah' },
         { id: 'satuan', name: 'Satuan' },
-        { id: 'action', name: 'Action' }
     ];
 
     useEffect(() => {
@@ -117,15 +118,30 @@ export default function Materials() {
                         <h2 className="text-2xl font-semibold">Data Material</h2>
                     </div>
                     <div className='flex justify-between'>
-                        <Button
-                            className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
-                            variant="outlined"
-                            size="medium"
-                            startIcon={<CirclePlus className='w-4 h-4' />}
-                            onClick={handleTambahMaterial}
-                        >
-                            Tambah
-                        </Button>
+                        <div className='space-x-2'>
+                            <Button
+                                className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
+                                variant="outlined"
+                                size="medium"
+                                startIcon={<CirclePlus className='w-4 h-4' />}
+                                onClick={handleTambahMaterial}
+                            >
+                                Tambah
+                            </Button>
+                            <ReactToPrint
+                                trigger={() => (
+                                    <Button
+                                        className='bg-blue-300 hover:bg-blue-500 cursor-pointer text-custom-jhitam font-semibold'
+                                        variant="outlined"
+                                        size="medium"
+                                        startIcon={<Printer className='w-4 h-4' />}
+                                    >
+                                        Cetak
+                                    </Button>
+                                )}
+                                content={() => printRef.current}
+                            />
+                        </div>
                         <TextField
                             variant="outlined"
                             placeholder="Search"
@@ -142,7 +158,7 @@ export default function Materials() {
                     </div>
                 </div>
                 <Paper>
-                    <TableContainer sx={{ maxHeight: 500 }}>
+                    <TableContainer sx={{ maxHeight: 500 }} ref={printRef}>
                         <Table stickyHeader>
                             <TableHead>
                                 <TableRow>
@@ -161,28 +177,7 @@ export default function Materials() {
                                     <TableRow key={row.id}>
                                         {columns.map((column) => (
                                             <TableCell className='text-sm font-semibold text-center' key={column.id}>
-                                                {column.id === 'action' ? (
-                                                    <div className='items-center space-x-2 text-center'>
-                                                        <Button
-                                                            className='bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold'
-                                                            variant="outlined"
-                                                            size="small"
-                                                            startIcon={<Pencil className='w-4 h-4' />}
-                                                            onClick={() => handleEdit(row.id)}
-                                                        >
-                                                            Edit
-                                                        </Button>
-                                                        <Button
-                                                            className='bg-red-400 hover:bg-red-500 cursor-pointer text-custom-jhitam font-semibold'
-                                                            variant="outlined"
-                                                            size="small"
-                                                            startIcon={<Trash2 className='w-4 h-4' />}
-                                                            onClick={() => handleDelete(row.id)}
-                                                        >
-                                                            Delete
-                                                        </Button>
-                                                    </div>
-                                                ) : column.id === 'index' ? (
+                                                {column.id === 'index' ? (
                                                     page * rowsPerPage + index + 1
                                                 ) : row[column.id]}
                                             </TableCell>

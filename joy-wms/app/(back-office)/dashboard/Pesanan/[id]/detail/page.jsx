@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Container, Grid, Paper, Typography, Box, Divider, Button, Select, MenuItem, FormControl } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PrintIcon from '@mui/icons-material/Print';
 import axios from 'axios';
+import ReactToPrint from 'react-to-print';
 
 const formatDate = (isoDate) => {
     const date = new Date(isoDate);
@@ -21,6 +23,7 @@ const formatDate = (isoDate) => {
 export default function LihatDetailPesanan() {
     const router = useRouter();
     const { id } = useParams();
+    const printRef = useRef();
     const [orderDetails, setOrderDetails] = useState({
         nama_pemesan: '',
         kode_pesanan: '',
@@ -89,7 +92,7 @@ export default function LihatDetailPesanan() {
 
     return (
         <div className='px-3 py-4'>
-            <Paper className="p-4">
+            <Paper className="p-4" ref={printRef}>
                 <h2 className="text-2xl font-semibold mb-4">Detail Pesanan</h2>
                 <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
@@ -107,11 +110,10 @@ export default function LihatDetailPesanan() {
                     <Grid item xs={12} sm={6}>
                         <div className='mb-8'>
                             <h4 className='mb-1'>Status:</h4>
-                            <span className={`rounded-md p-1 border border-neutral-800 text-sm font-semibold ${
-                                orderDetails.status === 'PENDING' ? 'bg-yellow-400' :
-                                orderDetails.status === 'DONE' ? 'bg-green-400' :
-                                'bg-red-400'
-                            }`}>
+                            <span className={`rounded-md p-1 border border-neutral-800 text-sm font-semibold ${orderDetails.status === 'PENDING' ? 'bg-yellow-400' :
+                                    orderDetails.status === 'DONE' ? 'bg-green-400' :
+                                        'bg-red-400'
+                                }`}>
                                 {orderDetails.status}
                             </span>
                         </div>
@@ -178,15 +180,31 @@ export default function LihatDetailPesanan() {
                         </Paper>
                     </Box>
                 ))}
-                <Button
-                    onClick={handleBack}
-                    variant="contained"
-                    size="small"
-                    startIcon={<ArrowBackIcon />}
-                    className='bg-custom-jorange hover:bg-orange-500 text-custom-jhitam font-semibold'
-                >
-                    Kembali
-                </Button>
+                <div className='flex justify-between'>
+                    <Button
+                        onClick={handleBack}
+                        variant="contained"
+                        size="small"
+                        startIcon={<ArrowBackIcon />}
+                        className='bg-custom-jorange hover:bg-orange-500 text-custom-jhitam font-semibold'
+                    >
+                        Kembali
+                    </Button>
+                    <ReactToPrint
+                        trigger={() => (
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                size="small"
+                                startIcon={<PrintIcon />}
+                                className='bg-blue-300 hover:bg-blue-500 text-custom-jhitam font-semibold'
+                            >
+                                Cetak / Simpan sebagai PDF
+                            </Button>
+                        )}
+                        content={() => printRef.current}
+                    />
+                </div>
             </Paper>
         </div>
     );
