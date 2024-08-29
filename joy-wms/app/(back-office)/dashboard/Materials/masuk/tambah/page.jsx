@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { Container, Grid, Paper, TextField, Button, Typography, FormControl, Select, MenuItem } from "@mui/material";
+import { Container, Grid, Paper, TextField, Button, Typography, FormControl, Select, MenuItem, Snackbar, SnackbarContent, InputAdornment } from "@mui/material";
 import { Plus, ArrowLeft } from 'lucide-react';
 
 export default function TambahMaterialMasuk() {
@@ -11,10 +11,14 @@ export default function TambahMaterialMasuk() {
 
     const [formValues, setFormValues] = useState({
         material_id: '',
-        quantity: ''
+        quantity: '',
     });
 
     const [materials, setMaterials] = useState([]);
+    const [selectedSatuan, setSelectedSatuan] = useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/materials?rowsPerPage=-1')
@@ -34,11 +38,7 @@ export default function TambahMaterialMasuk() {
         if (name === "material_id") {
             const selectedMaterial = materials.find(material => material.id === parseInt(value));
             if (selectedMaterial) {
-                setFormValues(prevValues => ({
-                    ...prevValues,
-                    kode_material: selectedMaterial.kode_material,
-                    nama_material: selectedMaterial.nama_material
-                }));
+                setSelectedSatuan(selectedMaterial.satuan);
             }
         }
     };
@@ -52,15 +52,27 @@ export default function TambahMaterialMasuk() {
             });
             console.log(response);
             if (response.status === 201) {
-                router.push('/dashboard/Materials/masuk');
+                setSnackbarSeverity('success');
+                setSnackbarMessage('Berhasil menambahkan material masuk!');
+                setSnackbarOpen(true);
+                setTimeout(() => {
+                    router.push('/dashboard/Materials/masuk');
+                }, 2000);
             }
         } catch (error) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Terjadi kesalahan saat menambahkan material!');
+            setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         }
     };
 
     const handleBack = () => {
         router.push('/dashboard/Materials/masuk');
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -109,6 +121,9 @@ export default function TambahMaterialMasuk() {
                                 onChange={handleInputChange}
                                 value={formValues.quantity}
                                 required
+                                InputProps={{ 
+                                    endAdornment: <InputAdornment position="end">{selectedSatuan}</InputAdornment>
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12} className='flex justify-between'>
@@ -133,6 +148,19 @@ export default function TambahMaterialMasuk() {
                     </Grid>
                 </form>
             </Paper>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <SnackbarContent
+                    style={{
+                        backgroundColor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+                    }}
+                    message={snackbarMessage}
+                />
+            </Snackbar>
         </Container>
     );
 }

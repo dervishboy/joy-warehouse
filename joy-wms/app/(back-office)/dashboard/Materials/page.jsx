@@ -23,9 +23,10 @@ import ReactToPrint from 'react-to-print';
 
 export default function Materials() {
     const router = useRouter();
-    const printRef = useRef();
+    const printRef = useRef(null);
 
     const [materials, setMaterials] = useState([]);
+    const [allMaterials, setAllMaterials] = useState([]);
     const [totalMaterials, setTotalMaterials] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
@@ -62,6 +63,19 @@ export default function Materials() {
 
         fetchMaterials();
     }, [searchTerm, page, rowsPerPage]);
+
+    useEffect(() => {
+        const fetchAllMaterials = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/materials?rowsPerPage=-1');
+                setAllMaterials(response.data.materials);
+            } catch (error) {
+                console.error('Error fetching all materials:', error);
+            }
+        };
+        fetchAllMaterials();
+    }, []);
+
 
     const handleEdit = (id) => {
         router.push(`/dashboard/Materials/${id}/edit`);
@@ -141,6 +155,7 @@ export default function Materials() {
                                     </Button>
                                 )}
                                 content={() => printRef.current}
+                                onAfterPrint={() => console.log('Print finished!')}
                             />
                         </div>
                         <TextField
@@ -219,6 +234,38 @@ export default function Materials() {
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
+                </Paper>
+            </div>
+            <div style={{ display: 'none' }}>
+                <Paper ref={printRef}>
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    {columns
+                                        .filter(column => column.id !== 'actions') // Exclude action columns
+                                        .map((column) => (
+                                            <TableCell key={column.id}>
+                                                {column.name}
+                                            </TableCell>
+                                        ))}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {allMaterials.map((row, index) => (
+                                    <TableRow key={row.id}>
+                                        {columns
+                                            .filter(column => column.id !== 'actions')
+                                            .map((column) => (
+                                                <TableCell key={column.id}>
+                                                    {column.id === 'index' ? index + 1 : row[column.id]}
+                                                </TableCell>
+                                            ))}
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Paper>
             </div>
             <Snackbar

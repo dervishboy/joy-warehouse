@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Container, Paper, Grid, TextField, Button, Typography } from "@mui/material";
+import { Container, Paper, Grid, TextField, Button, Typography, Snackbar, SnackbarContent } from "@mui/material";
 import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
 
@@ -14,6 +14,10 @@ export default function EditInventaris() {
         quantity: '',
         satuan: '',
     });
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,12 +52,28 @@ export default function EditInventaris() {
                 satuan: formData.satuan,
             });
             if (response.status === 200) {
-                router.push('/dashboard/Inventaris');
+                setSnackbarSeverity('success');
+                setSnackbarMessage('Data Inventaris berhasil diubah!');
+                setSnackbarOpen(true);
+                setTimeout(() => {
+                    router.push('/dashboard/Inventaris');
+                }, 2000);
             }
         } catch (error) {
-            console.error('Error updating inventaris:', error);
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Terjadi kesalahan saat mengubah data!');
+            setSnackbarOpen(true);
+            console.error('Error in handleSubmit:', error);
         }
     };
+
+    const handleBack = () => {
+        router.push('/dashboard/Inventaris');
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    }
 
     return (
         <div className='px-3 py-4'>
@@ -105,23 +125,36 @@ export default function EditInventaris() {
                         </Grid>
                         <Grid item xs={12} className="text-right space-x-2">
                             <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleBack}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
                                 type="submit"
                                 variant="contained"
                                 color="primary"
                             >
                                 Submit
                             </Button>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                onClick={() => router.push('/dashboard/Inventaris')}
-                            >
-                                Cancel
-                            </Button>
                         </Grid>
                     </Grid>
                 </form>
             </Paper>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <SnackbarContent
+                    style={{
+                        backgroundColor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+                    }}
+                    message={snackbarMessage}
+                />
+            </Snackbar>
         </div>
     );
 }

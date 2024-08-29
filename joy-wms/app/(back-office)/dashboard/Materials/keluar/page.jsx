@@ -79,7 +79,7 @@ export default function MaterialsKeluar() {
                 <div className="mb-2">
                     <div className='flex items-center mb-4'>
                         <FolderOutput className='w-8 h-8 mr-2' />
-                        <h2 className="text-2xl font-semibold">Barang Keluar</h2>
+                        <h2 className="text-2xl font-semibold">Material Keluar</h2>
                     </div>
                     <div className='flex justify-between'>
                         <div className='flex space-x-2'>
