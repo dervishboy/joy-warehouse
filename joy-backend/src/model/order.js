@@ -12,11 +12,11 @@ const Order = {
                     },
                 }
                 : {};
-    
+
             const totalOrders = await prisma.order.count({
                 where: whereClause,
             });
-    
+
             const orders = await prisma.order.findMany({
                 where: whereClause,
                 skip: page * rowsPerPage,
@@ -37,13 +37,13 @@ const Order = {
                     },
                 },
             });
-    
+
             return { orders, totalOrders };
         } catch (error) {
             throw new Error(`Failed to get orders: ${error.message}`);
         }
     },
-    
+
 
     getById: async (id) => {
         try {
@@ -72,12 +72,12 @@ const Order = {
 
     create: async (data) => {
         const { nama_pemesan, kode_pesanan, estimatedTime, products, totalHarga } = data;
-    
+
         try {
             const existingOrder = await prisma.order.findUnique({
                 where: { kode_pesanan }
             });
-    
+
             if (existingOrder) {
                 throw new Error('Order with this kode_pesanan already exists.');
             }
@@ -112,7 +112,7 @@ const Order = {
                                     await prisma.productMaterial.deleteMany({
                                         where: { product_id: existingProduct.id }
                                     });
-    
+
                                     await prisma.productMaterial.createMany({
                                         data: product.productMaterials.map(material => ({
                                             product_id: existingProduct.id,
@@ -138,7 +138,7 @@ const Order = {
                                         }
                                     });
                                 }
-    
+
                                 return {
                                     product_id: existingProduct.id
                                 };
@@ -161,10 +161,10 @@ const Order = {
                         }
                     }
                 });
-    
+
                 return newOrder;
             });
-    
+
             return createdOrder;
         } catch (error) {
             console.error(`Failed to create order: ${error.message}`);
@@ -199,11 +199,11 @@ const Order = {
                     },
                 },
             });
-    
+
             if (!order) {
                 throw new Error('Order not found');
             }
-    
+
             if (status === 'CANCELLED') {
                 return await prisma.$transaction(async (prisma) => {
                     for (const orderProduct of order.orderProducts) {
@@ -243,7 +243,7 @@ const Order = {
                     await prisma.orderProduct.deleteMany({
                         where: { order_id: parseInt(id) },
                     });
-    
+
                     for (const productId of productIds) {
                         const isSharedProduct = await prisma.orderProduct.count({
                             where: {
@@ -253,7 +253,7 @@ const Order = {
                                 },
                             },
                         });
-    
+
                         if (isSharedProduct === 0) {
                             await prisma.productMaterial.deleteMany({
                                 where: { product_id: productId },
@@ -265,7 +265,10 @@ const Order = {
                     }
                     return await prisma.order.update({
                         where: { id: parseInt(id) },
-                        data: { status: 'CANCELLED' },
+                        data: {
+                            status: 'CANCELLED',
+                            totalHarga: 0,
+                        },
                     });
                 });
             } else {
@@ -279,8 +282,8 @@ const Order = {
             throw new Error(`Failed to update order status: ${error.message}`);
         }
     },
-    
-    
+
+
     delete: async (id) => {
         try {
             const order = await prisma.order.findUnique({
@@ -297,11 +300,11 @@ const Order = {
                     }
                 }
             });
-    
+
             if (!order) {
                 throw new Error('Order not found');
             }
-    
+
             return await prisma.$transaction(async (prisma) => {
                 for (const orderProduct of order.orderProducts) {
                     for (const productMaterial of orderProduct.product.productMaterials) {
@@ -319,7 +322,7 @@ const Order = {
                                 }
                             }
                         });
-    
+
                         await prisma.material.update({
                             where: { id: productMaterial.material_id },
                             data: {
@@ -328,7 +331,7 @@ const Order = {
                                 }
                             }
                         });
-    
+
                         await prisma.materialMovement.deleteMany({
                             where: {
                                 id: {
@@ -352,18 +355,18 @@ const Order = {
                             }
                         }
                     });
-    
+
                     if (isSharedProduct === 0) {
                         await prisma.productMaterial.deleteMany({
                             where: { product_id: productId }
                         });
-    
+
                         await prisma.product.deleteMany({
                             where: { id: productId }
                         });
                     }
                 }
-    
+
                 return await prisma.order.delete({
                     where: { id: parseInt(id) },
                 });
@@ -373,7 +376,7 @@ const Order = {
             throw new Error(`Failed to delete order: ${error.message}`);
         }
     },
-    
+
 };
 
 export default Order;

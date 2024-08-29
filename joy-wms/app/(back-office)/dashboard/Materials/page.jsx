@@ -40,6 +40,7 @@ export default function Materials() {
         { id: 'nama_material', name: 'Nama Material' },
         { id: 'quantity', name: 'Jumlah' },
         { id: 'satuan', name: 'Satuan' },
+        { id: 'actions', name: 'Actions' }
     ];
 
     useEffect(() => {
@@ -177,10 +178,32 @@ export default function Materials() {
                                     <TableRow key={row.id}>
                                         {columns.map((column) => (
                                             <TableCell className='text-sm font-semibold text-center' key={column.id}>
-                                                {column.id === 'index' ? (
-                                                    page * rowsPerPage + index + 1
-                                                ) : row[column.id]}
+                                                {column.id === 'actions' ? (
+                                                    <div className='items-center space-x-2 text-center'>
+                                                        <Button
+                                                            className='bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold'
+                                                            variant="outlined"
+                                                            size="small"
+                                                            startIcon={<Pencil className='w-4 h-4' />}
+                                                            onClick={() => handleEdit(row.id)}
+                                                        >
+                                                            Edit
+                                                        </Button>
+                                                        <Button
+                                                            className='bg-red-400 hover:bg-red-500 cursor-pointer text-custom-jhitam font-semibold'
+                                                            variant="outlined"
+                                                            size="small"
+                                                            startIcon={<Trash2 className='w-4 h-4' />}
+                                                            onClick={() => handleDelete(row.id)}
+                                                        >
+                                                            Delete
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    column.id === 'index' ? index + 1 + page * rowsPerPage : row[column.id]
+                                                )}
                                             </TableCell>
+                                            
                                         ))}
                                     </TableRow>
                                 ))}

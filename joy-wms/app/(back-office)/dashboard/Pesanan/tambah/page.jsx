@@ -225,7 +225,7 @@ export default function TambahPesanan() {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <Typography variant="body1">Estimasi Waktu :</Typography>
+                            <Typography variant="body1">Estimasi Waktu Selesai :</Typography>
                             <TextField
                                 name="estimatedTime"
                                 type="datetime-local"

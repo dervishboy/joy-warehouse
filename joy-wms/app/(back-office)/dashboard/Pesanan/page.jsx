@@ -7,6 +7,10 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 const formatRupiah = (amount) => {
+    if (amount === 0) {
+        return 'Pesanan Dibatalkan';
+    }
+
     return new Intl.NumberFormat('id-ID', {
         style: 'currency',
         currency: 'IDR',

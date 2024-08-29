@@ -76,6 +76,7 @@ export default function LihatDetailPesanan() {
             setOrderDetails({
                 ...orderDetails,
                 status: newStatus,
+                totalHarga: newStatus === 'CANCELLED' ? 0 : orderDetails.totalHarga,
             });
 
             window.alert('Status pesanan berhasil diupdate!');
@@ -104,13 +105,20 @@ export default function LihatDetailPesanan() {
                         <Typography>{orderDetails.kode_pesanan}</Typography>
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <Typography>Estimasi Penyelesaian:</Typography>
+                        <Typography>Estimasi Waktu Selesai:</Typography>
                         <Typography>{formatDate(orderDetails.estimatedTime)}</Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <Typography>Total Harga:</Typography>
+                        <Typography>Rp {orderDetails.totalHarga}</Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <div className='mb-8'>
                             <h4 className='mb-1'>Status:</h4>
-                            <span className={`rounded-md p-1 border border-neutral-800 text-sm font-semibold ${orderDetails.status === 'PENDING' ? 'bg-yellow-400' :
+                            <span className={`rounded-md p-1 border border-neutral-800 text-sm font-semibold ${orderDetails.status === 'PROCESSING' ? 'bg-yellow-400' :
                                     orderDetails.status === 'DONE' ? 'bg-green-400' :
                                         'bg-red-400'
                                 }`}>
@@ -126,7 +134,7 @@ export default function LihatDetailPesanan() {
                                         value={newStatus}
                                         onChange={handleStatusChange}
                                     >
-                                        <MenuItem value="PENDING">PENDING</MenuItem>
+                                        <MenuItem value="PROCESSING">PROCESSING</MenuItem>
                                         <MenuItem value="DONE">DONE</MenuItem>
                                         <MenuItem value="CANCELLED">CANCELLED</MenuItem>
                                     </Select>
