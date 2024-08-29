@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Container, Grid, Paper, Typography, Box, Divider, Button, Select, MenuItem, FormControl } from "@mui/material";
+import { Container, Grid, Paper, Typography, Box, Divider, Button, Select, MenuItem, FormControl, Snackbar, SnackbarContent } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PrintIcon from '@mui/icons-material/Print';
 import axios from 'axios';
@@ -51,6 +51,10 @@ export default function LihatDetailPesanan() {
     });
     const [newStatus, setNewStatus] = useState('');
 
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
     useEffect(() => {
         const fetchOrderDetails = async () => {
             try {
@@ -78,18 +82,27 @@ export default function LihatDetailPesanan() {
                 status: newStatus,
                 totalHarga: newStatus === 'CANCELLED' ? 0 : orderDetails.totalHarga,
             });
-
-            window.alert('Status pesanan berhasil diupdate!');
-            router.push('/dashboard/Pesanan');
+            setSnackbarSeverity('success');
+            setSnackbarMessage('Status pesanan berhasil diupdate!');
+            setSnackbarOpen(true);
+            setTimeout(() => {
+                router.push('/dashboard/Pesanan');
+            }, 2000);
         } catch (error) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Terjadi kesalahan saat mengupdate status pesanan!');
+            setSnackbarOpen(true);
             console.error('Error updating order status:', error);
-            window.alert('Gagal mengupdate status pesanan!');
         }
-    }
+    };
 
     const handleBack = () => {
         router.push('/dashboard/Pesanan');
-    }
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    }; 
 
     return (
         <div className='px-3 py-4'>
@@ -214,6 +227,19 @@ export default function LihatDetailPesanan() {
                     />
                 </div>
             </Paper>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <SnackbarContent
+                    style={{
+                        backgroundColor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+                    }}
+                    message={snackbarMessage}
+                />
+            </Snackbar>
         </div>
     );
 }

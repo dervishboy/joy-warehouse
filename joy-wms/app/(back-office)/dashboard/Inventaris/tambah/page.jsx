@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Paper, Grid, TextField, Button, Typography } from "@mui/material";
+import { Paper, Grid, TextField, Button, Typography, Snackbar, SnackbarContent } from "@mui/material";
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
@@ -13,6 +13,10 @@ export default function TambahInventaris() {
         quantity: '',
         satuan: ''
     });
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -27,17 +31,28 @@ export default function TambahInventaris() {
                 quantity: Number(formValue.quantity),
                 satuan: formValue.satuan
             });
-            console.log(response);
             if (response.status === 201) {
-                router.push('/dashboard/Inventaris');
+                setSnackbarSeverity('success');
+                setSnackbarMessage('Data Inventaris berhasil ditambahkan!');
+                setSnackbarOpen(true);
+                setTimeout(() => {
+                    router.push('/dashboard/Inventaris');
+                }, 2000);
             }
         } catch (error) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Terjadi kesalahan saat menambahkan data!');
+            setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         }
     };
 
     const handleBack = () => {
         router.push('/dashboard/Inventaris');
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -104,6 +119,19 @@ export default function TambahInventaris() {
                     </Grid>
                 </form>
             </Paper>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={4000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <SnackbarContent
+                    style={{
+                        backgroundColor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+                    }}
+                    message={snackbarMessage}
+                />
+            </Snackbar>
         </div>
     );
 }

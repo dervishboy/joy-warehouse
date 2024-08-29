@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Paper, TextField, Button, Typography, FormControl, Select, MenuItem, IconButton, InputAdornment } from "@mui/material";
+import { Container, Grid, Paper, TextField, Button, Typography, FormControl, Select, MenuItem, IconButton, InputAdornment, Switch, FormControlLabel, Snackbar, SnackbarContent } from "@mui/material";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { File, ArrowLeft } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
@@ -35,6 +35,12 @@ export default function EditUser() {
         confirmPassword: false,
     });
 
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+    const [showChangePassword, setShowChangePassword] = useState(false);
+
     const fetchUser = async (id) => {
         try {
             const response = await axios.get(`http://localhost:5000/api/users/${id}`);
@@ -61,6 +67,11 @@ export default function EditUser() {
         setShowPassword({ ...showPassword, [field]: !showPassword[field] });
     };
 
+    const handleToggleChangePassword = () => {
+        setShowChangePassword(!showChangePassword);
+        setFormValues({ ...formValues, oldPassword: '', newPassword: '', confirmPassword: '' });
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
@@ -70,22 +81,35 @@ export default function EditUser() {
                 role: formValues.role,
             };
 
-            if (formValues.oldPassword && formValues.newPassword === formValues.confirmPassword) {
+            if (showChangePassword && formValues.oldPassword && formValues.newPassword === formValues.confirmPassword) {
                 updateData.oldPassword = formValues.oldPassword;
                 updateData.newPassword = formValues.newPassword;
             }
 
             const response = await axios.put(`http://localhost:5000/api/users/${id}`, updateData);
+
             if (response.status === 200) {
-                router.push('/dashboard/Users');
+                setSnackbarSeverity('success');
+                setSnackbarMessage('Data User berhasil perbarui!');
+                setSnackbarOpen(true);
+                setTimeout(() => {
+                    router.push('/dashboard/Users');
+                }, 2000);
             }
         } catch (error) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Terjadi kesalahan saat mengubah data!');
+            setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         }
     };
 
     const handleBack = () => {
         router.push('/dashboard/Users');
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -139,78 +163,97 @@ export default function EditUser() {
                                 </Select>
                             </FormControl>
                         </Grid>
+
                         <Grid item xs={12}>
-                            <Typography>Password Lama :</Typography>
-                            <TextField
-                                fullWidth
-                                name="oldPassword"
-                                type={showPassword.oldPassword ? 'text' : 'password'}
-                                value={formValues.oldPassword}
-                                onChange={handleInputChange}
-                                placeholder="Masukkan password lama"
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={() => handleTogglePasswordVisibility('oldPassword')}
-                                                edge="end"
-                                            >
-                                                {showPassword.oldPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={showChangePassword}
+                                        onChange={handleToggleChangePassword}
+                                        color="primary"
+                                    />
+                                }
+                                label="Ubah Password"
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <Typography>Password Baru :</Typography>
-                            <TextField
-                                fullWidth
-                                name="newPassword"
-                                type={showPassword.newPassword ? 'text' : 'password'}
-                                value={formValues.newPassword}
-                                onChange={handleInputChange}
-                                placeholder="Masukkan password baru (opsional)"
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={() => handleTogglePasswordVisibility('newPassword')}
-                                                edge="end"
-                                            >
-                                                {showPassword.newPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography>Konfirmasi Password Baru :</Typography>
-                            <TextField
-                                fullWidth
-                                name="confirmPassword"
-                                type={showPassword.confirmPassword ? 'text' : 'password'}
-                                value={formValues.confirmPassword}
-                                onChange={handleInputChange}
-                                placeholder="Konfirmasi password baru"
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={() => handleTogglePasswordVisibility('confirmPassword')}
-                                                edge="end"
-                                            >
-                                                {showPassword.confirmPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
+
+                        {showChangePassword && (
+                            <>
+                                <Grid item xs={12}>
+                                    <Typography>Password Lama :</Typography>
+                                    <TextField
+                                        fullWidth
+                                        name="oldPassword"
+                                        type={showPassword.oldPassword ? 'text' : 'password'}
+                                        value={formValues.oldPassword}
+                                        onChange={handleInputChange}
+                                        placeholder="Masukkan password lama"
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={() => handleTogglePasswordVisibility('oldPassword')}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword.oldPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Typography>Password Baru :</Typography>
+                                    <TextField
+                                        fullWidth
+                                        name="newPassword"
+                                        type={showPassword.newPassword ? 'text' : 'password'}
+                                        value={formValues.newPassword}
+                                        onChange={handleInputChange}
+                                        placeholder="Masukkan password baru"
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={() => handleTogglePasswordVisibility('newPassword')}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword.newPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Typography>Konfirmasi Password Baru :</Typography>
+                                    <TextField
+                                        fullWidth
+                                        name="confirmPassword"
+                                        type={showPassword.confirmPassword ? 'text' : 'password'}
+                                        value={formValues.confirmPassword}
+                                        onChange={handleInputChange}
+                                        placeholder="Konfirmasi password baru"
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={() => handleTogglePasswordVisibility('confirmPassword')}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword.confirmPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Grid>
+                            </>
+                        )}
+
                         <Grid item xs={12} className="flex justify-end space-x-2">
                             <Button
                                 variant="contained"
@@ -234,6 +277,19 @@ export default function EditUser() {
                     </Grid>
                 </form>
             </Paper>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <SnackbarContent
+                    style={{
+                        backgroundColor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+                    }}
+                    message={snackbarMessage}
+                />
+            </Snackbar>
         </Container>
     );
 }

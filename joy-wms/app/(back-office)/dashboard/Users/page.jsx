@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TextField, TablePagination, InputAdornment } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, TextField, TablePagination, InputAdornment, Snackbar, SnackbarContent } from "@mui/material";
 import { CirclePlus, Pencil, Trash2, Search, BookUser } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
@@ -14,6 +14,9 @@ export default function Users() {
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const columns = [
         { id: 'id', name: 'No' },
@@ -48,12 +51,30 @@ export default function Users() {
     };
 
     const handleDelete = async (id) => {
-        try {
-            await axios.delete(`http://localhost:5000/api/users/${id}`);
-            setUsers(users.filter(user => user.id !== id));
-        } catch (error) {
-            console.error('Error deleting user:', error);
+        const shouldDelete = confirm('Apakah Anda yakin ingin menghapus data user ini?');
+        if (shouldDelete) {
+            axios.delete(`http://localhost:5000/api/users/${id}`)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const updatedUsers = users.filter((user) => user.id !== id);
+                        setUsers(updatedUsers);
+                        setTotalUsers(totalUsers - 1);
+                        setSnackbarSeverity('success');
+                        setSnackbarMessage('Data User berhasil dihapus!');
+                        setSnackbarOpen(true);
+                    }
+                })
+                .catch((error) => {
+                    setSnackbarSeverity('error');
+                    setSnackbarMessage('Terjadi kesalahan saat menghapus data!');
+                    setSnackbarOpen(true);
+                    console.error('Error in handleDelete:', error);
+                });
         }
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
     };
 
     const handleAdd = () => {
@@ -89,7 +110,7 @@ export default function Users() {
             <div className="px-4 py-4">
                 <div className="mb-2">
                     <div className='flex items-center mb-4'>
-                        <BookUser className='w-8 h-8 mr-2'/>
+                        <BookUser className='w-8 h-8 mr-2' />
                         <h2 className="text-2xl font-semibold">Data User</h2>
                     </div>
                     <div className='flex justify-between'>
@@ -172,6 +193,19 @@ export default function Users() {
                     />
                 </Paper>
             </div>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <SnackbarContent
+                    style={{
+                        backgroundColor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+                    }}
+                    message={snackbarMessage}
+                />
+            </Snackbar>
         </div>
     );
 }

@@ -51,7 +51,7 @@ const User = {
     },
     update: async (id, data) => {
         try {
-            if (data.newPassword && data.oldPassword) {
+            if (data.oldPassword && data.newPassword) {
                 const user = await prisma.user.findUnique({
                     where: { id: parseInt(id) },
                 });
@@ -60,16 +60,16 @@ const User = {
 
                 const isMatch = await bcrypt.compare(data.oldPassword, user.password);
                 if (!isMatch) throw new Error('Old password is incorrect');
-
                 data.password = await bcrypt.hash(data.newPassword, 10);
-                delete data.oldPassword;
-                delete data.newPassword;
             }
+            delete data.oldPassword;
+            delete data.newPassword;
 
             const response = await prisma.user.update({
                 where: { id: parseInt(id) },
                 data,
             });
+    
             return response;
         } catch (error) {
             throw new Error(`Failed to update user: ${error.message}`);

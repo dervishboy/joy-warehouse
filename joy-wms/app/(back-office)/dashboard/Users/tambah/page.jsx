@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Container, Grid, Paper, TextField, Button, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Container, Grid, Paper, TextField, Button, Typography, FormControl, InputLabel, Select, MenuItem, Snackbar, SnackbarContent } from "@mui/material";
 import { Plus, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -26,6 +26,10 @@ export default function TambahUser() {
         confirmPassword: '',
     });
 
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormValues({ ...formValues, [name]: value });
@@ -43,15 +47,28 @@ export default function TambahUser() {
                 }
             );
             if (response.status === 201) {
-                router.push('/dashboard/Users');
+                setSnackbarSeverity('success');
+                setSnackbarMessage('Data User berhasil ditambahkan!');
+                setSnackbarOpen(true);
+                setTimeout(() => {
+                    router.push('/dashboard/Users');
+                }, 2000);
             }
-        } catch (error) {
+        }
+        catch (error) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Terjadi kesalahan saat menambahkan data!');
+            setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         };
     };
 
     const handleBack = () => {
         router.push('/dashboard/Users');
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -148,6 +165,19 @@ export default function TambahUser() {
                     </Grid>
                 </form>
             </Paper>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={4000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <SnackbarContent
+                    style={{
+                        backgroundColor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+                    }}
+                    message={snackbarMessage}
+                />
+            </Snackbar>
         </Container>
     );
 }
