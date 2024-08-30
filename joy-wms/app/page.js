@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from 'react';
-import { Container, Box, Typography, TextField, Button, Alert, AlertTitle, AlertDescription, InputAdornment, IconButton } from '@mui/material';
+import { Box, Typography, TextField, Button, Snackbar, InputAdornment, IconButton, Alert } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { Lock, VisibilityOff, Visibility, Person, ErrorOutline } from '@mui/icons-material';
 import Image from 'next/image';
 import axios from 'axios';
-
 
 export default function Login() {
   const router = useRouter();
@@ -14,28 +13,79 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleLogin = async () => {
+    if (!email && !password) {
+      setError('Harap masukkan email dan kata sandi.');
+      setSnackbarOpen(true);
+      return;
+    }
+  
+    if (!email) {
+      setError('Harap masukkan email.');
+      setSnackbarOpen(true);
+      return;
+    }
+  
+    if (!password) {
+      setError('Harap masukkan kata sandi.');
+      setSnackbarOpen(true);
+      return;
+    }
+  
+    if (!validateEmail(email)) {
+      setError('Format email tidak valid.');
+      setSnackbarOpen(true);
+      return;
+    }
+  
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         email,
         password
       });
-      console.log(response);
       if (response.status === 200) {
         localStorage.setItem('token', response.data.token);
         router.push('/dashboard');
       } else {
-        setError('Invalid username or password');
+        setError('Email atau kata sandi salah.');
+        setSnackbarOpen(true);
       }
-    }
-    catch (err) {
-      console.log(err);
+    } catch (err) {
+      console.error(err);
+
+      const errorMessage = err.response?.data?.message;
+      let translatedError = 'Terjadi kesalahan. Silakan coba lagi.';
+  
+      if (errorMessage === 'User does not exist') {
+        translatedError = 'Pengguna tidak ditemukan.';
+      } else if (errorMessage === 'Invalid password') {
+        translatedError = 'Kata sandi tidak valid.';
+      } else if (errorMessage === 'Email atau kata sandi salah.') {
+        translatedError = 'Email atau kata sandi salah.';
+      } else if (errorMessage === 'Please enter all fields') {
+        translatedError = 'Harap masukkan semua kolom.';
+      } else if (errorMessage === 'Invalid credentials') {
+        translatedError = 'Kredensial tidak valid.';
+      }
+  
+      setError(translatedError);
+      setSnackbarOpen(true);
     }
   };
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -77,7 +127,7 @@ export default function Login() {
                 fullWidth
                 margin="normal"
                 type={showPassword ? 'text' : 'password'}
-                placeholder='Password'
+                placeholder='Kata Sandi'
                 variant="outlined"
                 onChange={(e) => setPassword(e.target.value)}
                 InputProps={{
@@ -104,14 +154,6 @@ export default function Login() {
               >
                 Login
               </Button>
-
-              {error && (
-                <Alert severity="error" sx={{ marginTop: 16 }}>
-                  <ErrorOutline fontSize="inherit" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
             </form>
           </Box>
         </Box>
@@ -133,6 +175,17 @@ export default function Login() {
           </Typography>
         </Box>
       </Box>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ backgroundColor: '#f44336', color: '#fff' }}>
+          {error}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
