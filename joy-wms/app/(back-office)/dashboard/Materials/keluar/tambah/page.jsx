@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Container, Grid, Paper, TextField, Button, Typography, Select, MenuItem, FormControl, Snackbar, SnackbarContent, InputAdornment } from "@mui/material";
+import { Container, Grid, Paper, TextField, Button, Typography, Snackbar, SnackbarContent, InputAdornment, Autocomplete } from "@mui/material";
 import { Plus, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
@@ -15,6 +15,7 @@ export default function TambahMaterialKeluar() {
     });
 
     const [materials, setMaterials] = useState([]);
+    const [selectedMaterial, setSelectedMaterial] = useState(null);
     const [selectedSatuan, setSelectedSatuan] = useState('');
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -31,16 +32,15 @@ export default function TambahMaterialKeluar() {
             });
     }, []);
 
+    const handleMaterialChange = (event, newValue) => {
+        setSelectedMaterial(newValue);
+        setFormValues({ ...formValues, material_id: newValue ? newValue.id : '' });
+        setSelectedSatuan(newValue ? newValue.satuan : '');
+    };
+
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormValues({ ...formValues, [name]: value });
-
-        if (name === "material_id") {
-            const selectedMaterial = materials.find(material => material.id === parseInt(value));
-            if (selectedMaterial) {
-                setSelectedSatuan(selectedMaterial.satuan);
-            }
-        }
     };
 
     const handleSubmit = async (event) => {
@@ -85,43 +85,23 @@ export default function TambahMaterialKeluar() {
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Typography className='mb-2'>
-                                Kode Material :
+                                Material :
                             </Typography>
-                            <FormControl fullWidth size='small'>
-                                <Select
-                                    name="material_id"
-                                    value={formValues.material_id}
-                                    onChange={handleInputChange}
-                                    required
-                                    MenuProps={{
-                                        PaperProps: {
-                                            style: {
-                                                maxHeight: 48 * 4.5 + 8,
-                                                width: 250,
-                                            },
-                                        },
-                                    }}
-                                >
-                                    {materials.map((material) => (
-                                        <MenuItem key={material.id} value={material.id}>
-                                            {material.kode_material} - {material.nama_material}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        {/* </Grid>
-                        <Grid item xs={12}>
-                            <Typography className='mb-2'>
-                                Tanggal Masuk :
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                name="date"
-                                type="date"
-                                onChange={handleInputChange}
-                                value={formValues.date}
-                                required
-                            /> */}
+                            <Autocomplete
+                                options={materials}
+                                getOptionLabel={(material) => `${material.kode_material} - ${material.nama_material}`}
+                                value={selectedMaterial}
+                                onChange={handleMaterialChange}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        placeholder="Pilih material..."
+                                        variant="outlined"
+                                        fullWidth
+                                        required
+                                    />
+                                )}
+                            />
                         </Grid>
                         <Grid item xs={12}>
                             <Typography className='mb-2'>

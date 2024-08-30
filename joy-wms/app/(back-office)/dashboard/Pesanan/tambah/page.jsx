@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Snackbar, SnackbarContent, Grid, Paper, Typography, Box, Divider, Button, TextField, Select, MenuItem, FormControl, IconButton, InputAdornment } from "@mui/material";
+import { Snackbar, SnackbarContent, Grid, Paper, Typography, Box, Divider, Button, TextField, Select, MenuItem, FormControl, IconButton, InputAdornment, Autocomplete } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { CircleMinus, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
@@ -29,6 +29,8 @@ export default function TambahPesanan() {
     });
 
     const [materials, setMaterials] = useState([]);
+    const [selectedMaterial, setSelectedMaterial] = useState(null);
+    const [selectedSatuan, setSelectedSatuan] = useState('');
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -322,46 +324,43 @@ export default function TambahPesanan() {
                                 <Paper elevation={3} className="p-4 mb-4">
                                     <Grid container spacing={2}>
                                         {product.productMaterials.map((material, materialIndex) => (
-                                            <Grid container spacing={2} key={materialIndex}>
+                                            <Grid container spacing={2} key={materialIndex} className='mt-1'>
                                                 <Grid item xs={12} sm={6}>
-                                                    <FormControl fullWidth required>
-                                                        <Typography variant="body1">Material :</Typography>
-                                                        <Select
-                                                            value={material.material_id}
-                                                            onChange={(e) => handleChange(e, index, 'material_id', true, materialIndex)}
-                                                            displayEmpty
+                                                    <FormControl fullWidth required className='ml-2'>
+                                                        <Typography variant="body1">Material {materialIndex + 1} :</Typography>
+                                                        <Autocomplete
+                                                            options={materials}
                                                             size='small'
-                                                            MenuProps={{
-                                                                PaperProps: {
-                                                                    style: {
-                                                                        maxHeight: 48 * 4.5 + 8,
-                                                                        width: 250,
-                                                                    },
-                                                                },
+                                                            getOptionLabel={(material) => `${material.kode_material} - ${material.nama_material}`}
+                                                            value={selectedMaterial}
+                                                            onChange={(event, newValue) => {
+                                                                setSelectedMaterial(newValue);
+                                                                setSelectedSatuan(newValue.satuan);
+                                                                handleChange({ target: { name: 'material_id', value: newValue.id } }, index, 'material_id', true, materialIndex);
                                                             }}
-                                                        >
-                                                            <MenuItem value="">
-                                                                <em>Pilih Material</em>
-                                                            </MenuItem>
-                                                            {materials.map((mat) => (
-                                                                <MenuItem key={mat.id} value={mat.id}>
-                                                                    {mat.kode_material} - {mat.nama_material}
-                                                                </MenuItem>
-                                                            ))}
-                                                        </Select>
+                                                            renderInput={(params) => (
+                                                                <TextField
+                                                                    {...params}
+                                                                    placeholder="Pilih material..."
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                />
+                                                            )}
+                                                        />
                                                     </FormControl>
                                                 </Grid>
+
                                                 <Grid item xs={12} sm={6}>
-                                                    <Typography variant="body1">Quantity :</Typography>
+                                                    <Typography variant="body1">Jumlah :</Typography>
                                                     <TextField
-                                                        name="quantity"
                                                         type="number"
+                                                        name="quantity"
                                                         value={material.quantity}
                                                         onChange={(e) => handleChange(e, index, 'quantity', true, materialIndex)}
                                                         fullWidth
                                                         required
                                                         InputProps={{
-                                                            endAdornment: <InputAdornment position="end">{materials.find(mat => mat.id === material.material_id)?.satuan}</InputAdornment>
+                                                            endAdornment: <InputAdornment position="end">{selectedSatuan}</InputAdornment>
                                                         }}
                                                     />
                                                 </Grid>
