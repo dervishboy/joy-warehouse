@@ -54,6 +54,7 @@ model Product {
   id              Int              @id @default(autoincrement())
   kode_produk     String           @unique
   nama_produk     String
+  jumlah_produk   Int
   deskripsi       String
   productMaterials ProductMaterial[]
   orderProducts OrderProduct[]

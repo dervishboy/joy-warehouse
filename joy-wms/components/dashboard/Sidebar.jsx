@@ -10,8 +10,8 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 
     const materialLinks = [
         { name: "Data Material", href: "/dashboard/Materials" },
-        { name: "Stok Masuk", href: "/dashboard/Materials/masuk" },
-        { name: "Stok Keluar", href: "/dashboard/Materials/keluar" },
+        { name: "Material Masuk", href: "/dashboard/Materials/masuk" },
+        { name: "Material Keluar", href: "/dashboard/Materials/keluar" },
     ];
 
     const handleCollapsibleChange = () => {

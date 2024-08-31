@@ -99,6 +99,7 @@ const Order = {
                                         data: {
                                             kode_produk: product.kode_produk,
                                             nama_produk: product.nama_produk,
+                                            jumlah_produk: product.jumlah_produk,
                                             deskripsi: product.deskripsi,
                                             productMaterials: {
                                                 create: product.productMaterials.map(material => ({

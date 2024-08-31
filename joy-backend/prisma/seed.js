@@ -1,11 +1,10 @@
 import { PrismaClient } from '@prisma/client';
-// import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient();
 
 async function seeder() {
     try {
-
         const materials = await prisma.material.createMany({
             data: [
                 { kode_material: 'M001', nama_material: 'Akrilik 2mm bening', satuan: 'Cm' },
@@ -47,7 +46,18 @@ async function seeder() {
             ]
         });
 
-        // console.log('Seeding success', roles, users, materials);
+        const hashedPassword = await bcrypt.hash('admin', 10);
+
+        const adminUser = await prisma.user.create({
+            data: {
+                email: 'admin@admin.com',
+                name: 'Admin',
+                password: hashedPassword,
+                role: 'ADMIN',
+            },
+        });
+
+        console.log('Database has been seeded successfully');
 
     } catch (error) {
         console.error('Failed to seed database', error.message);

@@ -17,6 +17,7 @@ export default function TambahPesanan() {
             {
                 kode_produk: '',
                 nama_produk: '',
+                jumlah_produk: '',
                 deskripsi: '',
                 productMaterials: [
                     {
@@ -86,6 +87,7 @@ export default function TambahPesanan() {
                 {
                     kode_produk: '',
                     nama_produk: '',
+                    jumlah_produk: '',
                     deskripsi: '',
                     productMaterials: [
                         {
@@ -183,6 +185,7 @@ export default function TambahPesanan() {
                 products: formData.products.map(product => ({
                     kode_produk: product.kode_produk,
                     nama_produk: product.nama_produk,
+                    jumlah_produk: Number(product.jumlah_produk),
                     deskripsi: product.deskripsi,
                     productMaterials: product.productMaterials.map(material => ({
                         material_id: material.material_id,
@@ -295,6 +298,17 @@ export default function TambahPesanan() {
                                                 name="nama_produk"
                                                 value={product.nama_produk}
                                                 onChange={(e) => handleChange(e, index, 'nama_produk', true)}
+                                                fullWidth
+                                                required
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <Typography variant="body1">Jumlah Produk :</Typography>
+                                            <TextField
+                                                name="jumlah_produk"
+                                                type="number"
+                                                value={product.jumlah_produk}
+                                                onChange={(e) => handleChange(e, index, 'jumlah_produk', true)}
                                                 fullWidth
                                                 required
                                             />

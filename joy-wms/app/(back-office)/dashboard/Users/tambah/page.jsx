@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 
 const roleLabels = {
     ADMIN: 'Admin',
-    STAFF_GUDANG: 'Staff Gudang',
+    // STAFF_GUDANG: 'Staff Gudang',
 };
 
 const roleOptions = Object.entries(roleLabels).map(([value, label]) => ({
