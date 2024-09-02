@@ -35,6 +35,7 @@ export default function LihatDetailPesanan() {
                 product: {
                     kode_produk: '',
                     nama_produk: '',
+                    jumlah_produk: '',
                     deskripsi: '',
                     productMaterials: [
                         {
@@ -102,7 +103,7 @@ export default function LihatDetailPesanan() {
 
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
-    }; 
+    };
 
     return (
         <div className='px-3 py-4'>
@@ -129,11 +130,11 @@ export default function LihatDetailPesanan() {
 
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <div className='mb-8'>
+                        <div className='mb-4'>
                             <h4 className='mb-1'>Status:</h4>
                             <span className={`rounded-md p-1 border border-neutral-800 text-sm font-semibold ${orderDetails.status === 'PROCESSING' ? 'bg-yellow-400' :
-                                    orderDetails.status === 'DONE' ? 'bg-green-400' :
-                                        'bg-red-400'
+                                orderDetails.status === 'DONE' ? 'bg-green-400' :
+                                    'bg-red-400'
                                 }`}>
                                 {orderDetails.status}
                             </span>
@@ -147,7 +148,7 @@ export default function LihatDetailPesanan() {
                                         value={newStatus}
                                         onChange={handleStatusChange}
                                     >
-                                        <MenuItem value="PROCESSING">PROCESSING</MenuItem>
+                                        {/* <MenuItem value="PROCESSING">PROCESSING</MenuItem> */}
                                         <MenuItem value="DONE">DONE</MenuItem>
                                         <MenuItem value="CANCELLED">CANCELLED</MenuItem>
                                     </Select>
@@ -180,7 +181,15 @@ export default function LihatDetailPesanan() {
                                     <Typography>Nama Produk:</Typography>
                                     <Typography>{orderProduct.product.nama_produk}</Typography>
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography>
+                                        Jumlah Produk:
+                                    </Typography>
+                                    <Typography>
+                                        {orderProduct.product.jumlah_produk}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
                                     <Typography>Deskripsi Produk:</Typography>
                                     <Typography>{orderProduct.product.deskripsi}</Typography>
                                 </Grid>
@@ -227,6 +236,65 @@ export default function LihatDetailPesanan() {
                     />
                 </div>
             </Paper>
+            <div style={{ display: 'none' }}>
+                <Paper ref={printRef} style={{ padding: '20px', margin: '20px' }} sx={{ background: 'linear-gradient(180deg, #F8B177, #FBD8BB, #FEF2E8)' }}>
+                    <h2 style={{ textAlign: 'center', fontSize: '24px', fontWeight: 'bold', marginBottom: '60px' }}>
+                        DETAIL PESANAN
+                    </h2>
+                    <Grid container spacing={3} className='ml-2'>
+                        <Grid item xs={12} sm={6}>
+                            <Typography><strong>Kode Pesanan:</strong> {orderDetails.kode_pesanan}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography><strong>Nama Pemesan:</strong> {orderDetails.nama_pemesan}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography><strong>Estimasi Waktu Selesai:</strong> {formatDate(orderDetails.estimatedTime)}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography><strong>Total Harga:</strong> Rp {orderDetails.totalHarga}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography><strong>Status:</strong> {orderDetails.status}</Typography>
+                        </Grid>
+                    </Grid>
+
+                    {orderDetails.orderProducts.map((orderProduct, index) => (
+                        <Box key={index} mt={3} mb={3} ml={4}>
+                            <Divider className="mb-3" />
+                            <Typography variant="h6" className="font-bold mb-2">Product {index + 1}</Typography>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography><strong>Kode Produk:</strong> {orderProduct.product.kode_produk}</Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography><strong>Nama Produk:</strong> {orderProduct.product.nama_produk}</Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography><strong>Jumlah Produk:</strong> {orderProduct.product.jumlah_produk}</Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography><strong>Deskripsi Produk:</strong> {orderProduct.product.deskripsi}</Typography>
+                                </Grid>
+                            </Grid>
+
+                            <Box mt={3}>
+                                <Typography><strong>Materials:</strong></Typography>
+                                <Grid container spacing={3}>
+                                    {orderProduct.product.productMaterials.map((productMaterial, materialIndex) => (
+                                        <Grid item xs={12} sm={4} key={materialIndex}>
+                                            <Paper elevation={1} className="p-2 mb-2">
+                                                <Typography variant="body1"><strong>{productMaterial.material.nama_material}</strong></Typography>
+                                                <Typography variant="body2">Quantity: {productMaterial.quantity} {productMaterial.material.satuan}</Typography>
+                                            </Paper>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Box>
+                        </Box>
+                    ))}
+                </Paper>
+            </div>
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={6000}

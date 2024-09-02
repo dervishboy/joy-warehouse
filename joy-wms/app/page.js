@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Box, Typography, TextField, Button, Snackbar, InputAdornment, IconButton, Alert } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { Lock, VisibilityOff, Visibility, Person, ErrorOutline } from '@mui/icons-material';
+import { Lock, Person } from '@mui/icons-material';
 import Image from 'next/image';
 import axios from 'axios';
 
@@ -26,25 +26,25 @@ export default function Login() {
       setSnackbarOpen(true);
       return;
     }
-  
+
     if (!email) {
       setError('Harap masukkan email.');
       setSnackbarOpen(true);
       return;
     }
-  
+
     if (!password) {
       setError('Harap masukkan kata sandi.');
       setSnackbarOpen(true);
       return;
     }
-  
+
     if (!validateEmail(email)) {
       setError('Format email tidak valid.');
       setSnackbarOpen(true);
       return;
     }
-  
+
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         email,
@@ -62,7 +62,7 @@ export default function Login() {
 
       const errorMessage = err.response?.data?.message;
       let translatedError = 'Terjadi kesalahan. Silakan coba lagi.';
-  
+
       if (errorMessage === 'User does not exist') {
         translatedError = 'Pengguna tidak ditemukan.';
       } else if (errorMessage === 'Invalid password') {
@@ -74,7 +74,7 @@ export default function Login() {
       } else if (errorMessage === 'Invalid credentials') {
         translatedError = 'Kredensial tidak valid.';
       }
-  
+
       setError(translatedError);
       setSnackbarOpen(true);
     }
@@ -108,7 +108,10 @@ export default function Login() {
             <Typography variant="h4" component="h1" gutterBottom className='font-semibold text-custom-jhitam'>
               Login
             </Typography>
-            <form onSubmit={(e) => e.preventDefault()} className='mt-12'>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin();
+            }} className='mt-12'>
               <TextField
                 fullWidth
                 margin="normal"
@@ -133,22 +136,15 @@ export default function Login() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Lock fontSize='small'/>
+                      <Lock fontSize='small' />
                     </InputAdornment>
                   ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleShowPassword}>
-                        {showPassword ? <Visibility fontSize='small'/> : <VisibilityOff fontSize='small'/>}
-                      </IconButton>
-                    </InputAdornment>
-                  )
                 }}
               />
               <Button
                 fullWidth
                 variant="contained"
-                onClick={handleLogin}
+                type="submit"
                 sx={{ marginTop: 8, background: 'linear-gradient(180deg, #F59549, #F8B177 )' }}
                 className='hover:bg-orange-500 text-custom-jhitam font-semibold'
               >

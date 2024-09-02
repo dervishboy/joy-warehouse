@@ -57,6 +57,12 @@ async function seeder() {
             },
         });
 
+        const inventaris = await prisma.inventaris.createMany({
+            data: [
+                {}
+            ]
+        })
+
         console.log('Database has been seeded successfully');
 
     } catch (error) {
