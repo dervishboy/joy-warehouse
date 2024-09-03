@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Paper, Grid, TextField, Button, Typography, Snackbar, SnackbarContent } from "@mui/material";
 import { useRouter } from 'next/navigation';
+import { CirclePlus, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 export default function TambahInventaris() {
@@ -103,15 +104,19 @@ export default function TambahInventaris() {
                         <Grid item xs={12} className="text-right space-x-2">
                             <Button
                                 variant="contained"
-                                color="secondary"
+                                className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
+                                size='small'
                                 onClick={handleBack}
+                                startIcon={<ArrowLeft className='w-4 h-4' />}
                             >
-                                Back
+                                Kembali
                             </Button>
                             <Button
-                                type="submit"
                                 variant="contained"
-                                color="primary"
+                                className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
+                                size='small'
+                                type="submit"
+                                startIcon={<CirclePlus className='w-4 h-4' />}
                             >
                                 Tambah
                             </Button>

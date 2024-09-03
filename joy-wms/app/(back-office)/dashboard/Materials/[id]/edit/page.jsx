@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Container, Grid, Paper, TextField, Button, Typography } from "@mui/material";
-import { Pencil, ArrowLeft } from 'lucide-react';
+import { File, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 export default function EditMaterial() {
@@ -101,23 +101,23 @@ export default function EditMaterial() {
                             />
                         </Grid>
                         <Grid item xs={12} className="flex justify-end space-x-2">
-                            <Button
+                        <Button
                                 variant="contained"
-                                color="secondary"
-                                size="small"
+                                className="bg-custom-jorange hover:bg-orange-600 text-custom-jhitam font-semibold"
+                                size='small'
                                 onClick={handleBack}
-                                startIcon={<ArrowLeft className="w-4 h-4" />}
+                                startIcon={<ArrowLeft className='w-4 h-4' />}
                             >
-                                Back
+                                Kembali
                             </Button>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                size="small"
+                                size='small'
                                 type="submit"
-                                startIcon={<Pencil className="w-4 h-4" />}
+                                startIcon={<File className='w-4 h-4' />}
                             >
-                                Save
+                                Simpan
                             </Button>
                         </Grid>
                     </Grid>

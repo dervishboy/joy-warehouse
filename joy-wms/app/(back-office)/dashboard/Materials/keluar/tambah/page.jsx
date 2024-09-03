@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Container, Grid, Paper, TextField, Button, Typography, Snackbar, SnackbarContent, InputAdornment, Autocomplete } from "@mui/material";
-import { Plus, ArrowLeft } from 'lucide-react';
+import { CirclePlus, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 export default function TambahMaterialKeluar() {
@@ -121,19 +121,20 @@ export default function TambahMaterialKeluar() {
                         </Grid>
                         <Grid item xs={12} className='flex justify-between'>
                             <Button
-                                onClick={handleBack}
                                 variant="contained"
-                                color="secondary"
-                                startIcon={<ArrowLeft />}
-                                className="ml-2"
+                                className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
+                                size='small'
+                                onClick={handleBack}
+                                startIcon={<ArrowLeft className='w-4 h-4' />}
                             >
                                 Kembali
                             </Button>
                             <Button
-                                type="submit"
                                 variant="contained"
-                                color="primary"
-                                startIcon={<Plus />}
+                                className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
+                                size='small'
+                                type="submit"
+                                startIcon={<CirclePlus className='w-4 h-4' />}
                             >
                                 Tambah
                             </Button>

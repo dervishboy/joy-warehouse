@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, Grid, TextField, Button, Typography, Snackbar, SnackbarContent } from "@mui/material";
 import { useRouter, useParams } from 'next/navigation';
+import { File, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 export default function EditInventaris() {
@@ -126,17 +127,21 @@ export default function EditInventaris() {
                         <Grid item xs={12} className="text-right space-x-2">
                             <Button
                                 variant="contained"
-                                color="secondary"
+                                className="bg-custom-jorange hover:bg-orange-600 text-custom-jhitam font-semibold"
+                                size='small'
                                 onClick={handleBack}
+                                startIcon={<ArrowLeft className='w-4 h-4' />}
                             >
-                                Cancel
+                                Kembali
                             </Button>
                             <Button
-                                type="submit"
                                 variant="contained"
                                 color="primary"
+                                size='small'
+                                type="submit"
+                                startIcon={<File className='w-4 h-4' />}
                             >
-                                Submit
+                                Simpan
                             </Button>
                         </Grid>
                     </Grid>

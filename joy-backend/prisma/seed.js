@@ -59,7 +59,21 @@ async function seeder() {
 
         const inventaris = await prisma.inventaris.createMany({
             data: [
-                {}
+                {nama_barang: 'Mesin Las', quantity: 1, satuan: 'Unit'},
+                {nama_barang: 'Mesin Laser', quantity: 2, satuan: 'Unit'},
+                {nama_barang: 'Mesin Cutting Sticker', quantity: 2, satuan: 'Unit'},
+                {nama_barang: 'Mesin Bending (120 cm)', quantity: 1, satuan: 'Unit'},
+                {nama_barang: 'Mesin Bending (10 cm)', quantity: 1, satuan: 'Unit'},
+                {nama_barang: 'Bor Kabel', quantity: 3, satuan: 'Unit'},
+                {nama_barang: 'Bor Cordless', quantity: 2, satuan: 'Unit'},
+                {nama_barang: 'Hot Gun', quantity: 3, satuan: 'Unit'},
+                {nama_barang: 'Kompresor', quantity: 2, satuan: 'Unit'},
+                {nama_barang: 'Scafolding', quantity: 2, satuan: 'Set'},
+                {nama_barang: 'Tangga', quantity: 2, satuan: 'Set'},
+                {nama_barang: 'Komputer', quantity: 3, satuan: 'Unit'},
+                {nama_barang: 'Gerinda', quantity: 2, satuan: 'Unit'},
+                {nama_barang: 'Mesin Potong Besi', quantity: 2, satuan: 'Unit'},
+                {nama_barang: 'Torch', quantity: 2, satuan: 'Unit'},
             ]
         })
 

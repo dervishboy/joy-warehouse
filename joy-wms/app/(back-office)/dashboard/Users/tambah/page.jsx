@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Container, Grid, Paper, TextField, Button, Typography, FormControl, InputLabel, Select, MenuItem, Snackbar, SnackbarContent } from "@mui/material";
-import { Plus, ArrowLeft } from 'lucide-react';
+import { CirclePlus, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
@@ -145,7 +145,7 @@ export default function TambahUser() {
                         <Grid item xs={12} className="flex justify-end space-x-2">
                             <Button
                                 variant="contained"
-                                color="secondary"
+                                className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
                                 size='small'
                                 onClick={handleBack}
                                 startIcon={<ArrowLeft className='w-4 h-4' />}
@@ -154,10 +154,10 @@ export default function TambahUser() {
                             </Button>
                             <Button
                                 variant="contained"
-                                color="primary"
+                                className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
                                 size='small'
                                 type="submit"
-                                startIcon={<Plus className='w-4 h-4' />}
+                                startIcon={<CirclePlus className='w-4 h-4' />}
                             >
                                 Tambah
                             </Button>
