@@ -32,6 +32,9 @@ const Material = {
         try {
             const response = await prisma.material.findUnique({
                 where: { id: parseInt(id) },
+                include: {
+                    movements: true,
+                },
             });
             return response;
         } catch (error) {

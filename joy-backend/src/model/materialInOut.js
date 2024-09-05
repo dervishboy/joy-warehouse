@@ -42,6 +42,7 @@ const MaterialMovement = {
                 take: rowsPerPage,
                 include: {
                     material: true,
+                    order: true,
                 },
             });
 
@@ -91,6 +92,7 @@ const MaterialMovement = {
                 take: rowsPerPage,
                 include: {
                     material: true,
+                    order: true,
                 },
             });
 
@@ -104,7 +106,8 @@ const MaterialMovement = {
             const materialMovement = await prisma.materialMovement.create({
                 data: {
                     ...data,
-                    type: 'MASUK'
+                    type: 'MASUK',
+                    order_id: data.order_id || null, // Nullable order_id
                 }
             });
             await prisma.material.update({
@@ -120,12 +123,14 @@ const MaterialMovement = {
             return error;
         }
     },
+
     createOut: async (data) => {
         try {
             const materialMovement = await prisma.materialMovement.create({
                 data: {
                     ...data,
-                    type: 'KELUAR'
+                    type: 'KELUAR',
+                    order_id: data.order_id || null, // Nullable order_id
                 }
             });
             await prisma.material.update({
@@ -141,10 +146,15 @@ const MaterialMovement = {
             return error;
         }
     },
+
     getById: async (id) => {
         try {
             const response = await prisma.materialMovement.findUnique({
                 where: { id: parseInt(id) },
+                include: {
+                    material: true,
+                    order: true,
+                },
             });
             return response;
         } catch (error) {

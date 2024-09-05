@@ -18,6 +18,10 @@ const formatDate = (isoDate) => {
     return `${day} ${month} ${year}`;
 };
 
+const formatAngka = (angka) => {
+    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 export default function MaterialMasuk() {
     const router = useRouter();
 
@@ -131,7 +135,7 @@ export default function MaterialMasuk() {
                                         <TableCell className='text-sm font-semibold text-center'>{material.material.kode_material}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{material.material.nama_material}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{formatDate(material.date)}</TableCell>
-                                        <TableCell className='text-sm font-semibold text-center'>{material.quantity} {material.material.satuan}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{formatAngka(material.quantity)} {material.material.satuan}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

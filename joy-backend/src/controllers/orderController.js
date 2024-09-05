@@ -67,6 +67,16 @@ const OrderController = {
             res.status(500).json({ error: error.message });
         }
     },
+
+    generateNextKode: async (req, res) => {
+        try {
+            const { prefix, model, kodeField } = req.query;
+            const nextKode = await Order.generateNextKode(prefix, model, kodeField);
+            res.json({ nextKode });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
 };
 
 export default OrderController;

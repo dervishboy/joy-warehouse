@@ -18,6 +18,10 @@ const formatDate = (isoDate) => {
     return `${day} ${month} ${year}`;
 };
 
+const formatAngka = (angka) => {
+    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 export default function MaterialsKeluar() {
     const router = useRouter();
 
@@ -130,7 +134,7 @@ export default function MaterialsKeluar() {
                                         <TableCell className='text-sm font-semibold text-center'>{materialKeluar.material.kode_material}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{materialKeluar.material.nama_material}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{formatDate(materialKeluar.date)}</TableCell>
-                                        <TableCell className='text-sm font-semibold text-center'>{materialKeluar.quantity}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>{formatAngka(materialKeluar.quantity)} {materialKeluar.material.satuan}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

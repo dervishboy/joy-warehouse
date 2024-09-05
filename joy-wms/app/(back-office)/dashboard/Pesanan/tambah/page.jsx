@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Snackbar, SnackbarContent, Grid, Paper, Typography, Box, Divider, Button, TextField, Select, MenuItem, FormControl, IconButton, InputAdornment, Autocomplete } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { CircleMinus, ArrowLeft } from 'lucide-react';
+import { NumericFormat } from 'react-number-format';
 import axios from 'axios';
+
 
 export default function TambahPesanan() {
     const [formData, setFormData] = useState({
@@ -31,7 +33,7 @@ export default function TambahPesanan() {
 
     const [materials, setMaterials] = useState([]);
     const [selectedMaterial, setSelectedMaterial] = useState(null);
-    const [selectedSatuan, setSelectedSatuan] = useState('');
+    const [selectedSatuan, setSelectedSatuan] = useState([]);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -79,7 +81,9 @@ export default function TambahPesanan() {
         }
     };
 
-    const addProduct = () => {
+
+    const addProduct = async () => {
+
         setFormData({
             ...formData,
             products: [
@@ -139,37 +143,37 @@ export default function TambahPesanan() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         try {
             const checkOrderResponse = await axios.get(`http://localhost:5000/api/orders?kode_pesanan=${formData.kode_pesanan}`);
             console.log("Order Check Response:", checkOrderResponse.data);
-    
+
             const orders = checkOrderResponse.data.orders;
             const orderExists = orders.some(order => order.kode_pesanan === formData.kode_pesanan);
-    
+
             if (orderExists) {
                 alert('Kode pesanan sudah ada. Silakan gunakan kode yang berbeda.');
                 return;
             }
-    
+
             for (let i = 0; i < formData.products.length; i++) {
                 const product = formData.products[i];
                 const checkProductResponse = await axios.get(`http://localhost:5000/api/products?kode_produk=${product.kode_produk}`);
                 console.log(`Product Check Response for ${product.kode_produk}:`, checkProductResponse.data);
-    
+
                 const products = checkProductResponse.data.products;
                 const productExists = products.some(prod => prod.kode_produk === product.kode_produk);
-    
+
                 if (productExists) {
                     alert(`Kode produk ${product.kode_produk} sudah ada. Silakan gunakan kode yang berbeda untuk produk.`);
                     return;
                 }
-    
+
                 for (let j = 0; j < product.productMaterials.length; j++) {
                     const material = product.productMaterials[j];
                     const materialResponse = await axios.get(`http://localhost:5000/api/materials/${material.material_id}`);
                     console.log(`Material Check Response for ${material.material_id}:`, materialResponse.data);
-    
+
                     if (material.quantity > materialResponse.data.quantity) {
                         alert(`Jumlah material ${materialResponse.data.kode_material} tidak mencukupi. Stok tersedia: ${materialResponse.data.quantity}.`);
                         return;
@@ -193,7 +197,7 @@ export default function TambahPesanan() {
                     }))
                 }))
             });
-    
+
             if (response.status === 201) {
                 setSnackbarSeverity('success');
                 setSnackbarMessage('Data Pesanan berhasil ditambahkan!');
@@ -234,14 +238,31 @@ export default function TambahPesanan() {
                                 required
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        {/* <Grid item xs={12} sm={6}>
                             <Typography variant="body1">Kode Pesanan :</Typography>
                             <TextField
                                 name="kode_pesanan"
                                 value={formData.kode_pesanan}
-                                onChange={(e) => handleChange(e)}
                                 fullWidth
+                                disabled
+                                readonly
+                            />
+                        </Grid> */}
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="body1">Total Harga :</Typography>
+                            <NumericFormat
+                                value={formData.totalHarga}
+                                customInput={TextField}
+                                onValueChange={(values) => {
+                                    const { floatValue } = values;
+                                    setFormData({ ...formData, totalHarga: floatValue });
+                                }}
+                                thousandSeparator={true}
+                                prefix={'Rp '}
+                                suffix={',00'}
+                                allowNegative={false}
                                 required
+                                fullWidth
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -258,22 +279,7 @@ export default function TambahPesanan() {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="body1">Total Harga :</Typography>
-                            <TextField
-                                name="totalHarga"
-                                type="number"
-                                value={formData.totalHarga}
-                                onChange={(e) => handleChange(e)}
-                                fullWidth
-                                required
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">Rp</InputAdornment>,
-                                }}
-                            />
-                        </Grid>
                     </Grid>
-
                     {formData.products.map((product, index) => (
                         <Box key={index} mt={3} display="flex">
                             <Box flex={1} mr={2}>
@@ -282,16 +288,16 @@ export default function TambahPesanan() {
                                 </Typography>
                                 <Paper elevation={3} className="p-4 mb-4">
                                     <Grid container spacing={3}>
-                                        <Grid item xs={12} sm={6}>
+                                        {/* <Grid item xs={12} sm={6}>
                                             <Typography variant="body1">Kode Produk :</Typography>
                                             <TextField
                                                 name="kode_produk"
                                                 value={product.kode_produk}
-                                                onChange={(e) => handleChange(e, index, 'kode_produk', true)}
                                                 fullWidth
-                                                required
+                                                disabled
+                                                readonly
                                             />
-                                        </Grid>
+                                        </Grid> */}
                                         <Grid item xs={12} sm={6}>
                                             <Typography variant="body1">Nama Produk :</Typography>
                                             <TextField
@@ -346,11 +352,13 @@ export default function TambahPesanan() {
                                                             options={materials}
                                                             size='small'
                                                             getOptionLabel={(material) => `${material.kode_material} - ${material.nama_material}`}
-                                                            value={selectedMaterial}
-                                                            onChange={(event, newValue) => {
-                                                                setSelectedMaterial(newValue);
-                                                                setSelectedSatuan(newValue.satuan);
-                                                                handleChange({ target: { name: 'material_id', value: newValue.id } }, index, 'material_id', true, materialIndex);
+                                                            value={materials.find(mat => mat.material_id === material.material_id)}
+                                                            onChange={(e, value) => {
+                                                                setSelectedMaterial(value);
+                                                                const updateSatuan = [...selectedSatuan];
+                                                                updateSatuan[materialIndex] = value?.satuan || '';
+                                                                setSelectedSatuan(updateSatuan);
+                                                                handleChange({ target: { name: 'material_id', value: value?.id } }, index, 'material_id', true, materialIndex);
                                                             }}
                                                             renderInput={(params) => (
                                                                 <TextField
@@ -374,7 +382,7 @@ export default function TambahPesanan() {
                                                         fullWidth
                                                         required
                                                         InputProps={{
-                                                            endAdornment: <InputAdornment position="end">{selectedSatuan}</InputAdornment>
+                                                            endAdornment: <InputAdornment position="end">{selectedSatuan[materialIndex]}</InputAdornment>
                                                         }}
                                                     />
                                                 </Grid>

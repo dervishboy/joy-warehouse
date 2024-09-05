@@ -16,10 +16,14 @@ import {
     Snackbar,
     SnackbarContent
 } from "@mui/material";
-import { CirclePlus, Pencil, Trash2, Search, FolderCog, Printer } from 'lucide-react';
+import { CirclePlus, Pencil, Trash2, Search, FolderCog, Printer, FileClock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
+
+const formatAngkaMaterial = (angka) => {
+    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
 
 export default function Materials() {
     const router = useRouter();
@@ -193,8 +197,17 @@ export default function Materials() {
                                     <TableRow key={row.id}>
                                         {columns.map((column) => (
                                             <TableCell className='text-sm font-semibold text-center' key={column.id}>
-                                                {column.id === 'actions' ? (
-                                                    <div className='items-center space-x-2 text-center'>
+                                                {column.id === 'index' ? index + 1 : column.id === 'quantity' ? formatAngkaMaterial(row[column.id]) : row[column.id]}
+                                                {column.id === 'actions' && (
+                                                    <div className='flex justify-center space-x-2'>
+                                                        <Button
+                                                            className='bg-amber-400 hover:bg-amber-500 cursor-pointer text-custom-jhitam font-semibold'
+                                                            variant="outlined"
+                                                            size="small"
+                                                            startIcon={<FileClock className='w-4 h-4' />}
+                                                        >
+                                                            Kartu Stok
+                                                        </Button>
                                                         <Button
                                                             className='bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold'
                                                             variant="outlined"
@@ -214,8 +227,6 @@ export default function Materials() {
                                                             Delete
                                                         </Button>
                                                     </div>
-                                                ) : (
-                                                    column.id === 'index' ? index + 1 + page * rowsPerPage : row[column.id]
                                                 )}
                                             </TableCell>
                                             
@@ -243,9 +254,9 @@ export default function Materials() {
                             <TableHead>
                                 <TableRow>
                                     {columns
-                                        .filter(column => column.id !== 'actions') // Exclude action columns
+                                        .filter(column => column.id !== 'actions')
                                         .map((column) => (
-                                            <TableCell key={column.id}>
+                                            <TableCell className="bg-custom-jhitam text-custom-jputih font-semibold" key={column.id}>
                                                 {column.name}
                                             </TableCell>
                                         ))}
@@ -258,7 +269,7 @@ export default function Materials() {
                                             .filter(column => column.id !== 'actions')
                                             .map((column) => (
                                                 <TableCell key={column.id}>
-                                                    {column.id === 'index' ? index + 1 : row[column.id]}
+                                                    {column.id === 'index' ? index + 1 : column.id === 'quantity' ? formatAngkaMaterial(row[column.id]) : row[column.id]}
                                                 </TableCell>
                                             ))}
                                     </TableRow>

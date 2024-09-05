@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { Container, Grid, Paper, TextField, Button, Typography, Snackbar, SnackbarContent, InputAdornment, Autocomplete } from "@mui/material";
 import { CirclePlus, ArrowLeft } from 'lucide-react';
+import { NumericFormat } from 'react-number-format';
 
 export default function TambahMaterialMasuk() {
     const router = useRouter();
@@ -107,14 +108,19 @@ export default function TambahMaterialMasuk() {
                             <Typography className='mb-2'>
                                 Jumlah :
                             </Typography>
-                            <TextField
+                            <NumericFormat
+                                customInput={TextField}
                                 fullWidth
-                                type='number'
+                                thousandSeparator={true}
                                 name="quantity"
-                                onChange={handleInputChange}
+                                onValueChange={(values) => {
+                                    const { value } = values;
+                                    setFormValues({ ...formValues, quantity: value });
+                                }}
                                 value={formValues.quantity}
                                 required
-                                InputProps={{ 
+                                allowNegative={false}
+                                InputProps={{
                                     endAdornment: <InputAdornment position="end">{selectedSatuan}</InputAdornment>
                                 }}
                             />

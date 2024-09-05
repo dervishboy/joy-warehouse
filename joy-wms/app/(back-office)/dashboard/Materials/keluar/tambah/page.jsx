@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Container, Grid, Paper, TextField, Button, Typography, Snackbar, SnackbarContent, InputAdornment, Autocomplete } from "@mui/material";
 import { CirclePlus, ArrowLeft } from 'lucide-react';
+import { NumericFormat } from 'react-number-format';
 import axios from 'axios';
 
 export default function TambahMaterialKeluar() {
@@ -45,6 +46,14 @@ export default function TambahMaterialKeluar() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if (selectedMaterial && Number(formValues.quantity) > selectedMaterial.quantity) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Jumlah material keluar melebihi stok yang tersedia!');
+            setSnackbarOpen(true);
+            return;
+        }
+
         try {
             const response = await axios.post('http://localhost:5000/api/movements/out', {
                 material_id: formValues.material_id,
@@ -107,12 +116,17 @@ export default function TambahMaterialKeluar() {
                             <Typography className='mb-2'>
                                 Jumlah :
                             </Typography>
-                            <TextField
-                                fullWidth
-                                type='number'
+                            <NumericFormat
+                                customInput={TextField}
                                 name="quantity"
-                                onChange={handleInputChange}
                                 value={formValues.quantity}
+                                thousandSeparator={true}
+                                onValueChange={(values) => {
+                                    const { value } = values;
+                                    setFormValues({ ...formValues, quantity: value });
+                                }}
+                                variant="outlined"
+                                fullWidth
                                 required
                                 InputProps={{
                                     endAdornment: <InputAdornment position="end">{selectedSatuan}</InputAdornment>

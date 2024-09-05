@@ -43,11 +43,13 @@ model Material {
 model MaterialMovement {
   id          Int      @id @default(autoincrement())
   material_id Int
+  order_id    Int?
   quantity    Int
   date        DateTime @default(now())
   type        MovementType
 
   material    Material @relation(fields: [material_id], references: [id])
+  order        Order?  @relation(fields: [order_id], references: [id])
 }
 
 model Product {
@@ -78,6 +80,7 @@ model Order {
   estimatedTime DateTime
   totalHarga    Float
   orderProducts OrderProduct[]
+  movementsMaterial  MaterialMovement[]
 }
 
 model OrderProduct {
