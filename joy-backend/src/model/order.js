@@ -97,18 +97,20 @@ const Order = {
             },
             take: 1,
         });
-        
+    
         let newKode;
         if (!lastItem) {
-            newKode = `${prefix}001`;
+            newKode = `${prefix}001`; // Start from 001 if no previous code exists
         } else {
             const lastKode = lastItem[kodeField];
             const numericPart = parseInt(lastKode.replace(prefix, '')) + 1;
-            newKode = `${prefix}${numericPart.toString().padStart(3, '0')}`;
+            const numericPartLength = lastKode.length - prefix.length;
+            newKode = `${prefix}${numericPart.toString().padStart(numericPartLength, '0')}`;
         }
-
+    
         return newKode;
     },
+    
 
     create: async (data) => {
         const { nama_pemesan, estimatedTime, products, totalHarga } = data;

@@ -42,13 +42,17 @@ const MaterialMovement = {
                 take: rowsPerPage,
                 include: {
                     material: true,
-                    order: true,
+                    order: {
+                        select: {
+                            kode_pesanan: true, // Fetch kode_pesanan only
+                        },
+                    },
                 },
             });
 
             return { materialsMasuk, totalMasuk };
         } catch (error) {
-            throw new Error(`Failed to get materials masuk: ${error.message}`);
+            throw new Error(`Gagal mengambil data masuk: ${error.message}`);
         }
     },
 
@@ -92,15 +96,20 @@ const MaterialMovement = {
                 take: rowsPerPage,
                 include: {
                     material: true,
-                    order: true,
+                    order: {
+                        select: {
+                            kode_pesanan: true, // Fetch kode_pesanan only
+                        },
+                    },
                 },
             });
 
             return { materialsKeluar, totalKeluar };
         } catch (error) {
-            throw new Error(`Failed to get materials keluar: ${error.message}`);
+            throw new Error(`Gagal mengambil data keluar: ${error.message}`);
         }
     },
+    
     createIn: async (data) => {
         try {
             const materialMovement = await prisma.materialMovement.create({
@@ -153,7 +162,11 @@ const MaterialMovement = {
                 where: { id: parseInt(id) },
                 include: {
                     material: true,
-                    order: true,
+                    order: {
+                        select: {
+                            kode_pesanan: true, // Fetch kode_pesanan only
+                        },
+                    },
                 },
             });
             return response;

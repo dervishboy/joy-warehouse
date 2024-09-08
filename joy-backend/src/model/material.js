@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { response } from 'express';
 const prisma = new PrismaClient();
 
 const Material = {
@@ -28,12 +27,22 @@ const Material = {
         }
     },
 
-    getById: async (id) => {
+    getById: async (id, page = 1, pageSize = 10) => {
         try {
             const response = await prisma.material.findUnique({
                 where: { id: parseInt(id) },
                 include: {
-                    movements: true,
+                    movements: {
+                        skip: (page - 1) * pageSize,
+                        take: pageSize,
+                        include: {
+                            order: {
+                                select: {
+                                    kode_pesanan: true,
+                                },
+                            },
+                        },
+                    },
                 },
             });
             return response;
@@ -41,6 +50,7 @@ const Material = {
             return error;
         }
     },
+    
     create: async (data) => {
         try {
             const response = await prisma.material.create({

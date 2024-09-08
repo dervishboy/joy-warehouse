@@ -39,8 +39,11 @@ const MaterialController = {
 
     getMaterialById: async (req, res) => {
         const { id } = req.params;
+        const page = parseInt(req.query.page, 10) || 1;
+        const pageSize = parseInt(req.query.pageSize, 10) || 10; 
+    
         try {
-            const response = await Material.getById(id);
+            const response = await Material.getById(id, page, pageSize);
             if (!response) {
                 return res.status(404).send('Material not found');
             }
@@ -50,6 +53,7 @@ const MaterialController = {
             res.status(500).json({ error: error.message });
         }
     },
+    
 
     updateMaterial: async (req, res) => {
         const { id } = req.params;

@@ -110,6 +110,10 @@ export default function Materials() {
         router.push('/dashboard/Materials/tambah');
     };
 
+    const handleDetailRiwayatMaterial = (id) => {
+        router.push(`/dashboard/Materials/${id}/riwayat`);
+    };
+
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
         setPage(0);
@@ -201,14 +205,6 @@ export default function Materials() {
                                                 {column.id === 'actions' && (
                                                     <div className='flex justify-center space-x-2'>
                                                         <Button
-                                                            className='bg-amber-400 hover:bg-amber-500 cursor-pointer text-custom-jhitam font-semibold'
-                                                            variant="outlined"
-                                                            size="small"
-                                                            startIcon={<FileClock className='w-4 h-4' />}
-                                                        >
-                                                            Kartu Stok
-                                                        </Button>
-                                                        <Button
                                                             className='bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold'
                                                             variant="outlined"
                                                             size="small"
@@ -225,6 +221,15 @@ export default function Materials() {
                                                             onClick={() => handleDelete(row.id)}
                                                         >
                                                             Delete
+                                                        </Button>
+                                                        <Button
+                                                            className="bg-sky-500 hover:bg-sky-600 cursor-pointer text-custom-jhitam font-semibold"
+                                                            variant="outlined"
+                                                            size="small"
+                                                            startIcon={<FileClock className='w-4 h-4' />}
+                                                            onClick={() => handleDetailRiwayatMaterial(row.id)}
+                                                        >
+                                                            Riwayat Material
                                                         </Button>
                                                     </div>
                                                 )}
