@@ -29,6 +29,11 @@ export default function EditUser() {
         confirmPassword: '',
     });
 
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
     const [showPassword, setShowPassword] = useState({
         oldPassword: false,
         newPassword: false,
@@ -74,6 +79,21 @@ export default function EditUser() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if (showChangePassword && formValues.newPassword !== formValues.confirmPassword) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Password dan Confirm Password tidak sama!');
+            setSnackbarOpen(true);
+            return;
+        }
+
+        if (!validateEmail(formValues.email)) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Format email tidak valid!');
+            setSnackbarOpen(true);
+            return;
+        }
+
         try {
             const updateData = {
                 name: formValues.name,
@@ -90,7 +110,7 @@ export default function EditUser() {
 
             if (response.status === 200) {
                 setSnackbarSeverity('success');
-                setSnackbarMessage('Data User berhasil perbarui!');
+                setSnackbarMessage('Data User berhasil diperbarui!');
                 setSnackbarOpen(true);
                 setTimeout(() => {
                     router.push('/dashboard/Users');
@@ -98,7 +118,7 @@ export default function EditUser() {
             }
         } catch (error) {
             setSnackbarSeverity('error');
-            setSnackbarMessage('Terjadi kesalahan saat mengubah data!');
+            setSnackbarMessage('Gagal mengubah data user!');
             setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         }

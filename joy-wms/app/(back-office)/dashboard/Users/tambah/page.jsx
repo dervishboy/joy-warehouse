@@ -26,6 +26,11 @@ export default function TambahUser() {
         confirmPassword: '',
     });
 
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -37,6 +42,28 @@ export default function TambahUser() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if (formValues.password !== formValues.confirmPassword) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Gagal menambahkan data user!');
+            setSnackbarOpen(true);
+            return;
+        }
+
+        if (formValues.password.length < 6) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Password minimal 6 karakter!');
+            setSnackbarOpen(true);
+            return;
+        }
+
+        if (!validateEmail(formValues.email)) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Format email tidak valid!');
+            setSnackbarOpen(true);
+            return;
+        }
+
         try {
             const response = await axios.post('http://localhost:5000/api/users',
                 {

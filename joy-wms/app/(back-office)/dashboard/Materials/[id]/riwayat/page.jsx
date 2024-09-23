@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeftCircle } from 'lucide-react';
-import { Container, Grid, Paper, Typography, Divider, Box, Button } from "@mui/material";
+import { Container, Paper, Typography, Divider, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import axios from 'axios';
 
 const formatAngka = (angka) => {
@@ -41,6 +41,7 @@ export default function RiwayatMaterial() {
 
     const [page, setPage] = useState(1);
     const [pageSize] = useState(5);
+    const [initialSaldo, setInitialSaldo] = useState(0);
 
     useEffect(() => {
         const fetchHistoryMaterials = async () => {
@@ -52,6 +53,9 @@ export default function RiwayatMaterial() {
                     },
                 });
                 setHistoryMaterials(response.data);
+
+                let saldoAwal = response.data.initialSaldo || 0;
+                setInitialSaldo(saldoAwal);
             } catch (error) {
                 console.error('Error fetching history materials:', error);
             }
@@ -73,7 +77,7 @@ export default function RiwayatMaterial() {
             <Paper elevation={3} sx={{ padding: 3, marginTop: 2 }}>
                 <Typography variant="h5" className="mb-2 text-2xl font-semibold">RIWAYAT MATERIAL</Typography>
                 <Box className="flex justify-between items-center mb-8">
-                    <Typography className='text-2xl font-medium' >{historyMaterials.kode_material} - {historyMaterials.nama_material}</Typography>
+                    <Typography className='text-2xl font-medium'>{historyMaterials.kode_material} - {historyMaterials.nama_material}</Typography>
                     <Button
                         onClick={handleBack}
                         startIcon={<ArrowLeftCircle />}
@@ -90,29 +94,48 @@ export default function RiwayatMaterial() {
                 <Box mt={2}>
                     {historyMaterials.movements.length > 0 ? (
                         <>
-                            <Grid container spacing={2}>
-                                {historyMaterials.movements.map((movement, index) => (
-                                    <Grid item xs={12} key={index}>
-                                        <Paper elevation={1} sx={{ padding: 2 }}>
-                                            <Typography variant="body1">
-                                                <strong>{movement.type === 'MASUK' ? 'MASUK' : 'KELUAR'}</strong>: {formatAngka(movement.quantity)} {historyMaterials.satuan}
-                                            </Typography>
-                                            <Typography variant="body2" color="textSecondary">
-                                                {formatDate(movement.date)}
-                                            </Typography>
-                                            {movement.type === 'KELUAR' && movement.order ? (
-                                                <Typography variant="body2" color="textSecondary">
-                                                    Kode Pesanan: {movement.order.kode_pesanan}
-                                                </Typography>
-                                            ) : movement.type === 'KELUAR' && !movement.order ? (
-                                                <Typography variant="body2" color="textSecondary">
-                                                    Kode Pesanan : -
-                                                </Typography>
-                                            ) : null}
-                                        </Paper>
-                                    </Grid>
-                                ))}
-                            </Grid>
+                            <TableContainer component={Paper}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell align="left">Tanggal</TableCell>
+                                            <TableCell align="left">Stok Masuk</TableCell>
+                                            <TableCell align="left">Stok Keluar</TableCell>
+                                            <TableCell align="left">Saldo Terakhir</TableCell>
+                                            <TableCell align="left">Kode Pesanan</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {historyMaterials.movements.reduce((acc, movement, index) => {
+                                            let stokMasuk = '-';
+                                            let stokKeluar = '-';
+                                            let kodePesanan = '-';
+
+                                            if (movement.type === 'MASUK') {
+                                                stokMasuk = formatAngka(movement.quantity);
+                                                acc.saldo += movement.quantity;
+                                            } else if (movement.type === 'KELUAR') {
+                                                stokKeluar = formatAngka(movement.quantity);
+                                                acc.saldo -= movement.quantity;
+                                                kodePesanan = movement.order ? movement.order.kode_pesanan : '-';
+                                            }
+
+                                            acc.rows.push(
+                                                <TableRow key={index}>
+                                                    <TableCell>{formatDate(movement.date)}</TableCell>
+                                                    <TableCell align="left">{stokMasuk}</TableCell>
+                                                    <TableCell align="left">{stokKeluar}</TableCell>
+                                                    <TableCell align="left">{formatAngka(acc.saldo)}</TableCell>
+                                                    <TableCell align="left">{kodePesanan}</TableCell>
+                                                </TableRow>
+                                            );
+
+                                            return acc;
+                                        }, { saldo: initialSaldo, rows: [] }).rows}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+
                             <Box mt={4} className="flex justify-between">
                                 <Button
                                     variant="contained"
@@ -133,10 +156,9 @@ export default function RiwayatMaterial() {
                             </Box>
                         </>
                     ) : (
-                        <Typography variant="body2" color="textSecondary">
-                            No movement history available.
+                        <Typography variant="body2" color="textSecondary" className='text-center'>
+                            Tidak Ada History Material
                         </Typography>
-
                     )}
                 </Box>
             </Paper>

@@ -64,7 +64,7 @@ export default function Login() {
       let translatedError = 'Terjadi kesalahan. Silakan coba lagi.';
 
       if (errorMessage === 'User does not exist') {
-        translatedError = 'Pengguna tidak ditemukan.';
+        translatedError = 'Login gagal, email atau kata sandi salah';
       } else if (errorMessage === 'Invalid password') {
         translatedError = 'Kata sandi tidak valid.';
       } else if (errorMessage === 'Email atau kata sandi salah.') {
@@ -72,7 +72,7 @@ export default function Login() {
       } else if (errorMessage === 'Please enter all fields') {
         translatedError = 'Harap masukkan semua kolom.';
       } else if (errorMessage === 'Invalid credentials') {
-        translatedError = 'Kredensial tidak valid.';
+        translatedError = 'Login gagal, email atau kata sandi salah.';
       }
 
       setError(translatedError);

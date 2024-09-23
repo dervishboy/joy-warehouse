@@ -44,7 +44,7 @@ export default function TambahMaterial() {
             }
         } catch (error) {
             setSnackbarSeverity('error');
-            setSnackbarMessage('Terjadi kesalahan saat menambahkan data!');
+            setSnackbarMessage('Gagal menambahkan data material!');
             setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         };

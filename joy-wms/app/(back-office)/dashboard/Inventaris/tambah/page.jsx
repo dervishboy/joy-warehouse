@@ -42,7 +42,7 @@ export default function TambahInventaris() {
             }
         } catch (error) {
             setSnackbarSeverity('error');
-            setSnackbarMessage('Terjadi kesalahan saat menambahkan data!');
+            setSnackbarMessage('Gagal menambahkan data inventaris!');
             setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         }

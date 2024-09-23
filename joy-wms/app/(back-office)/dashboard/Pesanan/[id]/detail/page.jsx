@@ -20,6 +20,10 @@ const formatDate = (isoDate) => {
     return `${day} ${month} ${year}`;
 };
 
+const formatAngka = (angka) => {
+    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 export default function LihatDetailPesanan() {
     const router = useRouter();
     const { id } = useParams();
@@ -124,7 +128,7 @@ export default function LihatDetailPesanan() {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <Typography>Total Harga:</Typography>
-                        <Typography>Rp {orderDetails.totalHarga}</Typography>
+                        <Typography>Rp {formatAngka(orderDetails.totalHarga)}</Typography>
                     </Grid>
                     <Grid item xs={12} sm={6}>
 

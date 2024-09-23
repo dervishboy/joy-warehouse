@@ -44,7 +44,7 @@ const MaterialMovement = {
                     material: true,
                     order: {
                         select: {
-                            kode_pesanan: true, // Fetch kode_pesanan only
+                            kode_pesanan: true,
                         },
                     },
                 },
@@ -98,7 +98,7 @@ const MaterialMovement = {
                     material: true,
                     order: {
                         select: {
-                            kode_pesanan: true, // Fetch kode_pesanan only
+                            kode_pesanan: true,
                         },
                     },
                 },
@@ -116,7 +116,7 @@ const MaterialMovement = {
                 data: {
                     ...data,
                     type: 'MASUK',
-                    order_id: data.order_id || null, // Nullable order_id
+                    order_id: data.order_id || null,
                 }
             });
             await prisma.material.update({
@@ -139,7 +139,7 @@ const MaterialMovement = {
                 data: {
                     ...data,
                     type: 'KELUAR',
-                    order_id: data.order_id || null, // Nullable order_id
+                    order_id: data.order_id || null,
                 }
             });
             await prisma.material.update({
@@ -164,7 +164,7 @@ const MaterialMovement = {
                     material: true,
                     order: {
                         select: {
-                            kode_pesanan: true, // Fetch kode_pesanan only
+                            kode_pesanan: true,
                         },
                     },
                 },

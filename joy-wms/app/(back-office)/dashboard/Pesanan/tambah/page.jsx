@@ -208,7 +208,7 @@ export default function TambahPesanan() {
             }
         } catch (error) {
             setSnackbarSeverity('error');
-            setSnackbarMessage('Terjadi kesalahan saat menambahkan data!');
+            setSnackbarMessage('Gagal menambah data pesanan!');
             setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         }

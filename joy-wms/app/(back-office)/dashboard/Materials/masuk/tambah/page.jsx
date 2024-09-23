@@ -54,7 +54,7 @@ export default function TambahMaterialMasuk() {
             console.log(response);
             if (response.status === 201) {
                 setSnackbarSeverity('success');
-                setSnackbarMessage('Berhasil menambahkan material masuk!');
+                setSnackbarMessage('Berhasil menambahkan stok material.');
                 setSnackbarOpen(true);
                 setTimeout(() => {
                     router.push('/dashboard/Materials/masuk');

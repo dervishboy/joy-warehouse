@@ -100,7 +100,7 @@ const Order = {
     
         let newKode;
         if (!lastItem) {
-            newKode = `${prefix}001`; // Start from 001 if no previous code exists
+            newKode = `${prefix}001`;
         } else {
             const lastKode = lastItem[kodeField];
             const numericPart = parseInt(lastKode.replace(prefix, '')) + 1;

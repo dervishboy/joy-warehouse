@@ -62,7 +62,7 @@ export default function EditInventaris() {
             }
         } catch (error) {
             setSnackbarSeverity('error');
-            setSnackbarMessage('Terjadi kesalahan saat mengubah data!');
+            setSnackbarMessage('Gagal mengubah data inventaris!');
             setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         }

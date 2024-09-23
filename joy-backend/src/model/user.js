@@ -41,6 +41,14 @@ const User = {
     },
     create: async (data) => {
         try {
+            if (!data.email || !data.password) {
+                throw new Error('Harap masukkan email dan kata sandi.');
+            }
+
+            if (!data.email.includes('@')) {
+                throw new Error('Format email tidak valid.');
+            }
+
             const response = await prisma.user.create({
                 data,
             });
@@ -51,6 +59,11 @@ const User = {
     },
     update: async (id, data) => {
         try {
+
+            if (data.email && !data.email.includes('@')) {
+                throw new Error('Format email tidak valid.');
+            }
+
             if (data.oldPassword && data.newPassword) {
                 const user = await prisma.user.findUnique({
                     where: { id: parseInt(id) },
