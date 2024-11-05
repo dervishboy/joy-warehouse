@@ -35,7 +35,7 @@ model Material {
   kode_material     String           @unique
   nama_material     String
   satuan            String
-  quantity          Int            @default(0)
+  quantity          Decimal            @default(0)
   movements         MaterialMovement[]
   productMaterials  ProductMaterial[]
 }
@@ -44,7 +44,7 @@ model MaterialMovement {
   id          Int      @id @default(autoincrement())
   material_id Int
   order_id    Int?
-  quantity    Int
+  quantity    Decimal
   date        DateTime @default(now())
   type        MovementType
 
@@ -66,7 +66,7 @@ model ProductMaterial {
   id          Int      @id @default(autoincrement())
   product_id  Int
   material_id Int
-  quantity    Int
+  quantity    Decimal
 
   product     Product @relation(fields: [product_id], references: [id])
   material    Material @relation(fields: [material_id], references: [id])

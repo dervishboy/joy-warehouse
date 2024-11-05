@@ -68,7 +68,7 @@ export default function TambahMaterial() {
                 </div>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <Typography>Kode Material :</Typography>
                             <TextField
                                 fullWidth
@@ -77,7 +77,7 @@ export default function TambahMaterial() {
                                 onChange={handleInputChange}
                                 required
                             />
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12}>
                             <Typography>Nama Material :</Typography>
                             <TextField

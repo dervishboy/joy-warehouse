@@ -86,7 +86,7 @@ export default function TambahMaterialKeluar() {
 
     return (
         <Container maxWidth>
-            <Paper className="p-4">
+            <Paper className="p-4 mt-4">
                 <Typography className='text-2xl font-semibold mb-8'>
                     Tambah Material Keluar
                 </Typography>
@@ -128,6 +128,8 @@ export default function TambahMaterialKeluar() {
                                 variant="outlined"
                                 fullWidth
                                 required
+                                decimalScale={2}
+                                fixedDecimalScale={true}
                                 InputProps={{
                                     endAdornment: <InputAdornment position="end">{selectedSatuan}</InputAdornment>
                                 }}

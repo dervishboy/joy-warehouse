@@ -7,6 +7,16 @@ import { ArrowLeftCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
+
+const formatAngka = (angka) => {
+    const number = Number(angka);
+    if (number >= 1000) {
+        return new Intl.NumberFormat('id-ID').format(number);
+    } else {
+        return number.toString().replace('.', ',');
+    }
+};
+
 export default function DetailProduk() {
     const router = useRouter();
     const { id } = useParams();
@@ -59,9 +69,13 @@ export default function DetailProduk() {
                         <Typography className='text-sm font-semibold'>Nama Produk:</Typography>
                         <Typography className='text-sm font-semibold'>{productDetails.nama_produk}</Typography>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sm={6}>
                         <Typography className='text-sm font-semibold'>Deskripsi Produk:</Typography>
                         <Typography className='text-sm font-semibold'>{productDetails.deskripsi}</Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <Typography className='text-sm font-semibold'>Jumlah Produk:</Typography>
+                        <Typography className='text-sm font-semibold'>{productDetails.jumlah_produk}</Typography>
                     </Grid>
                 </Grid>
                 <Box mt={3}>
@@ -71,7 +85,7 @@ export default function DetailProduk() {
                             <Grid item xs={12} sm={4} key={index}>
                                 <Paper elevation={1} className="p-2 mb-2">
                                     <Typography variant="body1"><strong>{material.material.nama_material}</strong></Typography>
-                                    <Typography variant="body2">Quantity: {material.quantity} {material.material.satuan}</Typography>
+                                    <Typography variant="body2">Quantity: {formatAngka(material.quantity)} {material.material.satuan}</Typography>
                                 </Paper>
                             </Grid>
                         ))}

@@ -143,44 +143,40 @@ export default function TambahPesanan() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+    
         try {
-            const checkOrderResponse = await axios.get(`http://localhost:5000/api/orders?kode_pesanan=${formData.kode_pesanan}`);
-            console.log("Order Check Response:", checkOrderResponse.data);
-
-            const orders = checkOrderResponse.data.orders;
-            const orderExists = orders.some(order => order.kode_pesanan === formData.kode_pesanan);
-
-            if (orderExists) {
-                alert('Kode pesanan sudah ada. Silakan gunakan kode yang berbeda.');
-                return;
-            }
-
             for (let i = 0; i < formData.products.length; i++) {
                 const product = formData.products[i];
-                const checkProductResponse = await axios.get(`http://localhost:5000/api/products?kode_produk=${product.kode_produk}`);
-                console.log(`Product Check Response for ${product.kode_produk}:`, checkProductResponse.data);
-
-                const products = checkProductResponse.data.products;
-                const productExists = products.some(prod => prod.kode_produk === product.kode_produk);
-
-                if (productExists) {
-                    alert(`Kode produk ${product.kode_produk} sudah ada. Silakan gunakan kode yang berbeda untuk produk.`);
-                    return;
-                }
-
+    
                 for (let j = 0; j < product.productMaterials.length; j++) {
                     const material = product.productMaterials[j];
+                    
+                    // Pastikan quantity tidak negatif
+                    if (Number(material.quantity) < 0) {
+                        setSnackbarSeverity('error');
+                        setSnackbarMessage(`Jumlah material untuk produk ${i + 1} tidak boleh negatif.`);
+                        setSnackbarOpen(true);
+                        return;
+                    }
+    
+                    // Pengecekan stok dari server
                     const materialResponse = await axios.get(`http://localhost:5000/api/materials/${material.material_id}`);
                     console.log(`Material Check Response for ${material.material_id}:`, materialResponse.data);
-
-                    if (material.quantity > materialResponse.data.quantity) {
-                        alert(`Jumlah material ${materialResponse.data.kode_material} tidak mencukupi. Stok tersedia: ${materialResponse.data.quantity}.`);
+    
+                    const materialQuantity = Number(material.quantity);
+                    const availableQuantity = Number(materialResponse.data.quantity);
+    
+                    // Validasi quantity untuk memastikan stok mencukupi
+                    if (materialQuantity > availableQuantity) {
+                        setSnackbarSeverity('error');
+                        setSnackbarMessage(`Jumlah material ${materialResponse.data.kode_material} pada produk ${i + 1} tidak mencukupi. Stok tersedia: ${availableQuantity}.`);
+                        setSnackbarOpen(true);
                         return;
                     }
                 }
             }
-
+    
+            // Jika validasi lolos, lanjutkan untuk submit pesanan
             const response = await axios.post('http://localhost:5000/api/orders', {
                 nama_pemesan: formData.nama_pemesan,
                 kode_pesanan: formData.kode_pesanan,
@@ -197,7 +193,7 @@ export default function TambahPesanan() {
                     }))
                 }))
             });
-
+    
             if (response.status === 201) {
                 setSnackbarSeverity('success');
                 setSnackbarMessage('Data Pesanan berhasil ditambahkan!');
@@ -212,7 +208,7 @@ export default function TambahPesanan() {
             setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         }
-    };
+    };        
 
     const handleBack = () => {
         router.push('/dashboard/Pesanan');
@@ -238,16 +234,6 @@ export default function TambahPesanan() {
                                 required
                             />
                         </Grid>
-                        {/* <Grid item xs={12} sm={6}>
-                            <Typography variant="body1">Kode Pesanan :</Typography>
-                            <TextField
-                                name="kode_pesanan"
-                                value={formData.kode_pesanan}
-                                fullWidth
-                                disabled
-                                readonly
-                            />
-                        </Grid> */}
                         <Grid item xs={12} sm={6}>
                             <Typography variant="body1">Total Harga :</Typography>
                             <NumericFormat
@@ -371,16 +357,26 @@ export default function TambahPesanan() {
                                                         />
                                                     </FormControl>
                                                 </Grid>
-
                                                 <Grid item xs={12} sm={6}>
                                                     <Typography variant="body1">Jumlah :</Typography>
-                                                    <TextField
-                                                        type="number"
-                                                        name="quantity"
-                                                        value={material.quantity}
-                                                        onChange={(e) => handleChange(e, index, 'quantity', true, materialIndex)}
+                                                    <NumericFormat
+                                                        customInput={TextField}
                                                         fullWidth
+                                                        thousandSeparator={true}
+                                                        name="quantity"
+                                                        onValueChange={(values) => {
+                                                            const { value } = values;
+                                                            handleChange({ target: { name: 'quantity', value } }, index, 'quantity', true, materialIndex);
+                                                        }}
+                                                        value={material.quantity}
                                                         required
+                                                        allowNegative={false}
+                                                        decimalScale={2}
+                                                        fixedDecimalScale={true}
+                                                        isAllowed={(values) => {
+                                                            const { floatValue } = values;
+                                                            return floatValue >= 0;
+                                                        }}
                                                         InputProps={{
                                                             endAdornment: <InputAdornment position="end">{selectedSatuan[materialIndex]}</InputAdornment>
                                                         }}

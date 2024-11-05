@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const formatRupiah = (amount) => {
     if (amount === 0) {
-        return 'Pesanan Dibatalkan';
+        return '-';
     }
 
     return new Intl.NumberFormat('id-ID', {
@@ -86,14 +86,20 @@ export default function Pesanan() {
         try {
             const response = await axios.get(`http://localhost:5000/api/orders/${id}`);
             if (response.data.status === 'CANCELLED') {
-                alert('Pesanan telah dibatalkan');
+                setSnackbarSeverity('warning');
+                setSnackbarMessage('Pesanan telah dibatalkan');
+                setSnackbarOpen(true);
             } else {
                 router.push(`/dashboard/Pesanan/${id}/detail`);
             }
         } catch (error) {
             console.error('Error fetching order details:', error);
+            setSnackbarSeverity('error');
+            setSnackbarMessage(`Gagal mengambil detail pesanan: ${error.message}`);
+            setSnackbarOpen(true);
         }
     };
+
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
@@ -164,28 +170,21 @@ export default function Pesanan() {
                             <TableBody>
                                 {orders.map((row, index) => (
                                     <TableRow key={row.id}>
-                                        <TableCell className='text-sm font-semibold text-center'>{index + 1}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>
+                                            {page * rowsPerPage + index + 1}
+                                        </TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{row.nama_pemesan}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{row.kode_pesanan}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{formatRupiah(row.totalHarga)}</TableCell>
                                         <TableCell className="text-sm font-semibold text-center">
                                             <span className={`rounded-md p-1 border border-neutral-800 text-sm font-semibold ${row.status === 'PROCESSING' ? 'bg-yellow-400' :
-                                                    row.status === 'DONE' ? 'bg-green-400' :
-                                                        'bg-red-400'
+                                                row.status === 'DONE' ? 'bg-green-400' :
+                                                    'bg-red-400'
                                                 }`}>
                                                 {row.status}
                                             </span>
                                         </TableCell>
                                         <TableCell className='items-center space-x-2 text-center'>
-                                            {/* <Button
-                                                className="bg-teal-400 hover:bg-teal-500 cursor-pointer text-custom-jhitam font-semibold"
-                                                variant="outlined"
-                                                size="small"
-                                                startIcon={<Pencil />}
-                                                onClick={() => handleEdit(row.id)}
-                                            >
-                                                Edit
-                                            </Button> */}
                                             <Button
                                                 className="bg-rose-400 hover:bg-red-600 cursor-pointer text-custom-jhitam font-semibold"
                                                 variant="outlined"

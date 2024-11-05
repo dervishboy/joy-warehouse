@@ -118,7 +118,7 @@ export default function EditUser() {
             }
         } catch (error) {
             setSnackbarSeverity('error');
-            setSnackbarMessage('Gagal mengubah data user!');
+            setSnackbarMessage('Gagal mengubah data user, Periksa kembali masukan data!');
             setSnackbarOpen(true);
             console.error('Error in handleSubmit:', error);
         }

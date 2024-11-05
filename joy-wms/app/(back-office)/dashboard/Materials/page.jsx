@@ -22,8 +22,14 @@ import axios from 'axios';
 import ReactToPrint from 'react-to-print';
 
 const formatAngkaMaterial = (angka) => {
-    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    if (Number(angka) === 0) return "0";
+    const number = parseFloat(Number(angka).toFixed(2));
+    return number >= 1000
+        ? new Intl.NumberFormat('id-ID').format(number)
+        : number.toString().replace('.', ',');
 };
+
+
 
 export default function Materials() {
     const router = useRouter();
@@ -201,7 +207,11 @@ export default function Materials() {
                                     <TableRow key={row.id}>
                                         {columns.map((column) => (
                                             <TableCell className='text-sm font-semibold text-center' key={column.id}>
-                                                {column.id === 'index' ? index + 1 : column.id === 'quantity' ? formatAngkaMaterial(row[column.id]) : row[column.id]}
+                                                {column.id === 'index' 
+                                                    ? page * rowsPerPage + index + 1
+                                                    : column.id === 'quantity' 
+                                                    ? formatAngkaMaterial(row[column.id]) 
+                                                    : row[column.id]}
                                                 {column.id === 'actions' && (
                                                     <div className='flex justify-center space-x-2'>
                                                         <Button

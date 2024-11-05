@@ -78,7 +78,7 @@ export default function TambahMaterialMasuk() {
 
     return (
         <Container maxWidth>
-            <Paper className="p-4">
+            <Paper className="p-4 mt-4">
                 <Typography className='text-2xl font-semibold mb-8'>
                     Tambah Material Masuk
                 </Typography>
@@ -120,13 +120,15 @@ export default function TambahMaterialMasuk() {
                                 value={formValues.quantity}
                                 required
                                 allowNegative={false}
+                                decimalScale={2} // Batas maksimal 2 angka di belakang koma
+                                fixedDecimalScale={true} // Menjaga jumlah desimal tetap 2 angka
                                 InputProps={{
                                     endAdornment: <InputAdornment position="end">{selectedSatuan}</InputAdornment>
                                 }}
                             />
                         </Grid>
                         <Grid item xs={12} className='flex justify-between'>
-                        <Button
+                            <Button
                                 variant="contained"
                                 className='bg-custom-jorange hover:bg-orange-500 cursor-pointer text-custom-jhitam font-semibold'
                                 size='small'

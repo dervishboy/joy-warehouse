@@ -1,6 +1,23 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
+
+const generateNextKode = async (prefix, model, kodeField, increment = 0) => {
+    const lastItem = await prisma[model].findFirst({
+        orderBy: { [kodeField]: 'desc' },
+        take: 1,
+    });
+
+    let newKode = `${prefix}001`;
+    if (lastItem) {
+        const lastKode = lastItem[kodeField];
+        const numericPart = parseInt(lastKode.replace(prefix, '')) + increment + 1;
+        newKode = `${prefix}${numericPart.toString().padStart(3, '0')}`;
+    }
+
+    return newKode;
+};
+
 const Material = {
     getAll: async ({ searchQuery, page, rowsPerPage }) => {
         try {
@@ -53,8 +70,12 @@ const Material = {
     
     create: async (data) => {
         try {
+            const kodeMaterial = await generateNextKode('M', 'material', 'kode_material');
             const response = await prisma.material.create({
-                data,
+                data: {
+                    ...data,
+                    kode_material: kodeMaterial,
+                },
             });
             return response;
         } catch (error) {

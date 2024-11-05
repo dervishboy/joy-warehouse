@@ -40,6 +40,9 @@ const MaterialMovement = {
                 },
                 skip: page * rowsPerPage,
                 take: rowsPerPage,
+                orderBy: {
+                    id: 'desc',
+                },
                 include: {
                     material: true,
                     order: {
@@ -94,6 +97,9 @@ const MaterialMovement = {
                 },
                 skip: page * rowsPerPage,
                 take: rowsPerPage,
+                orderBy: {
+                    id: 'desc',
+                },
                 include: {
                     material: true,
                     order: {

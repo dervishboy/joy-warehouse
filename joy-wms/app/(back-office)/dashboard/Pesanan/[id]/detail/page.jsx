@@ -21,7 +21,12 @@ const formatDate = (isoDate) => {
 };
 
 const formatAngka = (angka) => {
-    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    const number = Number(angka);
+    if (number >= 1000) {
+        return new Intl.NumberFormat('id-ID').format(number);
+    } else {
+        return number.toString().replace('.', ',');
+    }
 };
 
 export default function LihatDetailPesanan() {
@@ -143,32 +148,33 @@ export default function LihatDetailPesanan() {
                                 {orderDetails.status}
                             </span>
                         </div>
-                        <Grid container spacing={2} alignItems="center">
-                            <Grid item xs={6}>
-                                <FormControl fullWidth>
-                                    <Select
-                                        variant='outlined'
+                        {orderDetails.status !== 'DONE' && (
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={6}>
+                                    <FormControl fullWidth>
+                                        <Select
+                                            variant='outlined'
+                                            size='small'
+                                            value={newStatus}
+                                            onChange={handleStatusChange}
+                                        >
+                                            <MenuItem value="DONE">DONE</MenuItem>
+                                            <MenuItem value="CANCELLED">CANCELLED</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <Button
+                                        variant='contained'
                                         size='small'
-                                        value={newStatus}
-                                        onChange={handleStatusChange}
+                                        color='primary'
+                                        onClick={handleUpdateStatus}
                                     >
-                                        {/* <MenuItem value="PROCESSING">PROCESSING</MenuItem> */}
-                                        <MenuItem value="DONE">DONE</MenuItem>
-                                        <MenuItem value="CANCELLED">CANCELLED</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                        Update Status
+                                    </Button>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={4}>
-                                <Button
-                                    variant='contained'
-                                    size='small'
-                                    color='primary'
-                                    onClick={handleUpdateStatus}
-                                >
-                                    Update Status
-                                </Button>
-                            </Grid>
-                        </Grid>
+                        )}
                     </Grid>
                 </Grid>
                 {orderDetails.orderProducts.map((orderProduct, index) => (
@@ -205,7 +211,7 @@ export default function LihatDetailPesanan() {
                                         <Grid item xs={12} sm={4} key={materialIndex}>
                                             <Paper elevation={1} className="p-2 mb-2">
                                                 <Typography variant="body1"><strong>{productMaterial.material.nama_material}</strong></Typography>
-                                                <Typography variant="body2">Quantity: {productMaterial.quantity} {productMaterial.material.satuan}</Typography>
+                                                <Typography variant="body2">Quantity: {formatAngka(productMaterial.quantity)} {productMaterial.material.satuan}</Typography>
                                             </Paper>
                                         </Grid>
                                     ))}
@@ -256,7 +262,7 @@ export default function LihatDetailPesanan() {
                             <Typography><strong>Estimasi Waktu Selesai:</strong> {formatDate(orderDetails.estimatedTime)}</Typography>
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <Typography><strong>Total Harga:</strong> Rp {orderDetails.totalHarga}</Typography>
+                            <Typography><strong>Total Harga:</strong> Rp{formatAngka(orderDetails.totalHarga)}</Typography>
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Typography><strong>Status:</strong> {orderDetails.status}</Typography>

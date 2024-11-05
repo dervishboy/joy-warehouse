@@ -19,7 +19,11 @@ const formatDate = (isoDate) => {
 };
 
 const formatAngka = (angka) => {
-    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    if (angka >= 1000) {
+        return new Intl.NumberFormat('id-ID').format(angka);
+    } else {
+        return angka.toString().replace('.', ',');
+    }
 };
 
 export default function MaterialMasuk() {

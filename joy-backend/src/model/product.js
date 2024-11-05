@@ -20,6 +20,9 @@ const Product = {
                 where: whereClause,
                 skip: page * rowsPerPage,
                 take: rowsPerPage,
+                orderBy: {
+                    id: 'desc',
+                },
                 include: {
                     productMaterials: {
                         include: {

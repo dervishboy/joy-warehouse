@@ -45,21 +45,21 @@ export default function Produk() {
 
     const handleDetail = (id) => {
         router.push(`/dashboard/Produk/${id}/detail`);
-    }
+    };
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
         setPage(0);
-    }
+    };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
-    }
+    };
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
-    }
+    };
 
     return (
         <div className='px-3 py-4'>
@@ -103,7 +103,9 @@ export default function Produk() {
                             <TableBody>
                                 {products.map((product, index) => (
                                     <TableRow key={product.id} hover>
-                                        <TableCell className='text-sm font-semibold text-center'>{index + 1}</TableCell>
+                                        <TableCell className='text-sm font-semibold text-center'>
+                                            {page * rowsPerPage + index + 1}
+                                        </TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{product.kode_produk}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{product.nama_produk}</TableCell>
                                         <TableCell className='text-sm font-semibold text-center'>{product.deskripsi}</TableCell>

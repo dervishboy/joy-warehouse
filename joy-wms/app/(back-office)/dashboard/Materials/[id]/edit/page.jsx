@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Container, Grid, Paper, TextField, Button, Typography } from "@mui/material";
+import { Container, Grid, Paper, TextField, Button, Typography, Snackbar, SnackbarContent } from "@mui/material";
 import { File, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
@@ -16,19 +16,23 @@ export default function EditMaterial() {
         satuan: '',
     });
 
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
     const fetchMaterial = async (id) => {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/materials/${id}`);
-                setFormValues({
-                    kode_material: response.data.kode_material,
-                    nama_material: response.data.nama_material,
-                    satuan: response.data.satuan,
-                });
-            } catch (error) {
-                console.error('Error fetching material:', error);
-            }
-        };
-    
+        try {
+            const response = await axios.get(`http://localhost:5000/api/materials/${id}`);
+            setFormValues({
+                kode_material: response.data.kode_material,
+                nama_material: response.data.nama_material,
+                satuan: response.data.satuan,
+            });
+        } catch (error) {
+            console.error('Error fetching material:', error);
+        }
+    };
+
     useEffect(() => {
         fetchMaterial(id);
     }, [id]);
@@ -41,23 +45,31 @@ export default function EditMaterial() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.put(`http://localhost:5000/api/materials/${id}`,
-                {
-                    kode_material: formValues.kode_material,
-                    nama_material: formValues.nama_material,
-                    satuan: formValues.satuan,
-                }
-            );
+            const response = await axios.put(`http://localhost:5000/api/materials/${id}`, {
+                kode_material: formValues.kode_material,
+                nama_material: formValues.nama_material,
+                satuan: formValues.satuan,
+            });
             if (response.status === 200) {
-                router.push('/dashboard/Materials');
+                setSnackbarMessage('Material berhasil diperbarui');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
+                setTimeout(() => router.push('/dashboard/Materials'), 2000); // Redirect setelah snackbar muncul
             }
         } catch (error) {
             console.error('Error in handleSubmit:', error);
+            setSnackbarMessage('Gagal memperbarui material');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
     };
 
     const handleBack = () => {
         router.push('/dashboard/Materials');
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -70,7 +82,7 @@ export default function EditMaterial() {
                 </div>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <Typography>Kode Bahan :</Typography>
                             <TextField
                                 fullWidth
@@ -79,7 +91,7 @@ export default function EditMaterial() {
                                 onChange={handleInputChange}
                                 required
                             />
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12}>
                             <Typography>Nama Bahan Baku :</Typography>
                             <TextField
@@ -101,7 +113,7 @@ export default function EditMaterial() {
                             />
                         </Grid>
                         <Grid item xs={12} className="flex justify-end space-x-2">
-                        <Button
+                            <Button
                                 variant="contained"
                                 className="bg-custom-jorange hover:bg-orange-600 text-custom-jhitam font-semibold"
                                 size='small'
@@ -123,6 +135,19 @@ export default function EditMaterial() {
                     </Grid>
                 </form>
             </Paper>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <SnackbarContent
+                    style={{
+                        backgroundColor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+                    }}
+                    message={snackbarMessage}
+                />
+            </Snackbar>
         </Container>
     );
 }
